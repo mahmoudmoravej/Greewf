@@ -1,0 +1,76 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Web;
+using System.Collections.Specialized;
+using System.Reflection;
+//TODO : 
+//اگر کاربر از کوری استرینگ را مستقیم از آدرس بخواند چطور؟ احتمالا مقادیر تصحیح نشده را بخواند
+//
+
+namespace Greewf.BaseLibrary.MVC.HttpModules
+{
+    public class PersianCharacterCorrecterModule : IHttpModule
+    {
+
+        //get the property
+        PropertyInfo ReadOnlyPropertyInfo = typeof(NameValueCollection).GetProperty("IsReadOnly", BindingFlags.Instance | BindingFlags.IgnoreCase | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+
+        public PersianCharacterCorrecterModule()
+        {
+        }
+
+        public String ModuleName
+        {
+            get { return "PersianCharacterCorrecterModule"; }
+        }
+
+        // In the Init function, register for HttpApplication 
+        // events by adding your handlers.
+        public void Init(HttpApplication application)
+        {
+            application.BeginRequest +=
+                (new EventHandler(this.Application_BeginRequest));
+        }
+
+        private void Application_BeginRequest(Object source,
+             EventArgs e)
+        {
+            //form
+            NameValueCollection formData = HttpContext.Current.Request.Form;
+
+            CorrectCollection(HttpContext.Current.Request.Form);
+            CorrectCollection(HttpContext.Current.Request.QueryString);     
+
+        }
+
+        //توجه :
+        //در یک حالت عجیب که یک فیلد چک باکس بود
+        //و ریپلیس آن عملا تغییری در آن ایجاد نمیکرد
+        //باعث خطا می شد. لذا با چک کردن این موضوع قبل از ست شدن مقدار خطا برطرف شد
+        // اما مشخص نگردید که سورس خطا کجاست و به چه علت است
+        private void CorrectCollection(NameValueCollection data)
+        {
+            if (data.Count > 0)
+            {
+
+                //unset readonly
+                ReadOnlyPropertyInfo.SetValue(data, false, null);
+
+                foreach (var key in data.AllKeys)
+                {
+                    string value = data[key];
+                    if (value.Contains("ي") || value.Contains("ك"))
+                        data[key] = value.Replace("ي", "ی").Replace("ك", "ک");
+                }
+
+                //set readonly
+                ReadOnlyPropertyInfo.SetValue(data, true, null);
+
+            }
+        }
+
+        public void Dispose() { }
+    }
+}
