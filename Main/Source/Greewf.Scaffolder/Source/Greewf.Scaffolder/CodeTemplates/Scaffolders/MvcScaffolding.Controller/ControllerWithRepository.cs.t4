@@ -1,0 +1,307 @@
+﻿<#@ template language="C#" HostSpecific="True"  inherits="DynamicTransform" #>
+<#@ Output Extension="cs" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="EnvDTE" #>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using Telerik.Web.Mvc;
+using System.ComponentModel.DataAnnotations;
+<# if(!string.IsNullOrEmpty(Model.ModelTypeNamespace)) { #>
+using <#= Model.ModelTypeNamespace #>;
+<# } #>
+<# if(!string.IsNullOrEmpty(Model.ModelTypeNamespace)) { #>
+using <#= Model.DefaultNamespace #>;
+<# } #>
+<# foreach(var ns in Model.DefaultImportingNamespaces) { #>
+using <#= ns #>;
+<# } #>
+
+//TODO : 
+// 1- complete the PermissionCordinator in order to support your limitter permissions (if any)
+// 3- complete the GetModelLimiterFunctions method if required
+// 4- modify ApplySearchCriteria method to satisfy your needs. 
+
+namespace <#= Model.ControllerNamespace #>
+{   
+<#  
+	var modelType = (CodeType)Model.ModelType; 
+	var modelName = modelType.Name; 
+	var modelNamePlural = Model.ModelTypePluralized; 
+	var modelVariable = modelName.ToLower(); 
+	var relatedEntities = ((IEnumerable)Model.RelatedEntities).OfType<RelatedEntityInfo>();
+	var primaryKeyProperty = modelType.VisibleMembers().OfType<CodeProperty>().Single(x => x.Name == Model.PrimaryKey);
+	var routingName = Regex.Replace(Model.ControllerName, "Controller$", "", RegexOptions.IgnoreCase);
+#>
+    public class <#= Model.ControllerName #> : CustomizedController< <#= modelName #>,<#= modelName #>ViewModel>
+    {
+
+
+
+	#region listing/filtering
+
+
+        private IQueryable< <#= modelName #>> ApplySearchCriteria(IQueryable< <#= modelName #>> q, <#= modelName #>SearchCriteria criteria)
+        {
+            if (criteria != null)
+            {
+				//TODO : write filtering code
+			}
+            return q;
+        }
+		
+        private IQueryable< <#= modelName #>GridViewModel> Get<#= modelNamePlural #>(<#= modelName #>SearchCriteria criteria = null)
+        {
+
+<#
+	var propertiesToInclude = relatedEntities.Select(relation => relation.LazyLoadingProperty).Where(x => x != null);
+	var includeExpression = String.Join(", ", propertiesToInclude.Select(x => String.Format("{0} => {0}.{1}", modelVariable, x.Name)));
+	if (!string.IsNullOrEmpty(includeExpression)) {
+		includeExpression = "Including(" + includeExpression + ")";
+	}
+	var allProperties =  modelType.VisibleMembers().OfType<CodeProperty>();
+	var allPropertyAssignments = String.Join(",\r\n ", allProperties.Select(x => String.Format("{0} = r.{0}", x.Name)));
+	
+#>			var q =
+                from r in (<#= Repositories[modelType.FullName].VariableName #>.All<#= includeExpression #>)
+                select r;
+
+            //apply search criteria
+            q = ApplySearchCriteria(q, criteria);
+
+            return
+                from r in q
+                orderby r.<#= primaryKeyProperty.Name #>
+                select new <#= modelName #>GridViewModel
+                {
+					<#= allPropertyAssignments #>
+                };
+
+        }
+		
+	#endregion 
+
+	#region Index
+
+        [Permissions(<#= modelName #>Permission.View)]
+		public ViewResult Index()
+        {
+            return View(Get<#= modelNamePlural #>());
+        }
+		
+    	[GridAction]
+        [Permissions(<#= modelName #>Permission.View)]
+        public ViewResult AjaxIndex()
+        {
+			var criteria = new <#= modelName #>SearchCriteria();
+			UpdateModel(criteria, CustomHelper.SearchCriteriaPrefix);            
+            return View(new GridModel(Get<#= modelNamePlural #>(criteria)));		
+        }	
+		
+	#endregion
+
+	#region Details
+
+        [AutoMap(typeof(<#= modelName #>), typeof(<#= modelName #>ViewModel))]
+        [Permissions(<#= modelName #>Permission.View)]
+        public ViewResult Details(<#= primaryKeyProperty.Type.AsString #> id)
+        {
+            return View(<#= Repositories[modelType.FullName].VariableName #>.Find(id));
+        }		
+	#endregion
+
+	#region Utilities
+
+        private void PrepareViewBagLists(bool isCreateOrEdit)
+        {
+<# foreach(var relatedEntity in relatedEntities.Where(x => x.RelationType == RelationType.Parent)) { #>
+			ViewBag.Possible<#= relatedEntity.RelationNamePlural #> = <#= Repositories[relatedEntity.RelatedEntityType.FullName].VariableName #>.All;
+<# } #>
+
+   			if (isCreateOrEdit)
+            {
+				//TODO:move only create/edit specific viewbag items to here
+			}
+		}		
+
+	#endregion
+
+	#region Create
+
+        [Permissions(<#= modelName #>Permission.Create)]
+        public ActionResult Create()
+        {
+			var new<#= modelName #> = new <#= modelName #>ViewModel();
+			PrepareViewBagLists(true);
+            return View(new<#= modelName #>);
+        } 
+
+        //
+        // POST: /<#= routingName #>/Create
+
+        [HttpPost]
+        [AutoMap(typeof(<#= modelName #>), typeof(<#= modelName #>ViewModel))]
+        [Permissions(<#= modelName #>Permission.Create)]
+        public ActionResult Create(<#= modelName #>ViewModel <#= modelVariable #>Model)
+        {
+			var <#= modelVariable #> = <#= modelName #>ModelMapper.Map(<#= modelVariable #>Model);
+			
+            if (ModelState.IsValid) {
+                <#= Repositories[modelType.FullName].VariableName #>.InsertOrUpdate(<#= modelVariable #>);
+                <#= Repositories[modelType.FullName].VariableName #>.Save();
+				
+				return Redirect(Url.Action("edit", new { id = <#= modelVariable #>.<#= primaryKeyProperty.Name #> }), true);
+            } 
+			else 
+			{
+				PrepareViewBagLists(true);
+	            return View(<#= modelVariable #>);
+			}
+        }
+        
+	#endregion
+
+	#region Edit
+
+        [AutoMap(typeof(<#= modelName #>), typeof(<#= modelName #>ViewModel))]
+        [Permissions(<#= modelName #>Permission.Edit)]
+        public ActionResult Edit(<#= primaryKeyProperty.Type.AsString #> id)
+        {
+			PrepareViewBagLists(true);
+			return View(<#= Repositories[modelType.FullName].VariableName #>.Find(id));
+        }
+
+        //
+        // POST: /<#= routingName #>/Edit/5
+
+        [HttpPost]
+        [Permissions(<#= modelName #>Permission.Edit)]
+        public ActionResult Edit(<#= modelName #>ViewModel	 <#= modelVariable #>)
+        {
+            if (ModelState.IsValid) {
+				var old<#= modelName #> = <#= Repositories[modelType.FullName].VariableName #>.Find(<#= modelVariable #>.<#= primaryKeyProperty.Name #>);
+				UpdateModel(old<#= modelName #>);
+                <#= Repositories[modelType.FullName].VariableName #>.InsertOrUpdate(old<#= modelName #>);
+                <#= Repositories[modelType.FullName].VariableName #>.Save();
+				return Redirect(Url.Action("edit"), true);
+
+            } else {
+				PrepareViewBagLists(true);
+	            return View(<#= modelVariable #>);
+			}
+        }
+
+	#endregion
+
+	#region Delete
+
+        [AutoMap(typeof(<#= modelName #>), typeof(<#= modelName #>ViewModel))]
+        [Permissions(<#= modelName #>Permission.Delete)]
+        public ActionResult Delete(<#= primaryKeyProperty.Type.AsString #> id)
+        {
+            return View(<#= Repositories[modelType.FullName].VariableName #>.Find(id));
+        }
+
+        //
+        // POST: /<#= routingName #>/Delete/5
+
+        [HttpPost, ActionName("Delete")]
+        [Permissions(<#= modelName #>Permission.Delete)]
+        public ActionResult DeleteConfirmed(<#= primaryKeyProperty.Type.AsString #> id)
+        {
+            <#= Repositories[modelType.FullName].VariableName #>.Delete(id);
+            <#= Repositories[modelType.FullName].VariableName #>.Save();
+
+            return Json(new { result = true });
+        }
+		
+	#endregion
+
+	#region Search
+
+        [Permissions(<#= modelName #>Permission.View)]
+        public ActionResult Search()
+        {
+            PrepareViewBagLists(false);
+            return View();
+        }
+
+        [HttpPost]
+        [Permissions(<#= modelName #>Permission.View)]
+        public ActionResult Search(<#= modelName #>SearchCriteria criteria)
+        {
+            PrepareViewBagLists(false);
+            ViewBag.SearchResult = Get<#= modelNamePlural #>(criteria);
+
+            return View(criteria);
+        }
+
+	#endregion	
+
+	#region ModelMapper
+
+        public IMapper< <#= modelName #>, <#= modelName #>ViewModel> <#= modelName #>ModelMapper
+        {
+            get
+            {
+                return EntityModelMapper;
+            }
+        }
+
+	#endregion
+
+	#region Permission Handling
+
+        public override ModelPermissionLimiters GetModelLimiterFunctions(dynamic model)
+        {
+            //TODO : uncomment and correct these if you have permission based on the entity creator or any other rules
+			//if (model is <#= modelName #>ViewModel)
+            //    return new ModelPermissionLimiters()
+            //    {
+            //        OrBase = true,
+            //        LimiterFunctions = new PermissionLimiterBase[1] { 
+			//				new PermissionLimiter()
+			//				.ForOwnsPermissionsOf(PermissionEntity.<#=modelNamePlural#>)
+			//				.MakeLimitsBy(() => (model as <#= modelName #>ViewModel).UserName == Commons.CurrentUser.UserName)
+            //        }                                                      
+            //    };
+            return null;
+        }
+	
+	#endregion
+
+    }	
+
+}
+
+<#+
+class RepositoryInfo {
+    public string RepositoryTypeName { get; set; }
+    public string VariableName { get; set; }
+}
+
+IDictionary<string, RepositoryInfo> _repositories;
+IDictionary<string, RepositoryInfo> Repositories {
+	get {
+		if (_repositories == null) {
+			var relatedEntities = ((IEnumerable)Model.RelatedEntities).OfType<RelatedEntityInfo>();
+			var relatedTypes = relatedEntities.Where(x => x.RelationType == RelationType.Parent).Select(x => x.RelatedEntityType).Distinct();
+			_repositories = relatedTypes.ToDictionary(
+				relatedType => relatedType.FullName,
+				relatedType => new RepositoryInfo { RepositoryTypeName = relatedType.Name + "Repository", VariableName = Camelize(relatedType.Name) + "Repository" }
+			); 
+			_repositories[((CodeType)Model.ModelType).FullName] = new RepositoryInfo { RepositoryTypeName = Model.Repository, VariableName = Camelize(((CodeType)Model.ModelType).Name) + "Repository" };
+		}
+		return _repositories;
+	}
+}
+
+string Camelize(string name){
+	return name.Substring(0,1).ToLower() + name.Substring(1);
+}
+#>

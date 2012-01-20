@@ -1,0 +1,41 @@
+﻿TODO:
+
+1- tabular...
+2- windows ...
+3- layouts...
+4- styling rules... & page formats...
+5- editor-focus, emphasize,
+
+link style :
+<a class="t-button t-grid-edit t-button-icon at-rowEdit" href='...' title='...' (inline='xxx' | newwindow='xxx'|justwindow='xxx'|justMain='xxx' | responsiveAjax='xxx') windowcallback='ContactGridCallBack' winWidth='50' winHeight='50' winMax='true' winNoModal='1' windowActionsNeedConfirm='true' winNoMaximaizable='x' winDisableBackHide='x' ajax='1'> ....</a>
+	classes : link,show-icon,link hover-classic,t-link
+
+	winDisableBackHide = در صورتی که می خواهید پنجره پشتی در زمان باز شدن پنجره جدید مخفی نشود
+	winNoModal= آیا نمایش به صورت مودال نباشد
+	winNoMaximaizable = ماکیزمایز پذیر نباشد!
+	windowcallback = function (url,data){}
+	responsiveAjax = اگر اکشنی که انجام می دهد نتیجه اش یک متنی است که تنها می بایست در پنجره مربوطه نمایش داده شود. مثلا وقتی کالا به سبد خرید اضافه می شود و نتیجه این است که "کالا اضافه شد" از این موارد استفاده می شود.
+
+QueryString keys :
+enforceLayout=1
+istab=1
+iswindow=1
+simplemode=1
+puremode=1
+SavedSuccessfully=1
+
+sprite images:
+use : 
+	1. @Sprite.Image("~/App_Sprites/myImage.jpg")  OR
+	2. if you are limitted to src and css class (for example: telerik panel bar) 
+		A. add the image path as a class : class="subDirectoryOne/subDirectoryTwo/myImage-png" (note!: replace dots with dashes)
+		B. set the source to Global.InlineImagePlaceHolder constant 
+		example :
+			.ImageUrl(Commons.InlineImagePlaceHolder)
+			.ImageHtmlAttributes(new { @class = "gohome-png" })
+	3. or add class manually : <span class="icon16 filename-xxx"></span>  ::don't forget to use icon16 class name
+
+
+controller : 
+implement these if needed :
+	public override string GetModelOwnerUserName(object model);
