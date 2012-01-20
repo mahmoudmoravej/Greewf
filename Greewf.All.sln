@@ -7,17 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "09-Greewf.Scaffolder", "Gre
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "01-Greewf.BaseLibrary.MVC", "Greewf.BaseLibrary.MVC\Source\Greewf.BaseLibrary.MVC\01-Greewf.BaseLibrary.MVC.csproj", "{566A5C58-FBA2-467D-B647-4A0CA767062C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SharedBinaries", "SharedBinaries", "{32DAECC6-0BBF-4505-A273-405667D17C5A}"
-	ProjectSection(SolutionItems) = preProject
-		SharedBinaries\AutoMapper.dll = SharedBinaries\AutoMapper.dll
-		SharedBinaries\EntityFramework.dll = SharedBinaries\EntityFramework.dll
-		SharedBinaries\Microsoft.Web.Mvc.dll = SharedBinaries\Microsoft.Web.Mvc.dll
-		SharedBinaries\Microsoft.Web.Samples.ImageOptimizationFramework.dll = SharedBinaries\Microsoft.Web.Samples.ImageOptimizationFramework.dll
-		SharedBinaries\Microsoft.Web.Samples.ImageSprite.dll = SharedBinaries\Microsoft.Web.Samples.ImageSprite.dll
-		SharedBinaries\Microsoft.Web.Samples.SpriteHelper.dll = SharedBinaries\Microsoft.Web.Samples.SpriteHelper.dll
-		SharedBinaries\Telerik.Web.Mvc.dll = SharedBinaries\Telerik.Web.Mvc.dll
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
 		SccNumberOfProjects = 4

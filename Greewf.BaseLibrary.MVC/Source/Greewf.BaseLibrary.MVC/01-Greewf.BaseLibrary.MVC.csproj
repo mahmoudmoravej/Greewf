@@ -102,35 +102,73 @@
     <Compile Include="ReportsLoaderBase.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Conventions.txt" />
-    <Content Include="Scripts\Base\helper.js" />
+    <Content Include="Documents\Conventions.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\helper.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\Base\jquery-ui-tab4telerik.1.8.11.js" />
     <Content Include="Scripts\Base\jquery-ui-tab4telerik.1.8.11.min-old.js" />
-    <Content Include="Scripts\Base\jquery-ui-tab4telerik.1.8.11.min.js" />
-    <Content Include="Scripts\Base\JqueryTabstripCustomStyle.css" />
-    <Content Include="Scripts\Base\TabstripLayoutManager.js" />
-    <Content Include="Scripts\Base\WindowLayoutManager.js" />
-    <Content Include="Scripts\Chosen\chosen-sprite.png" />
-    <Content Include="Scripts\Chosen\chosen.css" />
+    <Content Include="Scripts\Base\jquery-ui-tab4telerik.1.8.11.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\JqueryTabstripCustomStyle.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\TabstripLayoutManager.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\WindowLayoutManager.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Chosen\chosen-sprite.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Chosen\chosen.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\Chosen\chosen.jquery.js" />
-    <Content Include="Scripts\Chosen\chosen.jquery.min.js" />
-    <Content Include="Scripts\jquery.textchange.min.js" />
-    <Content Include="Scripts\MicrosoftAjax.min.js" />
-    <Content Include="Scripts\PersianCalendar\jquery.calendars.pack.js" />
+    <Content Include="Scripts\Chosen\chosen.jquery.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\jquery.textchange.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\MicrosoftAjax.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.pack.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\PersianCalendar\jquery.calendars.persian-fa.js" />
     <Content Include="Scripts\PersianCalendar\jquery.calendars.persian.js" />
-    <Content Include="Scripts\PersianCalendar\jquery.calendars.persian.pack.js" />
-    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker-fa.js" />
-    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker.css" />
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.persian.pack.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker-fa.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\PersianCalendar\jquery.calendars.picker.js" />
     <Content Include="Scripts\PersianCalendar\jquery.calendars.picker.pack-original.js" />
-    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker.pack.js" />
-    <Content Include="Scripts\PersianCalendar\jquery.calendars.plus.pack.js" />
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker.pack.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.plus.pack.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\PersianCalendar\jquery.localisation.js" />
-    <Content Include="Scripts\PersianCalendar\jquery.localisation.pack.js" />
+    <Content Include="Scripts\PersianCalendar\jquery.localisation.pack.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\PersianCalendar\jquery.localisation2.pack.js" />
     <Content Include="Scripts\PersianCalendar\persianDateConvertor.js" />
-    <Content Include="Scripts\PersianCalendar\persianDateConvertor.pack.js" />
+    <Content Include="Scripts\PersianCalendar\persianDateConvertor.pack.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -142,6 +180,11 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /Y /E /D "$(TargetDir)\Scripts" "$(SolutionDir)\..\GreewfRelease\Scripts\"
+xcopy /Y /E /D "$(TargetDir)\Documents" "$(SolutionDir)\..\GreewfRelease\Documents\"
+xcopy /Y /D "$(TargetDir)*.dll" "$(SolutionDir)\..\GreewfRelease\Dlls\"</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
