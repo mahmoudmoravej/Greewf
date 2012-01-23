@@ -48,6 +48,8 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
@@ -76,7 +78,30 @@
     <Compile Include="CustomHelpers\CompundComboListFor.cs" />
     <Compile Include="CustomizedControllerBase.cs" />
     <Compile Include="HttpModules\PersianCharacterCorrecterModule.cs" />
+    <Compile Include="Logging\LogContext\Log.cs">
+      <DependentUpon>LogContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Logging\LogContext\LogContext.Extend.cs" />
     <Compile Include="Logging\LogAttribute.cs" />
+    <Compile Include="Logging\LogContext\LogContext.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LogContext.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Logging\LogContext\LogContext.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LogContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Logging\LogContext\LogContext.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LogContext.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Logging\LogContext\LogDetail.cs">
+      <DependentUpon>LogContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Logging\Logger.cs" />
     <Compile Include="OfflineTools\HashStamp.cs" />
     <Compile Include="Security\PermissionLimiterBase.cs" />
     <Compile Include="Validators\Localized\RangeAttribute.cs" />
@@ -171,6 +196,19 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.Config" />
+    <None Include="Logging\LogContext\LogContext.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LogContext.Context.cs</LastGenOutput>
+    </None>
+    <EntityDeploy Include="Logging\LogContext\LogContext.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>LogContext.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="Logging\LogContext\LogContext.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LogContext.cs</LastGenOutput>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -178,6 +216,9 @@
       <Project>{3E04F4A9-AA08-4492-BD72-2EBC76CC85A1}</Project>
       <Name>00-Greewf.BaseLibrary</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
