@@ -194,7 +194,7 @@
         windowElement.modal = isModal;
         var windowTitle = $('span.t-window-title', w);
 
-        link = correctLink(link, doAjax != undefined, true,true);
+        link = correctLink(link, doAjax != undefined, true, true);
 
         //ajax or iframe?
         if (doAjax != undefined) {//ajax request : pure mode
@@ -342,6 +342,7 @@
     function ajaxifyInnerForms(windowElement, windowTitle) {
         //NOTE: just disable unobtrosive forms! TODO : handle old fasion ajax forms too
         $(windowElement.element).find('form:not([data-ajax*="true"])').each(function (i, o) {
+            handleInnerFormSubmitButtons(o);
             $(o).submit(function () {
                 if (!$(this).valid()) return false;
                 changeWindowTitle(windowTitle, 'در حال دریافت...');
@@ -350,9 +351,9 @@
                     type: this.method.toLowerCase() == 'get' ? 'GET' : 'POST',
                     url: link,
                     cache: false,
-                    data: $(this).serialize(),
-                    beforeSend : function(){
-                            windowElement.content(progressHtml);
+                    data: appendSubmitButtonValue($(this).serialize(), this),
+                    beforeSend: function () {
+                        windowElement.content(progressHtml);
                     },
                     success: function (html, status, xhr) {
                         insertAjaxContent(windowElement, windowTitle, null, link, html);
@@ -365,6 +366,22 @@
             });
         });
 
+    }
+
+    function appendSubmitButtonValue(serializedString, form) {
+        var buttonName = $(form).attr('submiterName');
+        if (buttonName == null || buttonName == '') return serializedString;
+        if (serializedString.length > 0) serializedString = serializedString + '&';
+        serializedString = serializedString + buttonName + '=' + $('[name="' + buttonName + '"]', form).val();
+        return serializedString;
+    }
+
+    function handleInnerFormSubmitButtons(form) {
+        $(':submit', form).each(function (i, o) {
+            $(o).click(function () {
+                $(this).closest('form').attr('submiterName', this.name);
+            });
+        });
     }
 
     windowLayout.CloseAndDone = function (data) {

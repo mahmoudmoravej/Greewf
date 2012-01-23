@@ -86,7 +86,7 @@
     }
 
     this.handlePageLeave = function (submitFormId, msg) {
-        return;// TODO: has problem in ajax-loaded forms (becuase of same window in all cases)
+        return; // TODO: has problem in ajax-loaded forms (becuase of same window in all cases)
         $(window).bind('beforeunload', function (s) {
             if (msg == null)
                 msg = "شما در حال ترک این صفحه هستید در حالیکه ممکن است تغییراتی ذخیره نشده در آن داشته باشید. در صورت ترک این صفحه این تغییرات را از دست می دهید. تصمیم شما چیست؟";
@@ -189,6 +189,11 @@ telerikHelper = new function () {
         $('.t-grid-add').css('visibility', 'visible');
     }
 
+    this.resizeGridTo = function (gridId, size) {
+        var grid = $('#' + gridId);
+        size = size - $('.t-grouping-header', grid).outerHeight() - $('.t-grid-header', grid).outerHeight() - $('.t-grid-bottom', grid).outerHeight();
+        $('.t-grid-content', grid).css("height", size - 3);
+    }
 };
 
 mvcHelper = new function () {
