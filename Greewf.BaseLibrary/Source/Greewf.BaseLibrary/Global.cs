@@ -23,6 +23,12 @@ namespace Greewf.BaseLibrary
             return "";
         }
 
+        public static string DisplayCurrentDate()
+        {
+            var date = DateTime.Now;
+            return string.Format(DATEFORMAT, pcal.GetYear(date), pcal.GetMonth(date), pcal.GetDayOfMonth(date));
+        }
+
         public static string DisplayDateTime(DateTime? date)
         {
             if (date.HasValue && date.Value != DateTime.MinValue)
