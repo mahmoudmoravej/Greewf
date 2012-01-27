@@ -19,5 +19,10 @@ namespace Greewf.BaseLibrary.Repositories
         {
             Context = new T();
         }
+
+        public int SaveChanges()
+        {
+            return Context.SaveChanges();
+        }
     }
 }

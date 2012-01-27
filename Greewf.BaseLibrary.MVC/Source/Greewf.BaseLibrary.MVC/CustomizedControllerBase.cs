@@ -8,6 +8,7 @@ using System.Web.Routing;
 using System.Text;
 using System.Data.Entity;
 using Greewf.BaseLibrary.Repositories;
+using Greewf.BaseLibrary.MVC.Logging;
 
 namespace Greewf.BaseLibrary.MVC
 {
@@ -121,7 +122,7 @@ namespace Greewf.BaseLibrary.MVC
             EnsureFlag(routeValues, Request.QueryString.AllKeys.Contains("puremode"), "puremode");
             EnsureFlag(routeValues, Request.QueryString.AllKeys.Contains("simplemode"), "simplemode");
             EnsureFlag(routeValues, Request.QueryString.AllKeys.Contains("includeUrlInContent"), "includeUrlInContent");
-            
+
         }
 
         private string EnsureWindowFlag(string url)
@@ -175,6 +176,13 @@ namespace Greewf.BaseLibrary.MVC
             return null;
         }
 
+        protected void Log<T>(T logId, object model, string[] exludeModelProperties = null) where T : struct
+        {
+            var metaData = ModelMetadataProviders.Current.GetMetadataForType(() => { return model; }, model.GetType());
+            //var metaData = ViewData.ModelMetadata != null && model.GetType() == ViewData.ModelMetadata.ModelType ? ViewData.ModelMetadata : null;
+            Logger.Current.Log(logId, model, metaData, exludeModelProperties);
+        }
+
     }
 
     /// <summary>
@@ -191,6 +199,8 @@ namespace Greewf.BaseLibrary.MVC
         {
             _contextManager = new Y();
         }
+
+
     }
 
 
