@@ -15,45 +15,28 @@ namespace Greewf.BaseLibrary.MVC.Logging
 
         private readonly int logId;
         private readonly Type logEnumType;
-        protected string Username { get; set; }
-        protected string UserFullname { get; set; }
+        private bool logOnInvalidModel;
+        private string[] exludeModelProperties;
 
-        protected LogAttributeBase(int logId, Type logEnumType)
+        protected LogAttributeBase(int logId, Type logEnumType, bool logOnInvalidModel = false, string[] exludeModelProperties = null)
         {
             this.logId = logId;
             this.logEnumType = logEnumType;
-        }
+            this.logOnInvalidModel = logOnInvalidModel;
+            this.exludeModelProperties = exludeModelProperties;
+        }   
 
         public override void OnActionExecuted(ActionExecutedContext filterContext)
         {
             base.OnActionExecuted(filterContext);
             var controller = filterContext.Controller as CustomizedControllerBase;
             if (controller == null) return;
+            if (!controller.ViewData.ModelState.IsValid && !logOnInvalidModel) return;
 
             var model = filterContext.Controller.ViewData.Model;
-            var log = new Log();
-            var request = HttpContext.Current.Request;
+            var modelMetaData = filterContext.Controller.ViewData.ModelMetadata;
 
-            log.DateTime = DateTime.Now;
-            log.Browser = request.Browser.Browser + request.Browser.Version;
-            log.IsMobile = request.Browser.IsMobileDevice;
-            log.UserAgent = request.UserAgent;
-            log.Code = Enum.GetName(logEnumType, logId);
-            log.Text = logId.ToString();
-            log.Ip = request.UserHostAddress;
-            log.MachineName = request.UserHostName;
-            log.Username = Username;
-            log.UserFullname = UserFullname;
-            log.RequestUrl = request.Url.ToString();
-            log.Querystring = request.QueryString.ToString();
-
-            if (model != null)
-            {
-                log.Key = model.GetType().Name;
-
-            }
-
-            Logger.Log(log);
+            Logger.Current.Log(logId, logEnumType, model, modelMetaData, exludeModelProperties);
 
             //var limiterModel = controller.GetModelLimiterFunctions(model);
             //if (limiterModel != null)

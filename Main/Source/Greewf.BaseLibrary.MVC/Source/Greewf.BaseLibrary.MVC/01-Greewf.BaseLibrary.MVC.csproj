@@ -78,6 +78,7 @@
     <Compile Include="CustomHelpers\CompundComboListFor.cs" />
     <Compile Include="CustomizedControllerBase.cs" />
     <Compile Include="HttpModules\PersianCharacterCorrecterModule.cs" />
+    <Compile Include="Logging\DefaultLogger.cs" />
     <Compile Include="Logging\LogContext\Log.cs">
       <DependentUpon>LogContext.tt</DependentUpon>
     </Compile>
