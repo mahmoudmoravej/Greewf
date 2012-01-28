@@ -63,13 +63,25 @@ namespace Greewf.BaseLibrary.MVC.Logging
             }
         }
 
+        public void Log<T>(T logId, object model, string[] exludeModelProperties = null) where T : struct
+        {
+            var typ = typeof(T);
+            Log((int)Convert.ChangeType(logId, typ), typ, model, exludeModelProperties);
+        }
+
         public void Log<T>(T logId, object model = null, ModelMetadata modelMetadata = null, string[] exludeModelProperties = null) where T : struct
         {
             var typ = typeof(T);
             Log((int)Convert.ChangeType(logId, typ), typ, model, modelMetadata, exludeModelProperties);
         }
 
-        public void Log(int logId, Type logEnumType, object model = null, ModelMetadata modelMetadata = null, string[] exludeModelProperties=null)
+        public void Log(int logId, Type logEnumType, object model, string[] exludeModelProperties = null)
+        {
+            var metaData = ModelMetadataProviders.Current.GetMetadataForType(() => { return model; }, model.GetType());
+            Log(logId, logEnumType, model, metaData, exludeModelProperties);
+        }
+
+        public void Log(int logId, Type logEnumType, object model = null, ModelMetadata modelMetadata = null, string[] exludeModelProperties = null)
         {
             var log = new Log();
             var request = HttpContext.Current.Request;
@@ -89,7 +101,11 @@ namespace Greewf.BaseLibrary.MVC.Logging
 
             if (model != null)
             {
-                log.Key = model.GetType().Name;
+                var typ = model.GetType();
+                if (modelMetadata==null)
+                    modelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => { return model; }, typ);
+
+                log.Key = typ.Name;
                 AddLogDetails(log, model, modelMetadata, exludeModelProperties);
             }
 
@@ -97,20 +113,20 @@ namespace Greewf.BaseLibrary.MVC.Logging
 
         }
 
-        private void AddLogDetails(LogContext.Log log, object model, ModelMetadata modelMetadata = null, string[] exludeModelProperties=null)
+        private void AddLogDetails(LogContext.Log log, object model, ModelMetadata modelMetadata = null, string[] exludeModelProperties = null)
         {
             foreach (var item in model.GetType().GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.GetProperty))
             {
                 if (!(item.PropertyType == typeof(String) || item.PropertyType.IsValueType)) continue;
-                
-                var key=item.Name;
+
+                var key = item.Name;
 
                 if (exludeModelProperties.Contains(key)) continue;
                 var logDetail = new LogDetail();
 
                 //key
                 if (modelMetadata == null)
-                    logDetail.Key = key ;
+                    logDetail.Key = key;
                 else
                 {
                     var meta = modelMetadata.Properties.SingleOrDefault(o => o.PropertyName == key);

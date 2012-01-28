@@ -10,79 +10,115 @@ using Greewf.BaseLibrary.MVC.Logging.LogContext;
 
 namespace Greewf.BaseLibrary.MVC.Logging
 {
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public abstract class LogAttributeBase : ActionFilterAttribute
     {
 
         private readonly int logId;
         private readonly Type logEnumType;
-        private bool logOnInvalidModel;
+        private ModelState logOnModelState;
+        private ResultType logOnResultType;
         private string[] exludeModelProperties;
 
-        protected LogAttributeBase(int logId, Type logEnumType, bool logOnInvalidModel = false, string[] exludeModelProperties = null)
+        protected LogAttributeBase(int logId, Type logEnumType, ModelState modelState = ModelState.Always, ResultType resultType = ResultType.Always, string[] exludeModelProperties = null)
         {
             this.logId = logId;
             this.logEnumType = logEnumType;
-            this.logOnInvalidModel = logOnInvalidModel;
+            this.logOnModelState = modelState;
+            this.logOnResultType = resultType;
             this.exludeModelProperties = exludeModelProperties;
-        }   
+        }
 
-        public override void OnActionExecuted(ActionExecutedContext filterContext)
+        //public override void OnActionExecuted(ActionExecutedContext filterContext)
+        //{
+        //    base.OnActionExecuted(filterContext);
+        //    var controller = filterContext.Controller as CustomizedControllerBase;
+        //    if (controller == null) return;
+        //    if (!controller.ViewData.ModelState.IsValid && !logOnInvalidModel) return;
+
+        //    var model = filterContext.Controller.ViewData.Model;
+        //    var modelMetaData = filterContext.Controller.ViewData.ModelMetadata;
+
+        //    Logger.Current.Log(logId, logEnumType, model, modelMetaData, exludeModelProperties);
+
+        //}
+
+        public override void OnResultExecuted(ResultExecutedContext filterContext)
         {
-            base.OnActionExecuted(filterContext);
+            base.OnResultExecuted(filterContext);
+
             var controller = filterContext.Controller as CustomizedControllerBase;
             if (controller == null) return;
-            if (!controller.ViewData.ModelState.IsValid && !logOnInvalidModel) return;
+
+            if (!IsModelValidToLog(controller)) return;
+            if (!IsResultValidToLog(filterContext.Result)) return;
 
             var model = filterContext.Controller.ViewData.Model;
-            var modelMetaData = filterContext.Controller.ViewData.ModelMetadata;
+            var modelMetadata = filterContext.Controller.ViewData.ModelMetadata;
 
-            Logger.Current.Log(logId, logEnumType, model, modelMetaData, exludeModelProperties);
-
-            //var limiterModel = controller.GetModelLimiterFunctions(model);
-            //if (limiterModel != null)
-            //{
-            //    bool? andPartResult = null, orPartResult = null;
-            //    List<string> errorMessages = new List<string>();
-
-            //    foreach (long per in logId)
-            //    {
-
-            //        foreach (var limiter in limiterModel.LimiterFunctions/*.OrderBy(o => !o.IsAndPart) : no need anymore? */)
-            //        {
-            //            if (limiter == null) continue;
-            //            bool? x = CurrentUserBase.GetActiveInstance().HasPermission(permissionObject, per, limiter);
-
-            //            if (limiter.IsAndPart)
-            //                andPartResult = (andPartResult ?? true) && (x ?? true);
-            //            else//or base
-            //                orPartResult = (orPartResult ?? false) || (x ?? false);
-
-            //            //error message
-            //            if (x == false)
-            //            {//TODO: is it corrent in OrPart case? when x==false but the whole result may be true finally ?!
-            //                string msg = limiter.ErrorMessage == null ? null : limiter.ErrorMessage();
-            //                if (!string.IsNullOrWhiteSpace(msg)) errorMessages.Add(msg);
-            //            }
-
-            //            if (andPartResult.HasValue && andPartResult == false)
-            //                break;
-
-            //        }
-
-            //        if (andPartResult.HasValue && andPartResult == false)
-            //            break;
-            //    }
-
-            //    bool result = (andPartResult ?? true) && (orPartResult ?? true);
-            //    if (result == false)
-            //        throw new SecurityException(permissionObject, errorMessages.ToArray());
-
-            //}
-            //  }
-
+            Logger.Current.Log(logId, logEnumType, model, modelMetadata, exludeModelProperties);
 
         }
 
+        private bool IsResultValidToLog(ActionResult actionResult)
+        {
+
+            if ((logOnResultType | ResultType.Always) > 0)
+                return true;
+            else if ((logOnResultType | ResultType.View) > 0 && actionResult is ViewResultBase)
+                return true;
+            else if (actionResult is RedirectToRouteResult || actionResult is RedirectResult)
+            {
+                if ((logOnResultType | ResultType.Redirect) > 0)
+                    return true;
+                else if ((logOnResultType | ResultType.RedirectToSuccess) > 0)
+                {
+                    if ((actionResult is RedirectToRouteResult) && (actionResult as RedirectToRouteResult).IsSavedSuccessfullyRedirect())
+                        return true;
+                    if ((actionResult is RedirectResult) && (actionResult as RedirectResult).IsSavedSuccessfullyRedirect())
+                        return true;
+
+                }
+            }
+
+            return false;
+        }
+
+        private bool IsModelValidToLog(CustomizedControllerBase controller)
+        {
+            switch (logOnModelState)
+            {
+                case ModelState.Always:
+                    return true;
+                case ModelState.Valid:
+                    if (controller.ViewData == null || controller.ViewData.ModelState == null) return false;
+                    return controller.ViewData.ModelState.IsValid;
+                case ModelState.Invalid:
+                    if (controller.ViewData == null || controller.ViewData.ModelState == null) return false;
+                    return !controller.ViewData.ModelState.IsValid;
+                default:
+                    return true;
+            }
+        }
+
+        public enum ModelState
+        {
+            Valid = 1,
+            Invalid = 2,
+            Always = Valid | Invalid
+        }
+
+        public enum ResultType
+        {
+            View = 1,
+            Redirect = 2,
+            RedirectToSuccess = 4,
+            Always = View | Redirect | RedirectToSuccess
+        }
+
+
 
     }
+
+
 }
