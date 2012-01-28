@@ -104,6 +104,7 @@
     </Compile>
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="OfflineTools\HashStamp.cs" />
+    <Compile Include="RedirectToRouteSuccessResult.cs" />
     <Compile Include="Security\PermissionLimiterBase.cs" />
     <Compile Include="Validators\Localized\RangeAttribute.cs" />
     <Compile Include="Validators\Localized\DigitsOnlyAttribute.cs" />

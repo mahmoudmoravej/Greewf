@@ -16,15 +16,23 @@ namespace Greewf.BaseLibrary.MVC
     {
         private const string SavedSuccessfullyUrlFormat = "~/home/SavedSuccessfully?url={0}";
         private const string SavedSuccessfullyControllerName = "home";
-        private const string SavedSuccessfullyActionName = "SavedSuccessfully";
+        internal const string SavedSuccessfullyActionName = "SavedSuccessfully";
+        internal const string SavedSuccessfullyFramgment = "successfullysaved";
 
         protected override RedirectResult Redirect(string url)
         {
             return Redirect(url, false);
         }
 
-        protected RedirectResult Redirect(string url, bool setSaveSuccesfullyFlag)
+        protected RedirectResult Redirect(string url, object model)
         {
+            ViewData.Model = model;
+            return Redirect(url, false);
+        }
+
+        protected RedirectResult Redirect(string url, bool setSaveSuccesfullyFlag, object model)
+        {
+            ViewData.Model = model;
             url = CheckRedirectAddress(url, setSaveSuccesfullyFlag);
             url = EnsureWindowFlag(url);
             url = EnsureSaveFlag(url, setSaveSuccesfullyFlag);
@@ -37,15 +45,15 @@ namespace Greewf.BaseLibrary.MVC
         {
             if (setSaveSuccesfullyFlag == false) return url;
             if (url.Contains("#"))
-                return url + ";successfullysaved";//surely the hash segment is placed at the end of url , so we add our string to it simply
+                return url + ";" + SavedSuccessfullyFramgment;//surely the hash segment is placed at the end of url , so we add our string to it simply
             else
-                return url + "#successfullysaved";
+                return url + "#" + SavedSuccessfullyFramgment;
         }
 
         private RedirectToRouteResult EnsureSaveFlag(RedirectToRouteResult result, bool setSaveSuccesfullyFlag)
         {
             if (setSaveSuccesfullyFlag == false) return result;
-            return result.AddFragment("successfullysaved");
+            return result.AddFragment(SavedSuccessfullyFramgment);
         }
 
         private string CheckRedirectAddress(string url, bool setSaveSuccesfullyFlag)
@@ -178,9 +186,7 @@ namespace Greewf.BaseLibrary.MVC
 
         protected void Log<T>(T logId, object model, string[] exludeModelProperties = null) where T : struct
         {
-            var metaData = ModelMetadataProviders.Current.GetMetadataForType(() => { return model; }, model.GetType());
-            //var metaData = ViewData.ModelMetadata != null && model.GetType() == ViewData.ModelMetadata.ModelType ? ViewData.ModelMetadata : null;
-            Logger.Current.Log(logId, model, metaData, exludeModelProperties);
+            Logger.Current.Log(logId, model, exludeModelProperties);
         }
 
     }
@@ -253,6 +259,20 @@ namespace Greewf.BaseLibrary.MVC
             return helper.RouteUrl(result.RouteName, result.RouteValues);
         }
 
+        public static bool IsSavedSuccessfullyRedirect(this RedirectToRouteResult result)
+        {
+
+        }
+
+        public static bool IsSavedSuccessfullyRedirect(this RedirectToRouteResultEx result)
+        {
+
+        }
+
+        public static bool IsSavedSuccessfullyRedirect(this RedirectResult result)
+        {
+
+        }
     }
 
     public class ModelPermissionLimiters
