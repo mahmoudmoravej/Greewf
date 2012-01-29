@@ -12,6 +12,7 @@ using System.Web;
 using System.Web.Mvc;
 using Telerik.Web.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 <# if(!string.IsNullOrEmpty(Model.ModelTypeNamespace)) { #>
 using <#= Model.ModelTypeNamespace #>;
 <# } #>
@@ -273,6 +274,15 @@ namespace <#= Model.ControllerNamespace #>
             return null;
         }
 	
+	#endregion
+
+	#region Log Details Handling
+
+        protected override Dictionary<string, string> GetLogDetails(int logPointId, dynamic model)
+        {
+            return null;
+        }
+
 	#endregion
 
     }	

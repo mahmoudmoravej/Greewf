@@ -16,11 +16,11 @@ namespace Greewf.BaseLibrary.MVC.Logging
 
         private readonly int logId;
         private readonly Type logEnumType;
-        private ModelState logOnModelState;
-        private ResultType logOnResultType;
+        private LogModelState logOnModelState;
+        private LogResultType logOnResultType;
         private string[] exludeModelProperties;
 
-        protected LogAttributeBase(int logId, Type logEnumType, ModelState modelState = ModelState.Always, ResultType resultType = ResultType.Always, string[] exludeModelProperties = null)
+        protected LogAttributeBase(int logId, Type logEnumType, LogModelState modelState = LogModelState.Always, LogResultType resultType = LogResultType.Always, string[] exludeModelProperties = null)
         {
             this.logId = logId;
             this.logEnumType = logEnumType;
@@ -29,23 +29,10 @@ namespace Greewf.BaseLibrary.MVC.Logging
             this.exludeModelProperties = exludeModelProperties;
         }
 
-        //public override void OnActionExecuted(ActionExecutedContext filterContext)
-        //{
-        //    base.OnActionExecuted(filterContext);
-        //    var controller = filterContext.Controller as CustomizedControllerBase;
-        //    if (controller == null) return;
-        //    if (!controller.ViewData.ModelState.IsValid && !logOnInvalidModel) return;
-
-        //    var model = filterContext.Controller.ViewData.Model;
-        //    var modelMetaData = filterContext.Controller.ViewData.ModelMetadata;
-
-        //    Logger.Current.Log(logId, logEnumType, model, modelMetaData, exludeModelProperties);
-
-        //}
-
         public override void OnResultExecuted(ResultExecutedContext filterContext)
         {
             base.OnResultExecuted(filterContext);
+            if (LogProfileReader.Current.IsLogDisabled(logId, logEnumType)) return;
 
             var controller = filterContext.Controller as CustomizedControllerBase;
             if (controller == null) return;
@@ -56,6 +43,13 @@ namespace Greewf.BaseLibrary.MVC.Logging
             var model = filterContext.Controller.ViewData.Model;
             var modelMetadata = filterContext.Controller.ViewData.ModelMetadata;
 
+            var customizedLogDetails = controller.GetLogDetails(logId, model);
+            if (customizedLogDetails != null)
+            {
+                model = customizedLogDetails;
+                modelMetadata = null;
+            }
+
             Logger.Current.Log(logId, logEnumType, model, modelMetadata, exludeModelProperties);
 
         }
@@ -63,17 +57,19 @@ namespace Greewf.BaseLibrary.MVC.Logging
         private bool IsResultValidToLog(ActionResult actionResult)
         {
 
-            if ((logOnResultType | ResultType.Always) > 0)
+            if (logOnResultType == LogResultType.Always)
                 return true;
-            else if ((logOnResultType | ResultType.View) > 0 && actionResult is ViewResultBase)
+            else if ((logOnResultType & LogResultType.View) > 0 && actionResult is ViewResultBase)
                 return true;
             else if (actionResult is RedirectToRouteResult || actionResult is RedirectResult)
             {
-                if ((logOnResultType | ResultType.Redirect) > 0)
+                if ((logOnResultType & LogResultType.Redirect) > 0)
                     return true;
-                else if ((logOnResultType | ResultType.RedirectToSuccess) > 0)
+                else if ((logOnResultType & LogResultType.RedirectToSuccess) > 0)
                 {
                     if ((actionResult is RedirectToRouteResult) && (actionResult as RedirectToRouteResult).IsSavedSuccessfullyRedirect())
+                        return true;
+                    if ((actionResult is RedirectToRouteResultEx) && (actionResult as RedirectToRouteResultEx).IsSavedSuccessfullyRedirect())
                         return true;
                     if ((actionResult is RedirectResult) && (actionResult as RedirectResult).IsSavedSuccessfullyRedirect())
                         return true;
@@ -88,12 +84,12 @@ namespace Greewf.BaseLibrary.MVC.Logging
         {
             switch (logOnModelState)
             {
-                case ModelState.Always:
+                case LogModelState.Always:
                     return true;
-                case ModelState.Valid:
+                case LogModelState.Valid:
                     if (controller.ViewData == null || controller.ViewData.ModelState == null) return false;
                     return controller.ViewData.ModelState.IsValid;
-                case ModelState.Invalid:
+                case LogModelState.Invalid:
                     if (controller.ViewData == null || controller.ViewData.ModelState == null) return false;
                     return !controller.ViewData.ModelState.IsValid;
                 default:
@@ -101,24 +97,22 @@ namespace Greewf.BaseLibrary.MVC.Logging
             }
         }
 
-        public enum ModelState
-        {
-            Valid = 1,
-            Invalid = 2,
-            Always = Valid | Invalid
-        }
-
-        public enum ResultType
-        {
-            View = 1,
-            Redirect = 2,
-            RedirectToSuccess = 4,
-            Always = View | Redirect | RedirectToSuccess
-        }
-
-
 
     }
 
+    public enum LogModelState
+    {
+        Valid = 1,
+        Invalid = 2,
+        Always = Valid | Invalid
+    }
+
+    public enum LogResultType
+    {
+        View = 1,
+        Redirect = 2,
+        RedirectToSuccess = 4,
+        Always = View | Redirect | RedirectToSuccess
+    }
 
 }

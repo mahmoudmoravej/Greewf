@@ -55,7 +55,7 @@
           </Key>
           <Property Name="LogId" Type="Int64" Nullable="false" />
           <Property Name="Key" Type="String" MaxLength="30" Unicode="false" FixedLength="false" Nullable="false" />
-          <Property Name="Value" Type="String" MaxLength="250" Unicode="true" FixedLength="false" Nullable="false" />
+          <Property Name="Value" Type="String" MaxLength="2000" Unicode="true" FixedLength="false" Nullable="false" />
           <NavigationProperty Name="Log" Relationship="LogModel.LogLogDetail" FromRole="LogDetail" ToRole="Log" />
           <Property Type="Guid" Name="Id" Nullable="false" />
         </EntityType>
@@ -67,7 +67,7 @@
           <Property Name="DateTime" Type="DateTime" Nullable="false" />
           <Property Name="Key" Type="String" MaxLength="30" Unicode="true" FixedLength="false" />
           <Property Name="Code" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
-          <Property Name="Text" Type="String" MaxLength="1000" Unicode="true" FixedLength="false" />
+          <Property Name="Text" Type="String" MaxLength="4000" Unicode="true" FixedLength="false" />
           <Property Name="Ip" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
           <Property Name="MachineName" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
           <Property Name="Browser" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />

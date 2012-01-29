@@ -19,15 +19,14 @@ namespace Greewf.BaseLibrary.MVC
         internal const string SavedSuccessfullyActionName = "SavedSuccessfully";
         internal const string SavedSuccessfullyFramgment = "successfullysaved";
 
-        protected override RedirectResult Redirect(string url)
+        private new RedirectResult Redirect(string url)
         {
-            return Redirect(url, false);
+            return Redirect(url, false , null);
         }
 
         protected RedirectResult Redirect(string url, object model)
         {
-            ViewData.Model = model;
-            return Redirect(url, false);
+            return Redirect(url, false, model);
         }
 
         protected RedirectResult Redirect(string url, bool setSaveSuccesfullyFlag, object model)
@@ -76,26 +75,30 @@ namespace Greewf.BaseLibrary.MVC
             return this.RedirectToAction(actionName, controllerName, routeValues, false);
         }
 
-        protected RedirectToRouteResult RedirectToSuccessAction()
+        protected RedirectToRouteResult RedirectToSuccessAction(object model)
         {
+            ViewData.Model = model;
             var result = base.RedirectToAction(SavedSuccessfullyActionName, SavedSuccessfullyControllerName);
             return this.CorrectRedirectToRouteResult(result, true);
         }
 
-        protected RedirectToRouteResult RedirectToSuccessAction(string actionName, string controllerName, System.Web.Routing.RouteValueDictionary routeValues)
+        protected RedirectToRouteResult RedirectToSuccessAction(string actionName, string controllerName, System.Web.Routing.RouteValueDictionary routeValues, object model)
         {
+            ViewData.Model = model;
             var result = base.RedirectToAction(actionName, controllerName, routeValues);
             return this.CorrectRedirectToRouteResult(result, true);
         }
 
-        protected RedirectToRouteResult RedirectToSuccessAction(string actionName, string controllerName, object routeValues)
+        protected RedirectToRouteResult RedirectToSuccessAction(string actionName, string controllerName, object routeValues, object model)
         {
+            ViewData.Model = model;
             var result = base.RedirectToAction(actionName, controllerName, routeValues);
             return this.CorrectRedirectToRouteResult(result, true);
         }
 
-        protected RedirectToRouteResult RedirectToSuccessAction(string actionName, object routeValues)
+        protected RedirectToRouteResult RedirectToSuccessAction(string actionName, object routeValues,object model)
         {
+            ViewData.Model = model;
             var result = base.RedirectToAction(actionName, routeValues);
             return this.CorrectRedirectToRouteResult(result, true);
         }
@@ -172,7 +175,7 @@ namespace Greewf.BaseLibrary.MVC
         }
 
 
-        public virtual ModelPermissionLimiters GetModelLimiterFunctions(dynamic model)
+        protected internal virtual ModelPermissionLimiters GetModelLimiterFunctions(dynamic model)
         {
             //TODO : make some conventions on it (for example : UserName,CreatorOwner,CreatedByUserName,OwnerUserName,CreatorUserName are good to automatically undrestand)
             //var modelType = (model as object).GetType();
@@ -182,6 +185,11 @@ namespace Greewf.BaseLibrary.MVC
             //    return model.CreatedByUserName;
 
             return null;
+        }
+
+        protected internal virtual Dictionary<string,string> GetLogDetails(int logPointId , dynamic model)
+        {
+            return null;        
         }
 
         protected void Log<T>(T logId, object model, string[] exludeModelProperties = null) where T : struct
@@ -203,7 +211,7 @@ namespace Greewf.BaseLibrary.MVC
         protected Y _contextManager = null;
         public CustomizedControllerBase()
         {
-            _contextManager = new Y();
+            _contextManager = new Y(); 
         }
 
 
@@ -261,16 +269,26 @@ namespace Greewf.BaseLibrary.MVC
 
         public static bool IsSavedSuccessfullyRedirect(this RedirectToRouteResult result)
         {
+            if (result.RouteValues.ContainsValue(CustomizedControllerBase.SavedSuccessfullyActionName))
+                return true;
+            return false;
 
         }
 
         public static bool IsSavedSuccessfullyRedirect(this RedirectToRouteResultEx result)
         {
-
+            if (result.Fragment.Contains(CustomizedControllerBase.SavedSuccessfullyFramgment))
+                return true;
+            else if (result.RouteValues.ContainsValue(CustomizedControllerBase.SavedSuccessfullyActionName))
+                return true;
+            return false;
         }
 
         public static bool IsSavedSuccessfullyRedirect(this RedirectResult result)
         {
+            if (result.Url.Contains(CustomizedControllerBase.SavedSuccessfullyFramgment) || result.Url.Contains(CustomizedControllerBase.SavedSuccessfullyActionName))
+                return true;
+            return false;
 
         }
     }
