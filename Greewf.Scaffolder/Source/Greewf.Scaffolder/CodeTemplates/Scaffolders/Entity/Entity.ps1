@@ -22,6 +22,9 @@ param(
 	[string]$AutoMapNamespace,
 	[string]$CustomHelperNamespace,
 	[string]$CustomizedControllerBaseNamespace,
+	[string]$LoggingNamespace,
+	[string]$LogAttributeNamespace,
+	[string]$LogPointsXmlFile='\Logs\LogPoints.xml',
 	[string[]]$TemplateFolders,
 	[switch]$Force = $false
 )
@@ -45,10 +48,11 @@ $foundModelType = Get-ProjectType $ModelType -Project $WebProject -BlockUi #it c
 $modelTypePluralized = Get-PluralizedWord $foundModelType.Name
 $relatedEntities = [Array](Get-RelatedEntities $foundModelType.FullName -Project $WebProject) #it can get it from $WebProject becuase of added refrence 
 if (!$relatedEntities) { $relatedEntities = @() }
+$DefaultImportingNamespaces = @($PermissionNameSpaceName,(Get-Project $RepositoryProject).Properties.Item("DefaultNamespace").Value,$ViewModelNameSpace,$AutoMapNamespace,$CustomizedControllerBaseNamespace,$CustomHelperNamespace,$LoggingNamespace,$LogAttributeNamespace)
+
 
 #1st: Controller 
 #1-1 : Entity Controller
-$DefaultImportingNamespaces = @($PermissionNameSpaceName,(Get-Project $RepositoryProject).Properties.Item("DefaultNamespace").Value,$ViewModelNameSpace,$AutoMapNamespace,$CustomizedControllerBaseNamespace,$CustomHelperNamespace)
 ApplyTemplate -TemplateFileName "ControllerWithRepository" -Project:$WebProject -OutputPath:'Controllers' -OutputFilePostName:'Controller' -OutputFilePreName:'' -RepositoryProject:$RepositoryProject -SubRepositoryNameSpace:'Repositories' -WebProject:$WebProject -SubViewModelNameSpace:$SubViewModelNameSpace -SubViewModelMetaDataNameSpace:'Models.MetaData' -ControllerSubNamespace:$ControllerSubNamespace -UsePluralNameInFileName -DefaultImportingNamespaces:$DefaultImportingNamespaces
 $DefaultImportingNamespaces = $null
 
@@ -248,3 +252,16 @@ else
 	Write-Host "$PermissionAttributeClass not found!!..." -ForegroundColor:Red
 }
 
+
+#6th: Logging
+Write-Host "Scaffolding LogPoints..." -ForegroundColor blue
+[string] $xmlLogFullPath = (Get-Project $WebProject).Properties.Item("LocalPath").Value+$LogPointsXmlFile
+$newXmlData = ApplyTemplate -TemplateFileName "LogPoints" -Project:$WebProject  -IsOutputText -RepositoryProject:$RepositoryProject -SubRepositoryNameSpace:'Repositories' -WebProject:$WebProject -SubViewModelNameSpace:$SubViewModelNameSpace -SubViewModelMetaDataNameSpace:'Models.MetaData'-ControllerSubNamespace:$ControllerSubNamespace -DefaultImportingNamespaces:$DefaultImportingNamespaces
+
+$xml = New-Object XML
+$xml.Load($xmlLogFullPath )
+[string] $oldXmlData= $xml.LogPoints.InnerXml
+
+$xml.LogPoints.InnerXml = $oldXmlData + $newXmlData
+$xml.Save($xmlLogFullPath)
+Write-Host "LogPoints Successfully Added to $LogPointsXmlFile file"

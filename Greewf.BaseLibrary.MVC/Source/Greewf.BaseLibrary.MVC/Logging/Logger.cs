@@ -56,9 +56,6 @@ namespace Greewf.BaseLibrary.MVC.Logging
 
             lock (context)
             {
-                foreach (var item in log.LogDetails)
-                    item.Id = Guid.NewGuid();
-
                 context.Logs.Add(log);
                 context.SaveChanges();
             }
@@ -98,7 +95,7 @@ namespace Greewf.BaseLibrary.MVC.Logging
             log.MachineName = request.UserHostName;
             log.Username = Username;
             log.UserFullname = UserFullName;
-            log.RequestUrl = request.Url.ToString();
+            log.RequestUrl = request.Url.GetLeftPart(UriPartial.Path);
             log.Querystring = request.QueryString.ToString();
 
             if (model != null)
@@ -136,17 +133,14 @@ namespace Greewf.BaseLibrary.MVC.Logging
 
                 if (exludeModelProperties != null && exludeModelProperties.Contains(key)) continue;
                 var logDetail = new LogDetail();
+                logDetail.Key = TakeMax(key, 100);
 
                 //key
-                if (modelMetadata == null)
-                    logDetail.Key = key;
-                else
+                if (modelMetadata != null)
                 {
                     var meta = modelMetadata.Properties.SingleOrDefault(o => o.PropertyName == key);
-                    if (meta != null)
-                        logDetail.Key = meta.DisplayName ?? key;
-                    else
-                        logDetail.Key = key;
+                    if (meta != null && meta.DisplayName != null)
+                        logDetail.KeyTitle = TakeMax(meta.DisplayName, 200);
                 }
 
                 //value
