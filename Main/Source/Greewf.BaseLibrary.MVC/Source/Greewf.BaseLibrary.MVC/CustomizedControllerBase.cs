@@ -175,6 +175,13 @@ namespace Greewf.BaseLibrary.MVC
         }
 
 
+        protected JsonResult Json(object data,object model)
+        {
+            ViewData.Model = model;
+            return base.Json(data);
+        }
+
+
         protected internal virtual ModelPermissionLimiters GetModelLimiterFunctions(dynamic model)
         {
             //TODO : make some conventions on it (for example : UserName,CreatorOwner,CreatedByUserName,OwnerUserName,CreatorUserName are good to automatically undrestand)
@@ -292,6 +299,7 @@ namespace Greewf.BaseLibrary.MVC
 
         }
     }
+
 
     public class ModelPermissionLimiters
     {

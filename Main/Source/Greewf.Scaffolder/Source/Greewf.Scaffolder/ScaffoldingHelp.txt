@@ -1,14 +1,14 @@
 ﻿NOTE!!!:
 	در کنسول پکیج منجر ، دقت کنید که پکیج سورس بر روی همه ست شده باشد
 
-scaffold Controller 'Greewf.PIN.Biz.Entities.xxx' -DbContextType 'Greewf.PIN.Dal.PINContext'  -Repository 
+scaffold Controller 'AienTehran.PIN.Biz.Entities.xxx' -DbContextType 'AienTehran.PIN.Dal.PINContext'  -Repository 
 
 just controller:
-scaffold Controller 'Greewf.PIN.Biz.Entities.xxx' -DbContextType 'Greewf.PIN.Dal.PINContext' -NoChildItems 
-scaffold Controller 'Greewf.PIN.Biz.Entities.xxx' -DbContextType 'Greewf.PIN.Dal.PINContext' -NoChildItems -Repository 
+scaffold Controller 'AienTehran.PIN.Biz.Entities.xxx' -DbContextType 'AienTehran.PIN.Dal.PINContext' -NoChildItems 
+scaffold Controller 'AienTehran.PIN.Biz.Entities.xxx' -DbContextType 'AienTehran.PIN.Dal.PINContext' -NoChildItems -Repository 
 
 just repository:
-	scaffold Repository 'Greewf.PIN.Biz.Entities.xxx' -DbContextType 'Greewf.PIN.Dal.PINContext'
+	scaffold Repository 'AienTehran.PIN.Biz.Entities.xxx' -DbContextType 'AienTehran.PIN.Dal.PINContext'
 
 
 
@@ -27,10 +27,10 @@ How to change to custom templates:(http://blog.stevensanderson.com/2011/04/06/mv
 
 
 samples :
- scaffold entity 'Aien.CRM.Biz.Entities.xxxx'       -DbContextType 'Aien.CRM.Dal.CrmContext'       -RepositoryProject '31-CRM.Biz' -WebProject:'50-CRM.UI.Web' -EntityProjectName:'30-CRM.Biz.Entities' -PermissionNameSpaceName 'Aien.CRM.Biz.Entities.Enums.Permissions'       -AutoMapNamespace 'Greewf.BaseLibrary.MVC.Mappers' -CustomizedControllerBaseNamespace 'Greewf.BaseLibrary.MVC' -CustomHelperNamespace 'Greewf.BaseLibrary.MVC.CustomHelpers'
- scaffold entity 'Greewf.PIN.Biz.Entities.xxxx' -DbContextType 'Greewf.PIN.Dal.PinContext' -RepositoryProject '31-PIN.Biz' -WebProject:'50-PIN.UI.Web' -EntityProjectName:'30-PIN.Biz.Entities' -PermissionNameSpaceName 'Greewf.PIN.Biz.Entities.Enums.Permissions' -AutoMapNamespace 'Greewf.BaseLibrary.MVC.Mappers' -CustomizedControllerBaseNamespace 'Greewf.BaseLibrary.MVC' -CustomHelperNamespace 'Greewf.BaseLibrary.MVC.CustomHelpers'
+ scaffold entity 'Aien.CRM.Biz.Entities.xxxx'       -DbContextType 'Aien.CRM.Dal.CrmContext'       -RepositoryProject '31-CRM.Biz' -WebProject:'50-CRM.UI.Web' -EntityProjectName:'30-CRM.Biz.Entities' -PermissionNameSpaceName 'Aien.CRM.Biz.Entities.Enums.Permissions'       -AutoMapNamespace 'Greewf.BaseLibrary.MVC.Mappers' -CustomizedControllerBaseNamespace 'Greewf.BaseLibrary.MVC' -CustomHelperNamespace 'Greewf.BaseLibrary.MVC.CustomHelpers' -LoggingNamespace 'Greewf.BaseLibrary.MVC.Logging' -LogAttributeNamespace       'Aien.CRM.UI.Web.Logs'
+ scaffold entity 'AienTehran.PIN.Biz.Entities.xxxx' -DbContextType 'AienTehran.PIN.Dal.PinContext' -RepositoryProject '31-PIN.Biz' -WebProject:'50-PIN.UI.Web' -EntityProjectName:'30-PIN.Biz.Entities' -PermissionNameSpaceName 'AienTehran.PIN.Biz.Entities.Enums.Permissions' -AutoMapNamespace 'Greewf.BaseLibrary.MVC.Mappers' -CustomizedControllerBaseNamespace 'Greewf.BaseLibrary.MVC' -CustomHelperNamespace 'Greewf.BaseLibrary.MVC.CustomHelpers' -LoggingNamespace 'Greewf.BaseLibrary.MVC.Logging' -LogAttributeNamespace 'AienTehran.PIN.UI.Web.Logs'
 
- scaffold entity 'EnergyPars.Ncc.Biz.Entities.xxxx' -DbContextType 'EnergyPars.Ncc.Dal.NccContext' -RepositoryProject '31-NCC.Biz' -WebProject:'50-NCC.UI.Web' -EntityProjectName:'30-NCC.Biz.Entities' -PermissionNameSpaceName 'EnergyPars.Ncc.Biz.Entities.Enums.Permissions' -AutoMapNamespace 'Greewf.BaseLibrary.MVC.Mappers' -CustomizedControllerBaseNamespace 'Greewf.BaseLibrary.MVC' -CustomHelperNamespace 'Greewf.BaseLibrary.MVC.CustomHelpers'
+ scaffold entity 'EnergyPars.Ncc.Biz.Entities.xxxx' -DbContextType 'EnergyPars.Ncc.Dal.NccContext' -RepositoryProject '31-NCC.Biz' -WebProject:'50-NCC.UI.Web' -EntityProjectName:'30-NCC.Biz.Entities' -PermissionNameSpaceName 'EnergyPars.Ncc.Biz.Entities.Enums.Permissions' -AutoMapNamespace 'Greewf.BaseLibrary.MVC.Mappers' -CustomizedControllerBaseNamespace 'Greewf.BaseLibrary.MVC' -CustomHelperNamespace 'Greewf.BaseLibrary.MVC.CustomHelpers' -LoggingNamespace 'Greewf.BaseLibrary.MVC.Logging' -LogAttributeNamespace 'EnergyPars.Ncc.UI.Web.Logs'
 
 
 

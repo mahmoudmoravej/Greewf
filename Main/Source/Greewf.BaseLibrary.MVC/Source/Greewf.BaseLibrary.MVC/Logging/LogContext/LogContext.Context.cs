@@ -25,7 +25,7 @@ namespace Greewf.BaseLibrary.MVC.Logging.LogContext
             //throw new UnintentionalCodeFirstException();
         }
     
-        public DbSet<LogDetail> LogDetails { get; set; }
         public DbSet<Log> Logs { get; set; }
+        public DbSet<LogDetail> LogDetails { get; set; }
     }
 }

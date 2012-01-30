@@ -148,6 +148,7 @@ namespace <#= Model.ControllerNamespace #>
         [HttpPost]
         [AutoMap(typeof(<#= modelName #>), typeof(<#= modelName #>ViewModel))]
         [Permissions(<#= modelName #>Permission.Create)]
+        [Log(LogPoint.<#= modelName #>Create, LogModelState.Valid, LogResultType.RedirectToSuccess)]
         public ActionResult Create(<#= modelName #>ViewModel <#= modelVariable #>Model)
         {
 			var <#= modelVariable #> = <#= modelName #>ModelMapper.Map(<#= modelVariable #>Model);
@@ -156,7 +157,7 @@ namespace <#= Model.ControllerNamespace #>
                 <#= Repositories[modelType.FullName].VariableName #>.InsertOrUpdate(<#= modelVariable #>);
                 <#= Repositories[modelType.FullName].VariableName #>.Save();
 				
-				return Redirect(Url.Action("edit", new { id = <#= modelVariable #>.<#= primaryKeyProperty.Name #> }), true);
+				return Redirect(Url.Action("edit", new { id = <#= modelVariable #>.<#= primaryKeyProperty.Name #> }), true, <#= modelName #>ModelMapper.Map(<#= modelVariable #>));
             } 
 			else 
 			{
@@ -182,18 +183,19 @@ namespace <#= Model.ControllerNamespace #>
 
         [HttpPost]
         [Permissions(<#= modelName #>Permission.Edit)]
-        public ActionResult Edit(<#= modelName #>ViewModel	 <#= modelVariable #>)
+        [Log(LogPoint.<#= modelName #>Edit, LogModelState.Valid, LogResultType.RedirectToSuccess)]
+        public ActionResult Edit(<#= modelName #>ViewModel <#= modelVariable #>Model)
         {
             if (ModelState.IsValid) {
-				var old<#= modelName #> = <#= Repositories[modelType.FullName].VariableName #>.Find(<#= modelVariable #>.<#= primaryKeyProperty.Name #>);
+				var old<#= modelName #> = <#= Repositories[modelType.FullName].VariableName #>.Find(<#= modelVariable #>Model.<#= primaryKeyProperty.Name #>);
 				UpdateModel(old<#= modelName #>);
                 <#= Repositories[modelType.FullName].VariableName #>.InsertOrUpdate(old<#= modelName #>);
                 <#= Repositories[modelType.FullName].VariableName #>.Save();
-				return Redirect(Url.Action("edit"), true);
+				return Redirect(Url.Action("edit"), true, <#= modelName #>ModelMapper.Map(old<#= modelName #>));
 
             } else {
 				PrepareViewBagLists(true);
-	            return View(<#= modelVariable #>);
+	            return View(<#= modelVariable #>Model);
 			}
         }
 
@@ -213,12 +215,14 @@ namespace <#= Model.ControllerNamespace #>
 
         [HttpPost, ActionName("Delete")]
         [Permissions(<#= modelName #>Permission.Delete)]
+        [Log(LogPoint.<#= modelName #>Delete, LogModelState.Always, LogResultType.Always)]
         public ActionResult DeleteConfirmed(<#= primaryKeyProperty.Type.AsString #> id)
         {
+            var <#= modelVariable #>Model = <#= modelName #>ModelMapper.Map(<#= Repositories[modelType.FullName].VariableName #>.Find(id));
             <#= Repositories[modelType.FullName].VariableName #>.Delete(id);
             <#= Repositories[modelType.FullName].VariableName #>.Save();
 
-            return Json(new { result = true });
+            return Json(new { result = true }, <#= modelVariable #>Model);
         }
 		
 	#endregion
