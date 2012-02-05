@@ -43,6 +43,7 @@ namespace Greewf.BaseLibrary
             return "";
         }
 
+
         public static string DisplayDate(string date)
         {
             if (string.IsNullOrWhiteSpace(date)) return null;//help to use ?? operator
@@ -80,7 +81,29 @@ namespace Greewf.BaseLibrary
 
         public static DateTime? ToSystemDateTime(string persianDateTime)
         {
+            persianDateTime=persianDateTime.Trim();
             var p = persianDateTime.Replace("-", "/").Replace(":", "/").Replace(" ", "").Split('/').ToList();
+
+            if (p.Count == 1)//means database formated date-time
+            {               
+                if (persianDateTime.Length == 8)
+                {
+                    p= new List<string>();
+                    p.Add( persianDateTime.Substring(0, 4));
+                    p.Add( persianDateTime.Substring(4, 2));
+                    p.Add( persianDateTime.Substring(6, 2));                    
+                }
+                else if (persianDateTime.Length == 12)
+                {
+                    p = new List<string>();
+                    p.Add(persianDateTime.Substring(0, 4));
+                    p.Add(persianDateTime.Substring(4, 2));
+                    p.Add(persianDateTime.Substring(6, 2));
+                    p.Add(persianDateTime.Substring(8, 1));
+                    p.Add(persianDateTime.Substring(10, 2));
+                }
+            }
+
             if (p.Count == 3)//just date
             {
                 p.Add("0");
@@ -136,13 +159,27 @@ namespace Greewf.BaseLibrary
             var p = displayDate.Split('/');
             if (p.Length != 3) return null;
             if (p[0].Length == 2) p[0] = CurrentDate().Substring(0, 2) + p[0];
-            
+
             var result = string.Format("{0:0000}{1:00}{2:00}", p[0], p[1], p[2]);
-            
+
             if (IsValidDate(result))
                 return result;
             else
                 return null;
+        }
+
+        public static string ToDatabaseDateTime(DateTime? date)
+        {
+            if (date.HasValue && date.Value != DateTime.MinValue)
+                return string.Format("{0:0000}{1:00}{2:00}{3:00}{4:00}", pcal.GetYear(date.Value), pcal.GetMonth(date.Value), pcal.GetDayOfMonth(date.Value), date.Value.Hour, date.Value.Minute);
+            return "";
+        }
+
+        public static string ToDatabaseDate(DateTime? date)
+        {
+            if (date.HasValue && date.Value != DateTime.MinValue)
+                return string.Format("{0:0000}{1:00}{2:00}", pcal.GetYear(date.Value), pcal.GetMonth(date.Value), pcal.GetDayOfMonth(date.Value));
+            return "";
         }
 
         public static string NumberToString(float no)
@@ -227,6 +264,8 @@ namespace Greewf.BaseLibrary
                 }
                 return stotal;
             }
+
+
 
         }
 

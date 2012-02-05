@@ -37,13 +37,14 @@ namespace Greewf.BaseLibrary.MVC.Security
             }
 
         }
-     
+
 
         public override void OnActionExecuted(ActionExecutedContext filterContext)
         {
             base.OnActionExecuted(filterContext);
             var controller = filterContext.Controller as CustomizedControllerBase;
             if (controller == null) return;
+            if (filterContext.Result is RedirectResult || filterContext.Result is RedirectToRouteResult) return;//in redirecting to another page(when each page/controller is responsible for its actions security) we don't need to check the permissions
 
             var model = filterContext.Controller.ViewData.Model;
             if (model != null)
@@ -70,7 +71,7 @@ namespace Greewf.BaseLibrary.MVC.Security
                             //error message
                             if (x == false)
                             {//TODO: is it corrent in OrPart case? when x==false but the whole result may be true finally ?!
-                                string msg = limiter.ErrorMessage ==null ? null :limiter.ErrorMessage();
+                                string msg = limiter.ErrorMessage == null ? null : limiter.ErrorMessage();
                                 if (!string.IsNullOrWhiteSpace(msg)) errorMessages.Add(msg);
                             }
 
