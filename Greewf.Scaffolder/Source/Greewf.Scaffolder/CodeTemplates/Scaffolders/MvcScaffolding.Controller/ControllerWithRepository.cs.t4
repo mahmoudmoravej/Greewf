@@ -262,7 +262,7 @@ namespace <#= Model.ControllerNamespace #>
 
 	#region Permission Handling
 
-        public override ModelPermissionLimiters GetModelLimiterFunctions(dynamic model)
+        protected override ModelPermissionLimiters GetModelLimiterFunctions(dynamic model)
         {
             //TODO : uncomment and correct these if you have permission based on the entity creator or any other rules
 			//if (model is <#= modelName #>ViewModel)

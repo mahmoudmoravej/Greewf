@@ -252,7 +252,6 @@ else
 	Write-Host "$PermissionAttributeClass not found!!..." -ForegroundColor:Red
 }
 
-
 #6th: Logging
 Write-Host "Scaffolding LogPoints..." -ForegroundColor blue
 [string] $xmlLogFullPath = (Get-Project $WebProject).Properties.Item("LocalPath").Value+$LogPointsXmlFile
@@ -263,5 +262,10 @@ $xml.Load($xmlLogFullPath )
 [string] $oldXmlData= $xml.LogPoints.InnerXml
 
 $xml.LogPoints.InnerXml = $oldXmlData + $newXmlData
+
+$file = Get-ProjectItem  -project:$WebProject -path:$LogPointsXmlFile
+$file.open()
+$file.document.save() #helps to check-out if checked-in before
 $xml.Save($xmlLogFullPath)
+
 Write-Host "LogPoints Successfully Added to $LogPointsXmlFile file"

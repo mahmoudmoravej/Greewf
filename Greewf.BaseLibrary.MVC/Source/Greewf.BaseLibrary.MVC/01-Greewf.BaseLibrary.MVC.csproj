@@ -133,68 +133,68 @@
     <Content Include="Documents\Conventions.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Security\Scripts\Base\helper.js">
+    <Content Include="Scripts\Base\helper.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Security\Scripts\Base\jquery-ui-tab4telerik.1.8.11.js" />
-    <Content Include="Security\Scripts\Base\jquery-ui-tab4telerik.1.8.11.min-old.js" />
-    <Content Include="Security\Scripts\Base\jquery-ui-tab4telerik.1.8.11.min.js">
+    <Content Include="Scripts\Base\jquery-ui-tab4telerik.1.8.11.js" />
+    <Content Include="Scripts\Base\jquery-ui-tab4telerik.1.8.11.min-old.js" />
+    <Content Include="Scripts\Base\jquery-ui-tab4telerik.1.8.11.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Security\Scripts\Base\JqueryTabstripCustomStyle.css">
+    <Content Include="Scripts\Base\JqueryTabstripCustomStyle.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Security\Scripts\Base\TabstripLayoutManager.js">
+    <Content Include="Scripts\Base\TabstripLayoutManager.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Security\Scripts\Base\WindowLayoutManager.js">
+    <Content Include="Scripts\Base\WindowLayoutManager.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Security\Scripts\Chosen\chosen-sprite.png">
+    <Content Include="Scripts\Chosen\chosen-sprite.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Security\Scripts\Chosen\chosen.css">
+    <Content Include="Scripts\Chosen\chosen.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Security\Scripts\Chosen\chosen.jquery.js" />
-    <Content Include="Security\Scripts\Chosen\chosen.jquery.min.js">
+    <Content Include="Scripts\Chosen\chosen.jquery.js" />
+    <Content Include="Scripts\Chosen\chosen.jquery.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Security\Scripts\jquery.textchange.min.js">
+    <Content Include="Scripts\jquery.textchange.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Security\Scripts\MicrosoftAjax.min.js">
+    <Content Include="Scripts\MicrosoftAjax.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Security\Scripts\PersianCalendar\jquery.calendars.pack.js">
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.pack.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Security\Scripts\PersianCalendar\jquery.calendars.persian-fa.js" />
-    <Content Include="Security\Scripts\PersianCalendar\jquery.calendars.persian.js" />
-    <Content Include="Security\Scripts\PersianCalendar\jquery.calendars.persian.pack.js">
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.persian-fa.js" />
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.persian.js" />
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.persian.pack.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Security\Scripts\PersianCalendar\jquery.calendars.picker-fa.js">
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker-fa.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Security\Scripts\PersianCalendar\jquery.calendars.picker.css">
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Security\Scripts\PersianCalendar\jquery.calendars.picker.js" />
-    <Content Include="Security\Scripts\PersianCalendar\jquery.calendars.picker.pack-original.js" />
-    <Content Include="Security\Scripts\PersianCalendar\jquery.calendars.picker.pack.js">
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker.js" />
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker.pack-original.js" />
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker.pack.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Security\Scripts\PersianCalendar\jquery.calendars.plus.pack.js">
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.plus.pack.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Security\Scripts\PersianCalendar\jquery.localisation.js" />
-    <Content Include="Security\Scripts\PersianCalendar\jquery.localisation.pack.js">
+    <Content Include="Scripts\PersianCalendar\jquery.localisation.js" />
+    <Content Include="Scripts\PersianCalendar\jquery.localisation.pack.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Security\Scripts\PersianCalendar\jquery.localisation2.pack.js" />
-    <Content Include="Security\Scripts\PersianCalendar\persianDateConvertor.js" />
-    <Content Include="Security\Scripts\PersianCalendar\persianDateConvertor.pack.js">
+    <Content Include="Scripts\PersianCalendar\jquery.localisation2.pack.js" />
+    <Content Include="Scripts\PersianCalendar\persianDateConvertor.js" />
+    <Content Include="Scripts\PersianCalendar\persianDateConvertor.pack.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

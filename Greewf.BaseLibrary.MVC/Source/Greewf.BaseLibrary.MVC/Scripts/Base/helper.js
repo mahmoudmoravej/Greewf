@@ -104,7 +104,9 @@ persianHelper = new function () {
 
     this.displayDate = function (s) {
         if (s == null || jsHelper.trim(s) == '') return '';
-        return s.substr(0, 4) + '/' + s.substr(4, 2) + '/' + s.substr(6, 2)
+        var result = s.substr(0, 4) + '/' + s.substr(4, 2) + '/' + s.substr(6, 2);
+        if (result == '//') result = '';
+        return result;
     }
 
     this.displayDateTime = function (s) {
