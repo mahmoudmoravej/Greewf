@@ -135,7 +135,7 @@ layoutHelper = new function () {
             var item = $(document.body).append('<a href="' + link + '"></a>').children().last();
             parent.$.tabStripMain.AddTab(item);
             item.remove();
-            layoutHelper.windowLayout().CloaseTopMost();
+            layoutHelper.windowLayout.CloseTopMost();
         }
         else if (justMain != undefined && justMain == true)
             parent.window.location = link;
@@ -143,15 +143,19 @@ layoutHelper = new function () {
             window.location = link;
     }
 
-    this.windowLayout = function () {
-        return (parent.$.windowLayout != null) ? parent.$.windowLayout : $.windowLayout;
+    this.core = new function () {
+        return (parent.$.layoutCore != null) ? parent.$.layoutCore : $.layoutCore;
+    }
+
+    this.windowLayout = new function () {
+        return (parent.$.layoutCore != null) ? parent.$.windowLayout : $.windowLayout;
     }
 
     this.windowLayoutActiveDocument = function () {
-        return (parent.$.windowLayout != null) ? parent.document : document;
+        return (parent.$.layoutCore != null) ? parent.document : document;
     }
     this.mainJqObject = function () {/*get the main JQuery object*/
-        return (parent.$.windowLayout != null) ? parent.$ : $;
+        return (parent.$.layoutCore != null) ? parent.$ : $;
     }
 
     this.setInitialFocus = function () {

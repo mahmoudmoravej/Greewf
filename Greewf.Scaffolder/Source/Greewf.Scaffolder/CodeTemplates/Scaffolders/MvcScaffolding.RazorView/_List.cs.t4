@@ -67,7 +67,7 @@ foreach (ModelProperty property in properties) {
         .ToolBar(commands =>
         {
             commands.Template(@<text><a class="t-button t-grid-add t-button-icon at-rowEdit" style="display:@(Commons.CurrentUser.HasPermission<<#=modelDataType.Name#>Permission>(<#=modelDataType.Name#>Permission.Create) ? "" : "none")"
-                href='@Url.Content("~/<#= Model.ModelTypePluralized #>/create")' title='اطلاعات جدید' newwindow='true' windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'><span
+                href='@Url.Content("~/<#= Model.ModelTypePluralized #>/create")' title='<#=GetDisplayName(modelDataType)#> جدید' newwindow='true' windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'><span
                     class="t-icon t-add"></span>اضافه کردن <#=GetDisplayName(modelDataType)#> جدید</a></text>);
         })
         .Scrollable(scrolling => { scrolling.Enabled(false); scrolling.Height("400%"); })
