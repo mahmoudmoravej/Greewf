@@ -49,7 +49,7 @@
 </div>
 <script type="text/javascript" language="javascript">
     $('#cancelDelete').click(function () {
-        layoutHelper.windowLayout().CloaseTopMost();
+        layoutHelper.windowLayout.CloseTopMost();
     });
     $('#submitDelete').click(function () {
         $('button').attr('disabled', true).addClass('t-state-disabled');
@@ -59,7 +59,7 @@
             url: window.location,
             cache: false,
             success: function (html) {
-                layoutHelper.windowLayout().CloseAndDone();
+                layoutHelper.windowLayout.CloseAndDone();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 $('#divContent').css('direction', 'ltr').html(xhr.responseText);

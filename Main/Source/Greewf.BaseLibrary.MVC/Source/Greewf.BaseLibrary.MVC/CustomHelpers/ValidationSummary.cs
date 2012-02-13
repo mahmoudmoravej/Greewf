@@ -73,10 +73,10 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
             output.Append(string.Format("<div id='{0}' style='display:none;'>{1}</div>", name, (pureValidationSummary == null ? "" : pureValidationSummary.ToHtmlString())));
 
             outputScript.AppendFormat("<script type='text/javascript'> $(document).ready(function () {{ {0} }});</script>",
-                string.Format("$('#{1}').closest('form').submit(function () {{if ({0} && Sys.Mvc.FormContext && Sys.Mvc.FormContext.getValidationForForm(this).validate('submit').length) layoutHelper.windowLayout().ShowErrorMessage($('#{1}').html(),'بروز خطا'); }});", excludePropertyErrors ? "false" : "true", name)
+                string.Format("$('#{1}').closest('form').submit(function () {{if ({0} && Sys.Mvc.FormContext && Sys.Mvc.FormContext.getValidationForForm(this).validate('submit').length) layoutHelper.core.showErrorMessage($('#{1}').html(),'بروز خطا'); }});", excludePropertyErrors ? "false" : "true", name)
                 );
             output.Append(outputScript);
-            helper.Telerik().ScriptRegistrar().OnDocumentReady(string.Format(" if ($('#validationSummary','#{0}').hasClass('validation-summary-errors')) {{ layoutHelper.windowLayout().ShowErrorMessage($('#{0}').html(),'بروز خطا');  }}", name));
+            helper.Telerik().ScriptRegistrar().OnDocumentReady(string.Format(" if ($('#validationSummary','#{0}').hasClass('validation-summary-errors')) {{ layoutHelper.core.showErrorMessage($('#{0}').html(),'بروز خطا');  }}", name));
             return new MvcHtmlString(output.ToString());
         }
 
