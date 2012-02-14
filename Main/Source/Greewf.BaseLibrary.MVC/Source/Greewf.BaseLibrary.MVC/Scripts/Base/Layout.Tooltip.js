@@ -5,40 +5,62 @@
     var messageWins = new Array(); //{win:xxx , type:xxx}
     var inAutoHide;
     var inAutoClose = false;
-    var debugMode = true;
 
-    tooltipLayout.debug = function (value) {
-        if (value != null) debugMode = value;
-        return debugMode;
-    };
+    tooltipLayout.progressHtml = function () {
+        return '<div isProgress="1" class="bigprogress-icon t-content" style="min-width:48px;min-height:48px;" ></div>';
+    }
+
 
     tooltipLayout.changeTitle = function (winTitleElement, title) {
-        var ico = winTitleElement.children()[0];
-        ico = ico == undefined ? '' : $("<span>").append($(ico).clone()).html();
-        winTitleElement.html(ico + ' ' + title);
+        //var ico = winTitleElement.children()[0];
+        //ico = ico == undefined ? '' : $("<span>").append($(ico).clone()).html();
+        //winTitleElement.html(ico + ' ' + title);
     }
 
     tooltipLayout.makeReadyToShow = function (sender, link, title, ownerWindow) {
-        var isModal = $(sender).attr('winNoModal') == undefined;
-        if (activeWinsQueue.length > 0) {
-            var doBackHide = $(sender).attr('winDisableBackHide') == undefined;
-            if (doBackHide) {
-                var oldWindow = activeWinsQueue[activeWinsQueue.length - 1].win.data('tWindow');
-                inAutoHide = true;
-                oldWindow.modal = false; //because of telerik bug!
-                oldWindow.close();
-                inAutoHide = false;
-            }
-        }
 
         var winWidth = $(sender).attr('winwidth');
         var winHeight = $(sender).attr('winheight');
-        var maximaizable = $(sender).attr('winNoMaximaizable') == undefined;
-        var winMax = $(sender).attr('winMax');
-        var doAjax = $(sender).attr('ajax');
-        var actions = new Array('Refresh');
-        if (maximaizable) actions.push('Maximize');
-        actions.push('Close');
+
+        winWidth = winWidth > 0 ? winWidth : 'auto';
+        winHeight = winHeight > 0 ? winHeight : 'auto';
+
+        sender = $(sender);
+
+        if (sender.qtip('api') == null)
+            sender.qtip({
+                show: {
+                    event: 'click',
+                    solo: true,
+                    effect: function (offset) {
+                        $(this).slideDown(500);
+                    }
+                },
+                hide: {
+                    event: 'unfocus',
+                    effect: function (offset) {
+                        $(this).slideUp(200);
+                    }
+                },
+                style: {
+                    classes: 'ui-tooltip-wiki ui-tooltip-light ui-tooltip-shadow',
+                    height: winHeight,
+                    width: winWidth
+                },
+                position: {
+                    my: 'top right',
+                    at: 'bottom right',
+                    viewport: $(window), // Keep it on-screen at all times if possible
+                    adjust: { x: -10 }
+                }
+            });
+
+        var api = sender.qtip('api');
+        api.render();
+        if (winHeight > 0) $(api.elements.content).height(winHeight); //becuase of bug in qtip we should handle it manually
+
+        return { widget: { api: api, sender: sender, htmlTag: api.elements.content, ownerWindow: ownerWindow }, widgetTitle: sender.qtip('api') };
+
 
         w = $.telerik.window.create({
             title: fetchIcon(sender) + " در حال دریافت...",
@@ -88,33 +110,33 @@
 
     }
 
-    tooltipLayout.show = function (window) {
-        window.data('tWindow').center().open();
+    tooltipLayout.show = function (tooltip) {
+        //tooltip.api.reposition();
+        tooltip.api.show();
+
     }
 
-    tooltipLayout.setContent = function (window, content) {
-        window.data('tWindow').content(content);
+    tooltipLayout.setContent = function (tooltip, content) {
+        //tooltip.hide();
+        tooltip.api.set('content.text', $(content));
+        //if (tooltip.api.elements.content != null)
+        //    tooltip.api.elements.content.html(content);
+        //if (tooltip.source.css('visibility') != 'visible') 
+        tooltip.api.show();
     }
 
-    tooltipLayout.CloseAndDone = function (data) {
-        if (activeWinsQueue.length == 0) return;
-        var lw = activeWinsQueue[activeWinsQueue.length - 1];
-        inAutoClose = true;
-        lw.win.data('tWindow').close();
-        inAutoClose = false;
-        var callBack = $(lw.sender).attr('windowcallback');
+    tooltipLayout.CloseAndDone = function (data, tooltip) {
+        if (tooltip == null) return;
+        tooltip.api.hide();
+        var callBack = $(tooltip.sender).attr('windowcallback');
         if (typeof (callBack) != 'undefined')
-            lw.ownerWindow[callBack].apply(this, new Array(lw.sender, data));
-        else if (typeof (lw.ownerWindow.tooltipLayout_DoneSuccessfullyCallBack) != 'undefined')
-            lw.ownerWindow.tooltipLayout_DoneSuccessfullyCallBack(lw.sender, data);
+            tooltip.ownerWindow[callBack].apply(this, new Array(tooltip.sender, data));
+        else if (typeof (tooltip.ownerWindow.tooltipLayout_DoneSuccessfullyCallBack) != 'undefined')
+            tooltip.ownerWindow.tooltipLayout_DoneSuccessfullyCallBack(tooltip.sender, data);
     }
 
-    tooltipLayout.CloseTopMost = function () {
-        if (activeWinsQueue.length == 0) return;
-        var lw = activeWinsQueue[activeWinsQueue.length - 1];
-        inAutoClose = true;
-        lw.win.data('tWindow').close();
-        inAutoClose = false;
+    tooltipLayout.CloseTopMost = function (tooltip/*can be null*/) {
+        if (tooltip != null) tooltip.api.hide();
     }
 
     tooltipLayout.maximize = function (win) {

@@ -7,7 +7,7 @@
 5- editor-focus, emphasize,
 
 link style :
-<a class="t-button t-grid-edit t-button-icon at-rowEdit" href='...' title='...' (inline='xxx' | newwindow='xxx'|justwindow='xxx'|justMain='xxx' | responsiveAjax='xxx') windowcallback='ContactGridCallBack' winWidth='50' winHeight='50' winMax='true' winNoModal='1' windowActionsNeedConfirm='true' winNoMaximaizable='x' winDisableBackHide='x' ajax='1'> ....</a>
+<a class="t-button t-grid-edit t-button-icon at-rowEdit" href='...' title='...' (inline='xxx' | newwindow='xxx'|justwindow='xxx'|justMain='xxx' | responsiveAjax='xxx'|tooltipWindow='xxx') windowcallback='ContactGridCallBack' winWidth='50' winHeight='50' winMax='true' winNoModal='1' windowActionsNeedConfirm='true' winNoMaximaizable='x' winDisableBackHide='x' ajax='1'> ....</a>
 	classes : link,show-icon,link hover-classic,t-link
 
 	winDisableBackHide = در صورتی که می خواهید پنجره پشتی در زمان باز شدن پنجره جدید مخفی نشود
@@ -15,6 +15,7 @@ link style :
 	winNoMaximaizable = ماکیزمایز پذیر نباشد!
 	windowcallback = function (url,data){}
 	responsiveAjax = اگر اکشنی که انجام می دهد نتیجه اش یک متنی است که تنها می بایست در پنجره مربوطه نمایش داده شود. مثلا وقتی کالا به سبد خرید اضافه می شود و نتیجه این است که "کالا اضافه شد" از این موارد استفاده می شود.
+	tooltipWindow=  آیا در یک تول تیپ باز کند؟
 
 QueryString keys :
 enforceLayout=1

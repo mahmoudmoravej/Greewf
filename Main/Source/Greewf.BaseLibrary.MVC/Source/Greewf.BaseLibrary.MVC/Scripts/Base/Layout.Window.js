@@ -32,6 +32,10 @@
         return showMessage(msg, title, 2);
     }
 
+    windowLayout.progressHtml = function () {
+        return '<div isProgress="1" class="bigprogress-icon t-content" style="width:99%;height:97%;position:absolute;" ></div>';
+    }
+
     getMessageIcon = function (type) {
         switch (type) {
             case 1: //success
@@ -148,7 +152,7 @@
                 if (confirm) {
                     win = curWin.win;
                     var winTitle = $('span.t-window-title', win);
-                    $.layoutCore.refreshContent($.windowLayout, winTitle, win);
+                    $.layoutCore.refreshContent($.windowLayout, curWin.widget, winTitle);
                 }
             },
             onClose: function (e) {
@@ -173,23 +177,24 @@
             }
         });
 
-        activeWinsQueue.push({ win: w, sender: sender, ownerWindow: ownerWindow, isModal: isModal });
+        var widget = { core: w, htmlTag: w };
+        activeWinsQueue.push({ win: w, sender: sender, ownerWindow: ownerWindow, isModal: isModal, widget: widget });
         w.data('tWindow').modal = isModal;
         var windowTitle = $('span.t-window-title', w);
 
-        return { widget: w, widgetTitle: windowTitle };
+        return { widget: widget, widgetTitle: windowTitle };
 
     }
 
     windowLayout.show = function (window) {
-        window.data('tWindow').center().open();
+        window.core.data('tWindow').center().open();
     }
 
     windowLayout.setContent = function (window, content) {
-        window.data('tWindow').content(content);
+        window.core.data('tWindow').content(content);
     }
 
-    windowLayout.CloseAndDone = function (data) {
+    windowLayout.CloseAndDone = function (data, widget) {
         if (activeWinsQueue.length == 0) return;
         var lw = activeWinsQueue[activeWinsQueue.length - 1];
         inAutoClose = true;
@@ -202,7 +207,7 @@
             lw.ownerWindow.WindowLayout_DoneSuccessfullyCallBack(lw.sender, data);
     }
 
-    windowLayout.CloseTopMost = function () {
+    windowLayout.CloseTopMost = function (widget/*can be null*/) {
         if (activeWinsQueue.length == 0) return;
         var lw = activeWinsQueue[activeWinsQueue.length - 1];
         inAutoClose = true;
@@ -211,19 +216,19 @@
     }
 
     windowLayout.maximize = function (win) {
-        win.data('tWindow').maximize();
+        win.core.data('tWindow').maximize();
     }
 
     windowLayout.center = function (win) {
-        win.data('tWindow').center();
+        win.core.data('tWindow').center();
     }
 
     windowLayout.setHeight = function (win, height) {
-        $(win.data('tWindow').element).find(".t-window-content").height(height);
+        $(win.core.data('tWindow').element).find(".t-window-content").height(height);
     }
 
     windowLayout.setWidth = function (win, width) {
-        $(win.data('tWindow').element).find(".t-window-content").width(width);
+        $(win.core.data('tWindow').element).find(".t-window-content").width(width);
     }
 
     windowLayout.getTitleHeight = function (winTitle) {
@@ -244,7 +249,7 @@
             });
 
         errorWindow.data('tWindow').center().open();
-    }   
+    }
 
     $.extend({ windowLayout: windowLayout });
 })(jQuery);

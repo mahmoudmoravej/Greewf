@@ -3,7 +3,7 @@
     tabStripMain = {};
     var options = { tabstripId: 'tabstripMain', firstPageUrl: '/', firstPageTitle: '', isNewWindowOk: true };
     var arrTabs = new Array();
-    var linkPattern = 'a[href][href!^="#"][href!^="#"]:not([href^="javascript:"]):not([href*="ajax=True"]):not([inline]):not([justwindow]):not([justMain]):not([responsiveAjax])'; //pattern which accept links to open
+    var linkPattern = 'a[href][href!^="#"][href!^="#"]:not([href^="javascript:"]):not([href*="ajax=True"]):not([inline]):not([justwindow]):not([justMain]):not([responsiveAjax]):not([tooltipWindow])'; //pattern which accept links to open
     var currentTabId = -1;
 
     tabStripMain.load = function (o) {
