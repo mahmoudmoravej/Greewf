@@ -1,14 +1,11 @@
 ﻿(function ($) {
 
     layoutCore = {};
-    var progressHtml = '<div isProgress="1" class="bigprogress-icon t-content" style="width:99%;height:97%;position:absolute;" ></div>';
     var widgetManager = { changeTitle: '' };
-    /*
-    widgetManager.changeTitle(widgetTitle,title);
-    layoutCore.OpenWidget = function (widgetLayout, sender, link, title, ownerWindow) {
-    
-    */
 
+    layoutCore.progressHtml = function (widgetLayout) {
+        return widgetLayout.progressHtml();
+    }
 
     function changeWidgetTitle(widgetLayout, widgetTitle, title) {
         widgetLayout.changeTitle(widgetTitle, title);
@@ -28,14 +25,14 @@
         return confirm
     }
 
-    layoutCore.refreshContent = function (widgetLayout, widgetTitle, widget) {
+    layoutCore.refreshContent = function (widgetLayout, widget, widgetTitle) {
         changeWidgetTitle(widgetLayout, widgetTitle, 'در حال دریافت...');
-        var ajaxContent = $("#addedAjaxWindowContentContainer", widget);
+        var ajaxContent = $("#addedAjaxWindowContentContainer", widget.htmlTag);
         if (ajaxContent.length > 0)//ajax refresh
             loadThroughAjax(widgetLayout, widget, widgetTitle, null, $(ajaxContent).attr('link'));
         else//iframe refresh
         {
-            var ifrm = $("iframe", widget)[0];
+            var ifrm = $("iframe", widget.htmlTag)[0];
             //$(ifrm).css('visibility', 'hidden');
             $('div', $(ifrm).parent()).show();
             ifrm.contentWindow.onbeforeunload = null; //to avoid getting any confirmation if provided
@@ -52,7 +49,6 @@
         var widget = widgetInfo.widget;
         var widgetTitle = widgetInfo.widgetTitle;
 
-
         var winWidth = $(sender).attr('winwidth');
         var winHeight = $(sender).attr('winheight');
         var maximaizable = $(sender).attr('winNoMaximaizable') == undefined;
@@ -64,16 +60,16 @@
         //ajax or iframe?
         if (doAjax != undefined) {//ajax request : pure mode
             loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, function () {
-                var contentContainer = $('#addedAjaxWindowContentContainer', widget);
+                var contentContainer = $('#addedAjaxWindowContentContainer', widget.htmlTag);
                 correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, true, contentContainer.outerHeight(), contentContainer.outerWidth());
             });
 
         }
         else {//iframe request : simple mode
-            widgetLayout.setContent(widget, progressHtml + '<iframe frameborder="0" style="width:100%;height:99%;visibility:visible;" src="' + link + '"></iframe>');
+            widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout) + '<iframe frameborder="0" style="width:100%;height:99%;visibility:visible;" src="' + link + '"></iframe>');
 
 
-            $("iframe", widget).load(function () {
+            $("iframe", widget.htmlTag).load(function () {
                 $('div[isProgress]', $(this).parent()).hide();
                 //$(this).css('visibility', 'visible'); //1:jquery hide/show methods makes some problem with inner content,2:making invisible makes problem in first field focusing
                 changeWidgetTitle(widgetLayout, widgetTitle, title == '' ? (this.contentWindow.document != undefined ? this.contentWindow.document.title : '') : title);
@@ -81,7 +77,7 @@
                 var correctingSizeCondition = $(this).attr('isrefresh') != 'true' && this.contentWindow.location.toString().indexOf("/SavedSuccessfully") == -1 && this.contentWindow.location.hash.toString().indexOf('successfullysaved') == -1;
                 correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, correctingSizeCondition, $(this.contentWindow.document.body).outerHeight(), $(this.contentWindow.document.body).outerWidth());
 
-                handleSpecialPagesByLink(widgetLayout, this.contentWindow.location);
+                handleSpecialPagesByLink(widgetLayout, widget, this.contentWindow.location);
 
             });
         }
@@ -91,7 +87,7 @@
 
     }
 
-    function handleSpecialPagesByLink(widgetLayout, location, linkHash) {
+    function handleSpecialPagesByLink(widgetLayout, widget, location, linkHash) {
         var handled = false;
         var link = location;
         if (linkHash == null) linkHash = ''; //todo : linkhash is null in ajax mode.
@@ -102,11 +98,11 @@
         }
 
         if (link.indexOf("/SavedSuccessfully") > 0 || linkHash.indexOf('successfullysaved') > 0) {
-            widgetLayout.CloseAndDone(location.hash != undefined ? location : null); //when ajax request
+            widgetLayout.CloseAndDone(location.hash != undefined ? location : null, widget); //when ajax request
             handled = true;
         }
         else if (link.indexOf("/accessdenied") > 0) {
-            widgetLayout.CloseTopMost();
+            widgetLayout.CloseTopMost(widget);
             handled = true;
         }
 
@@ -131,7 +127,7 @@
     }
 
     function loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, postSuccessAction) {
-        widgetLayout.setContent(widget, progressHtml);
+        widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout));
         $.ajax({
             url: link,
             cache: false,
@@ -147,14 +143,14 @@
 
     function insertAjaxContent(widgetLayout, widget, widgetTitle, title, link, html) {
         widgetLayout.setContent(widget, '<div id="addedAjaxWindowContentContainer" link="' + link + '">' + html + '</div>');
-        var urlData = $('#currentPageUrl', widget); //when redirecting in ajax request
+        var urlData = $('#currentPageUrl', widget.htmlTag); //when redirecting in ajax request
         if (urlData.length > 0) {
             link = urlData.text();
-            $('#addedAjaxWindowContentContainer', widget).attr('link', link);
+            $('#addedAjaxWindowContentContainer', widget.htmlTag).attr('link', link);
         }
 
         //handle page title
-        var pageContentTitle = $('#currentPageTitle', widget);
+        var pageContentTitle = $('#currentPageTitle', widget.htmlTag);
         if (widgetTitle != null)
             if (pageContentTitle.length > 0)
                 changeWidgetTitle(widgetLayout, widgetTitle, pageContentTitle.text());
@@ -162,7 +158,7 @@
                 changeWidgetTitle(widgetLayout, widgetTitle, '');
 
         //handle validation+content
-        if (!handleSpecialPagesByLink(widgetLayout, link)) {//the page is not closed
+        if (!handleSpecialPagesByLink(widgetLayout, widget, link)) {//the page is not closed
             if (widgetTitle != null && title != null && title != '') changeWidgetTitle(widgetLayout, widgetTitle, title);
             enableValidation(widgetLayout, widget);
             ajaxifyInnerForms(widgetLayout, widget, widgetTitle);
@@ -194,7 +190,7 @@
     function enableValidation(widgetLayout, widget) {
         //unobtrusive validation
         if ($.validator.unobtrusive != undefined && $.validator.unobtrusive != null) {
-            $(widget).find('form').each(function (i, o) {
+            $(widget.htmlTag).find('form').each(function (i, o) {
                 $.validator.unobtrusive.parse(o);
             });
         }
@@ -206,7 +202,7 @@
 
     function ajaxifyInnerForms(widgetLayout, widget, widgetTitle) {
         //NOTE: just disable unobtrosive forms! TODO : handle old fasion ajax forms too
-        $(widget).find('form:not([data-ajax*="true"])').each(function (i, o) {
+        $(widget.htmlTag).find('form:not([data-ajax*="true"])').each(function (i, o) {
             handleInnerFormSubmitButtons(o);
             $(o).submit(function () {
                 if (!$(this).valid()) return false;
@@ -218,7 +214,7 @@
                     cache: false,
                     data: appendSubmitButtonValue($(this).serialize(), this),
                     beforeSend: function () {
-                        widgetLayout.setContent(widget, progressHtml);
+                        widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout));
                     },
                     success: function (html, status, xhr) {
                         insertAjaxContent(widgetLayout, widget, widgetTitle, null, link, html);
@@ -264,7 +260,7 @@
 
         $('a[justMain]', ownerWindow.document).live('click', function () {
             if (ownerWindow.location.toString().indexOf('iswindow=1') != -1)
-                if (parent.$.layoutCore != null) parent.$.layoutCore.CloseTopMost();
+                if (parent.$.layoutCore != null) parent.$.windowLayout.CloseTopMost();
 
             if (isTabularLayout)
                 parent.$.tabStripMain.AddTab(this);
@@ -312,7 +308,7 @@
         });
     }
 
-    layoutCore.showSuccessMessage = function (msg,title) {
+    layoutCore.showSuccessMessage = function (msg, title) {
         layoutHelper.windowLayout.ShowSuccessMessage(msg, title);
     }
 
