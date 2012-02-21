@@ -86,17 +86,17 @@ namespace Greewf.BaseLibrary.MVC.Logging
             var request = HttpContext.Current.Request;
 
             log.DateTime = DateTime.Now;
-            log.Browser = request.Browser.Browser + request.Browser.Version;
+            log.Browser = TakeMax(request.Browser.Browser + request.Browser.Version, 50);
             log.IsMobile = request.Browser.IsMobileDevice;
-            log.UserAgent = request.UserAgent;
-            log.Code = Enum.GetName(logEnumType, logId);
+            log.UserAgent = TakeMax(request.UserAgent, 150);
+            log.Code = TakeMax(Enum.GetName(logEnumType, logId), 50);
             log.Text = (model is Exception ? TakeMax(model.ToString(), 4000) : null);//TODO : for future use!
             log.Ip = request.UserHostAddress;
-            log.MachineName = request.UserHostName;
-            log.Username = Username;
-            log.UserFullname = UserFullName;
-            log.RequestUrl = request.Url.GetLeftPart(UriPartial.Path);
-            log.Querystring = request.QueryString.ToString();
+            log.MachineName = TakeMax(request.UserHostName, 50);
+            log.Username = TakeMax(Username, 50);
+            log.UserFullname = TakeMax(UserFullName, 50);
+            log.RequestUrl = TakeMax(request.Url.GetLeftPart(UriPartial.Path), 150);
+            log.Querystring = TakeMax(request.QueryString.ToString(), 200);
 
             if (model != null)
             {
@@ -104,7 +104,7 @@ namespace Greewf.BaseLibrary.MVC.Logging
                 if (modelMetadata == null)
                     modelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => { return model; }, typ);
 
-                log.Key = typ.Name;
+                log.Key = TakeMax(typ.Name, 30);
                 AddLogDetails(log, model, modelMetadata, exludeModelProperties);
             }
 

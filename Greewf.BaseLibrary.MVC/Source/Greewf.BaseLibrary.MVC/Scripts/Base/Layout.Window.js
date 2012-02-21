@@ -155,10 +155,15 @@
                     $.layoutCore.refreshContent($.windowLayout, curWin.widget, winTitle);
                 }
             },
+            onActivate: function () {
+                var curWin = activeWinsQueue[activeWinsQueue.length - 1];
+                var winTitle = $('span.t-window-title', curWin.win);
+                $.layoutCore.widgetActivated($.windowLayout, curWin.widget, winTitle);
+            },
             onClose: function (e) {
                 if (!inAutoHide) {
                     curWin = activeWinsQueue[activeWinsQueue.length - 1]; //instead of top() function
-                    var confirm = $.layoutCore.confirmRefresh(curWin.sender, inAutoClose);
+                    var confirm = $.layoutCore.confirmClose(curWin.sender, inAutoClose);
 
                     if (confirm) {
                         activeWinsQueue.pop();
@@ -177,7 +182,7 @@
             }
         });
 
-        var widget = { core: w, htmlTag: w };
+        var widget = { core: w, htmlTag: w, ownerWindow: ownerWindow, sender: sender };
         activeWinsQueue.push({ win: w, sender: sender, ownerWindow: ownerWindow, isModal: isModal, widget: widget });
         w.data('tWindow').modal = isModal;
         var windowTitle = $('span.t-window-title', w);
@@ -200,11 +205,13 @@
         inAutoClose = true;
         lw.win.data('tWindow').close();
         inAutoClose = false;
-        var callBack = $(lw.sender).attr('windowcallback');
-        if (typeof (callBack) != 'undefined')
-            lw.ownerWindow[callBack].apply(this, new Array(lw.sender, data));
-        else if (typeof (lw.ownerWindow.WindowLayout_DoneSuccessfullyCallBack) != 'undefined')
-            lw.ownerWindow.WindowLayout_DoneSuccessfullyCallBack(lw.sender, data);
+        $.layoutCore.handleCloseCallBack(lw.sender, data, lw.ownerWindow);
+
+        //        var callBack = $(lw.sender).attr('windowcallback');
+        //        if (typeof (callBack) != 'undefined')
+        //            lw.ownerWindow[callBack].apply(this, new Array(lw.sender, data));
+        //        else if (typeof (lw.ownerWindow.WindowLayout_DoneSuccessfullyCallBack) != 'undefined')
+        //            lw.ownerWindow.WindowLayout_DoneSuccessfullyCallBack(lw.sender, data);
     }
 
     windowLayout.CloseTopMost = function (widget/*can be null*/) {
@@ -224,10 +231,12 @@
     }
 
     windowLayout.setHeight = function (win, height) {
+        win.core.data('tWindow').height = height;
         $(win.core.data('tWindow').element).find(".t-window-content").height(height);
     }
 
     windowLayout.setWidth = function (win, width) {
+        win.core.data('tWindow').width = width;
         $(win.core.data('tWindow').element).find(".t-window-content").width(width);
     }
 

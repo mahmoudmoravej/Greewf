@@ -151,6 +151,14 @@ layoutHelper = new function () {
         return (parent.$.layoutCore != null) ? parent.$.windowLayout : $.windowLayout;
     }
 
+    this.tooltipLayout = new function () {
+        return (parent.$.layoutCore != null) ? parent.$.tooltipLayout : $.tooltipLayout;
+    }
+
+    this.isParentLayoutPresent = function () {
+        return (parent.$.layoutCore != null);
+    }
+
     this.windowLayoutActiveDocument = function () {
         return (parent.$.layoutCore != null) ? parent.document : document;
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Web.Caching;
 
 namespace Greewf.BaseLibrary.MVC.Logging
 {
@@ -24,7 +25,8 @@ namespace Greewf.BaseLibrary.MVC.Logging
             }
         }
 
-        private HashSet<string> disabledLogs;
+        private HashSet<string> disabledLogs = null;
+        private bool isNeedToBeReload = false;
 
         private string logProfileFilePath;
         public string LogProfileFilePath
@@ -39,14 +41,34 @@ namespace Greewf.BaseLibrary.MVC.Logging
                 lock (logProfileFilePath)
                 {
                     Reload();
+                    AddCacheDependency(logProfileFilePath);
                 }
             }
+        }
+
+        private void AddCacheDependency(string logProfileFilePath)
+        {
+
+            if (System.Web.HttpContext.Current.Cache["__logProfileCacheChange"] != null)
+                System.Web.HttpContext.Current.Cache.Remove("__logProfileCacheChange");
+
+            isNeedToBeReload = false;
+
+            if (!string.IsNullOrWhiteSpace(logProfileFilePath))
+                System.Web.HttpContext.Current.Cache.Add("__logProfileCacheChange", "x", new CacheDependency(logProfileFilePath), DateTime.MaxValue, TimeSpan.Zero, CacheItemPriority.High, LogProfileFileChanged);
+        }
+
+        private void LogProfileFileChanged(string key, object value, CacheItemRemovedReason reason)
+        {
+            //System.Web.HttpContext.Current.Cache.Remove("__logProfileCacheChange");
+            isNeedToBeReload = true;
         }
 
         public void Reload()
         {
             try
             {
+
 
                 var xmlProfiles = new XmlDocument();
                 xmlProfiles.Load(logProfileFilePath);
@@ -77,6 +99,7 @@ namespace Greewf.BaseLibrary.MVC.Logging
 
         public bool IsLogDisabled(string logId)
         {
+            if (isNeedToBeReload) LogProfileFilePath = LogProfileFilePath;
             if (disabledLogs == null) return true;//null means all are disabled
             return disabledLogs.Contains(logId);
         }
