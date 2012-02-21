@@ -1,10 +1,7 @@
 ﻿(function ($) {
 
     tooltipLayout = {};
-    var activeWinsQueue = new Array(); // {sender: xxx, win:xxx,ownerWindow:xxx}
-    var messageWins = new Array(); //{win:xxx , type:xxx}
-    var inAutoHide;
-    var inAutoClose = false;
+    var lastQtipSender = null;
 
     tooltipLayout.progressHtml = function () {
         return '<div isProgress="1" class="bigprogress-icon t-content" style="min-width:48px;min-height:48px;" ></div>';
@@ -17,27 +14,37 @@
         //winTitleElement.html(ico + ' ' + title);
     }
 
+    tooltipLayout.closeLastTip = function () {
+        $(lastQtipSender).qtip('hide');
+    }
+
     tooltipLayout.makeReadyToShow = function (sender, link, title, ownerWindow) {
 
         var winWidth = $(sender).attr('winwidth');
         var winHeight = $(sender).attr('winheight');
+        var showEvents = $(sender).attr('showEvents');
+        var hideEvents = $(sender).attr('hideEvents');
+        showEvents = showEvents == null ? 'click' : showEvents;
+        hideEvents = hideEvents == null ? 'unfocus' : hideEvents;
 
         winWidth = winWidth > 0 ? winWidth : 'auto';
         winHeight = winHeight > 0 ? winHeight : 'auto';
 
         sender = $(sender);
+        lastQtipSender = sender;
 
         if (sender.qtip('api') == null)
             sender.qtip({
+                content: ' ', //sender with empty title (at least) cause error in creation!
                 show: {
-                    event: 'click',
+                    event: showEvents,
                     solo: true,
                     effect: function (offset) {
                         $(this).slideDown(500);
                     }
                 },
                 hide: {
-                    event: 'unfocus',
+                    event: hideEvents,
                     effect: function (offset) {
                         $(this).slideUp(200);
                     }
@@ -52,6 +59,11 @@
                     at: 'bottom right',
                     viewport: $(window), // Keep it on-screen at all times if possible
                     adjust: { x: -10 }
+                },
+                events: {
+                    hide: function (event, api) {
+                        api.destroy();
+                    }
                 }
             });
 
@@ -60,53 +72,6 @@
         if (winHeight > 0) $(api.elements.content).height(winHeight); //becuase of bug in qtip we should handle it manually
 
         return { widget: { api: api, sender: sender, htmlTag: api.elements.content, ownerWindow: ownerWindow }, widgetTitle: sender.qtip('api') };
-
-
-        w = $.telerik.window.create({
-            title: fetchIcon(sender) + " در حال دریافت...",
-            visible: false,
-            resizable: true,
-            draggable: true,
-            width: winWidth == undefined ? 800 : winWidth,
-            height: winHeight == undefined ? 300 : winHeight,
-            actions: actions,
-            refresh: function () {
-                var curWin = activeWinsQueue[activeWinsQueue.length - 1];
-                var confirm = $.layoutCore.confirmRefresh(curWin.sender);
-
-                if (confirm) {
-                    win = curWin.win;
-                    var winTitle = $('span.t-window-title', win);
-                    $.layoutCore.refreshContent($.tooltipLayout, winTitle, win);
-                }
-            },
-            onClose: function (e) {
-                if (!inAutoHide) {
-                    curWin = activeWinsQueue[activeWinsQueue.length - 1]; //instead of top() function
-                    var confirm = $.layoutCore.confirmRefresh(curWin.sender, inAutoClose);
-
-                    if (confirm) {
-                        activeWinsQueue.pop();
-                        if (activeWinsQueue.length > 0 && $(curWin.sender).attr('winDisableBackHide') == undefined) {
-                            var w = activeWinsQueue[activeWinsQueue.length - 1];
-                            var lw = w.win.data('tWindow');
-                            lw.modal = w.isModal;
-                            lw.open();
-                        }
-                        curWin.win.data('tWindow').destroy();
-                        e.preventDefault();
-                    }
-                    else
-                        return false;
-                }
-            }
-        });
-
-        activeWinsQueue.push({ win: w, sender: sender, ownerWindow: ownerWindow, isModal: isModal });
-        w.data('tWindow').modal = isModal;
-        var windowTitle = $('span.t-window-title', w);
-
-        return { widget: w, widgetTitle: windowTitle };
 
     }
 
@@ -128,11 +93,7 @@
     tooltipLayout.CloseAndDone = function (data, tooltip) {
         if (tooltip == null) return;
         tooltip.api.hide();
-        var callBack = $(tooltip.sender).attr('windowcallback');
-        if (typeof (callBack) != 'undefined')
-            tooltip.ownerWindow[callBack].apply(this, new Array(tooltip.sender, data));
-        else if (typeof (tooltip.ownerWindow.tooltipLayout_DoneSuccessfullyCallBack) != 'undefined')
-            tooltip.ownerWindow.tooltipLayout_DoneSuccessfullyCallBack(tooltip.sender, data);
+        $.layoutCore.handleCloseCallBack(tooltip.sender, data, tooltip.ownerWindow);
     }
 
     tooltipLayout.CloseTopMost = function (tooltip/*can be null*/) {
@@ -140,39 +101,24 @@
     }
 
     tooltipLayout.maximize = function (win) {
-        win.data('tWindow').maximize();
+        // win.data('tWindow').maximize();
     }
 
     tooltipLayout.center = function (win) {
-        win.data('tWindow').center();
+        //  win.data('tWindow').center();
     }
 
     tooltipLayout.setHeight = function (win, height) {
-        $(win.data('tWindow').element).find(".t-window-content").height(height);
+        //  $(win.data('tWindow').element).find(".t-window-content").height(height);
     }
 
     tooltipLayout.setWidth = function (win, width) {
-        $(win.data('tWindow').element).find(".t-window-content").width(width);
+        //  $(win.data('tWindow').element).find(".t-window-content").width(width);
     }
 
     tooltipLayout.getTitleHeight = function (winTitle) {
-        return winTitle.outerHeight();
-    }
-
-    var errorWindow = null;
-    tooltipLayout.OpenErrorWindow = function (content) {
-        alert(content);
-        if (errorWindow == null)
-            errorWindow = $.telerik.window.create({
-                title: "خطاهای ثبت فرم",
-                visible: false,
-                resizable: true,
-                draggable: true,
-                html: content,
-                actions: new Array('Close')
-            });
-
-        errorWindow.data('tWindow').center().open();
+        // return winTitle.outerHeight();
+        return 0;
     }
 
     $.extend({ tooltipLayout: tooltipLayout });

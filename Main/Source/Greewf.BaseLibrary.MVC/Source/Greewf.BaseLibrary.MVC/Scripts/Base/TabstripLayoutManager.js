@@ -160,6 +160,7 @@
 
     tabStripMain.HandleChildPageLinks = function (ownerWindow) {
         $(linkPattern, ownerWindow.document).live('click', function () {
+            layoutHelper.tooltipLayout.closeLastTip();
             parent.$.tabStripMain.AddTab(this);
             return false;
         });
