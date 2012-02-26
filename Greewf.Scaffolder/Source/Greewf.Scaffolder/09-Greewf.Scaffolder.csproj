@@ -48,7 +48,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CodeTemplates\Scaffolders\Entity\Entity.ps1" />
-    <None Include="CodeTemplates\Scaffolders\Entity\EntityTemplate.cs.t4" />
+    <None Include="CodeTemplates\Scaffolders\Entity\ProjectEntity.ps1" />
     <None Include="CodeTemplates\Scaffolders\Entity\Utilities.ps1" />
     <None Include="CodeTemplates\Scaffolders\MvcScaffolding.Controller\ControllerWithRepository.cs.t4" />
     <None Include="CodeTemplates\Scaffolders\MvcScaffolding.Controller\LogPoints.cs.t4" />
