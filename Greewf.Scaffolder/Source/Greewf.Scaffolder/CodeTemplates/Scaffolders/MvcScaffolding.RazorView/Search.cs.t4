@@ -52,7 +52,7 @@ if (!String.IsNullOrEmpty(Model.Layout)) {
     @{var result = ViewBag.SearchResult as IEnumerable<object>;}
     @if (result != null && result.Count() > 0)
 	{
-		@Html.Partial("_<#= Model.ModelTypePluralized #>List", result)
+		@Html.Partial("_List", result)<# /*Model.ModelTypePluralized*/ #>
 	}
    else if (result != null)
    { 
