@@ -1,5 +1,6 @@
 ﻿(function ($) {
 
+    if ($.windowLayout != undefined) return; //I don't know why this object call more than once. this insure us to hace only one instance per page
     windowLayout = {};
     var activeWinsQueue = new Array(); // {sender: xxx, win:xxx,ownerWindow:xxx}
     var messageWins = new Array(); //{win:xxx , type:xxx}
@@ -55,7 +56,7 @@
     }
 
     showMessage = function (msg, title, type) {
-        template = "<table style='height:100%;width:300px;'><tr><td><img class='###' src='data:image/gif;base64,R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' /></td><td style='vertical-align:middle;width:100%;white-space: nowrap;'>$$$</td></tr></table><button class='t-button editor-focus2' style='float:left'><span class='icon16 stop-png'></span>&nbsp;بستن</button>";
+        template = "<table style='width:300px;'><tr><td><img class='###' src='data:image/gif;base64,R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' /></td><td style='vertical-align:middle;width:100%;white-space: nowrap;'>$$$</td></tr></table><button class='t-button editor-focus2' style='float:left'><span class='icon16 stop-png'></span>&nbsp;بستن</button>";
         var oldWin = null;
         $(messageWins).each(function (i, o) { if (o.type == type) oldWin = o; });
 

@@ -358,9 +358,9 @@
     layoutCore.openTooltipFor = function (sender, link, settings) {
         var options = null;
         if (settings == null || (settings != null && settings.ajax != false))
-            options = { ajax: '1', hideEvents: 'mouseout', showEvents: 'mousein' };
-        if (settings != null && settings.ajax == false)//becuase ajax property value is not important. 
-            options = { hideEvents: 'mouseout', showEvents: 'mousein' };
+            options = { ajax: '1'};
+        //if (settings != null && settings.ajax == false)//becuase ajax property value is not important. 
+            //options = { hideEvents: 'unfocus'};
 
         $.extend(options, settings);
 

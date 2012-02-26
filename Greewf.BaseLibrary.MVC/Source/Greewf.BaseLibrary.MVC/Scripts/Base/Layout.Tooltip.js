@@ -1,21 +1,21 @@
 ﻿(function ($) {
 
+    if ($.tooltipLayout != undefined) return; //I don't know why this object call more than once. this insure us to hace only one instance per page
     tooltipLayout = {};
     var lastQtipSender = null;
+    var lastQtipContainer = null;
 
     tooltipLayout.progressHtml = function () {
         return '<div isProgress="1" class="bigprogress-icon t-content" style="min-width:48px;min-height:48px;" ></div>';
     }
 
 
-    tooltipLayout.changeTitle = function (winTitleElement, title) {
-        //var ico = winTitleElement.children()[0];
-        //ico = ico == undefined ? '' : $("<span>").append($(ico).clone()).html();
-        //winTitleElement.html(ico + ' ' + title);
+    tooltipLayout.changeTitle = function (api, title) {
+        api.set({ 'content.title.text': title });
     }
 
     tooltipLayout.closeLastTip = function () {
-        $(lastQtipSender).qtip('hide');
+        $(lastQtipSender, lastQtipContainer).qtip('hide');
     }
 
     tooltipLayout.makeReadyToShow = function (sender, link, title, ownerWindow) {
@@ -30,12 +30,14 @@
         winWidth = winWidth > 0 ? winWidth : 'auto';
         winHeight = winHeight > 0 ? winHeight : 'auto';
 
+        this.closeLastTip();
         sender = $(sender);
         lastQtipSender = sender;
+        lastQtipContainer = sender.closest('body');
 
         if (sender.qtip('api') == null)
             sender.qtip({
-                content: ' ', //sender with empty title (at least) cause error in creation!
+                content: { text: ' ', title: { text: ' ', button: 'close'} }, //sender with empty title (at least) cause error in creation!
                 show: {
                     event: showEvents,
                     solo: true,
@@ -44,6 +46,7 @@
                     }
                 },
                 hide: {
+                    fixed: true,
                     event: hideEvents,
                     effect: function (offset) {
                         $(this).slideUp(200);
@@ -57,8 +60,10 @@
                 position: {
                     my: 'top right',
                     at: 'bottom right',
-                    viewport: $(window), // Keep it on-screen at all times if possible
-                    adjust: { x: -10 }
+                    viewport: $(ownerWindow), //$(window), // Keep it on-screen at all times if possible
+                    container: lastQtipContainer,
+                    target: sender,
+                    adjust: { x: -10, y: -5 }
                 },
                 events: {
                     hide: function (event, api) {
@@ -70,6 +75,7 @@
         var api = sender.qtip('api');
         api.render();
         if (winHeight > 0) $(api.elements.content).height(winHeight); //becuase of bug in qtip we should handle it manually
+        $(api.elements.button).attr('title', 'بستن');
 
         return { widget: { api: api, sender: sender, htmlTag: api.elements.content, ownerWindow: ownerWindow }, widgetTitle: sender.qtip('api') };
 
