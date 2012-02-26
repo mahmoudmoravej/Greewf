@@ -81,7 +81,7 @@ namespace Greewf.BaseLibrary.MVC
         public bool HasPermission<T>(T permissions, string itemCreatorUserName = null) where T : struct
         {
             var entityItem = PermissionCoordinator.GetRelatedPermissionItem(typeof(T));
-            return HasPermission(entityItem, Convert.ToInt64(permissions), itemCreatorUserName)==true;
+            return HasPermission(entityItem, Convert.ToInt64(permissions), itemCreatorUserName) == true;
         }
 
         /// <summary>
@@ -254,7 +254,7 @@ namespace Greewf.BaseLibrary.MVC
 
         public bool IsEnterpriseAdmin()
         {
-            return HttpContext.Current.User.Identity.IsAuthenticated && EnterpriseAdminUsername == UserName;
+            return HttpContext.Current.User.Identity.IsAuthenticated && string.Compare(EnterpriseAdminUsername, UserName, true) == 0;
         }
 
         public bool IsAuthenticated
@@ -329,6 +329,18 @@ namespace Greewf.BaseLibrary.MVC
             set
             {
                 HttpContext.Current.Response.Cookies.Set(new HttpCookie("Body-Font-Size") { Value = value.ToString(), Expires = DateTime.MaxValue });
+            }
+        }
+
+        public string BodyFontName
+        {
+            get
+            {
+                return !HttpContext.Current.Request.Cookies.AllKeys.Contains("Body-Font-Name") ? "Tahoma" : HttpContext.Current.Request.Cookies["Body-Font-Name"].Value.ToString();
+            }
+            set
+            {
+                HttpContext.Current.Response.Cookies.Set(new HttpCookie("Body-Font-Name") { Value = value.ToString(), Expires = DateTime.MaxValue });
             }
         }
 
