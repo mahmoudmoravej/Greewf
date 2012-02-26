@@ -24,7 +24,7 @@
     Layout = "<#= Model.Layout #>";
 <# } #>
 }
-@Html.Partial("_<#= Model.ModelTypePluralized #>List", Model)
+@Html.Partial("_List", Model) <# /* Model.ModelTypePluralized  */ #>
 <div id="<#=modelDataType.Name#>Details"></div>
 <#+
 // Describes the information about a property on the model

@@ -26,6 +26,7 @@ param(
 	[string]$LogAttributeNamespace,
 	[string]$LogPointsXmlFile='\Logs\LogPoints.xml',
 	[string[]]$TemplateFolders,
+	[string]$Area=$null,
 	[switch]$Force = $false
 )
 
@@ -33,6 +34,15 @@ param(
 $SubViewModelNameSpace='Models'
 $ViewModelNameSpace = [T4Scaffolding.Namespaces]::Normalize((Get-Project $WebProject).Properties.Item("DefaultNamespace").Value + "." + $SubViewModelNameSpace)
 $ViewType = $null
+if ($Area -ne $null -and $Area -ne '')
+{
+	$Area = $Area.Trim('\').Trim('/')
+	$Area = "Areas\$Area\"
+}
+else
+{
+	$Area =''
+}
 
 [string]$path = (Get-Project).properties.item('LocalPath').value
 $path=$path+"\CodeTemplates\Scaffolders"
@@ -53,7 +63,7 @@ $DefaultImportingNamespaces = @($PermissionNameSpaceName,(Get-Project $Repositor
 
 #1st: Controller 
 #1-1 : Entity Controller
-ApplyTemplate -TemplateFileName "ControllerWithRepository" -Project:$WebProject -OutputPath:'Controllers' -OutputFilePostName:'Controller' -OutputFilePreName:'' -RepositoryProject:$RepositoryProject -SubRepositoryNameSpace:'Repositories' -WebProject:$WebProject -SubViewModelNameSpace:$SubViewModelNameSpace -SubViewModelMetaDataNameSpace:'Models.MetaData' -ControllerSubNamespace:$ControllerSubNamespace -UsePluralNameInFileName -DefaultImportingNamespaces:$DefaultImportingNamespaces
+ApplyTemplate -TemplateFileName "ControllerWithRepository" -Project:$WebProject -OutputPath:"$($Area)Controllers" -OutputFilePostName:'Controller' -OutputFilePreName:'' -RepositoryProject:$RepositoryProject -SubRepositoryNameSpace:'Repositories' -WebProject:$WebProject -SubViewModelNameSpace:$SubViewModelNameSpace -SubViewModelMetaDataNameSpace:'Models.MetaData' -ControllerSubNamespace:$ControllerSubNamespace -UsePluralNameInFileName -DefaultImportingNamespaces:$DefaultImportingNamespaces
 $DefaultImportingNamespaces = $null
 
 #1-2: Adding  entityRepositories to CustomizedController
@@ -98,10 +108,10 @@ else
 }
 
 #2nd: ViewModels
-$GridFolder = $ModelFolder+'\Grid'
-$MetaDataFolder = $ModelFolder+'\EntitiesMetadata'
-$ViewModelFolder = $ModelFolder+'\EntitiesViewModel'
-$SearchCriteria = $ModelFolder+'\SearchCriteria'
+$GridFolder = "$($Area)$ModelFolder\"+$foundModelType.Name
+$MetaDataFolder = "$($Area)$ModelFolder\"+$foundModelType.Name
+$ViewModelFolder = "$($Area)$ModelFolder\"+$foundModelType.Name
+$SearchCriteria = "$($Area)$ModelFolder\"+$foundModelType.Name
 
 Write-Host "Scaffolding ViewModel Classes..." -ForegroundColor blue
 ApplyTemplate -TemplateFileName "ViewModel" -Project:$WebProject -OutputPath:$ViewModelFolder -OutputFilePostName:'ViewModel' -OutputFilePreName:'' -RepositoryProject:$RepositoryProject -SubRepositoryNameSpace:'Repositories' -WebProject:$WebProject -SubViewModelNameSpace:$SubViewModelNameSpace -SubViewModelMetaDataNameSpace:'Models.MetaData' -ControllerSubNamespace:$ControllerSubNamespace -DefaultImportingNamespaces:$DefaultImportingNamespaces
@@ -115,11 +125,11 @@ Write-Host "Scaffolding Views..." -ForegroundColor blue
 $ViewModel = $foundModelType.Name + "ViewModel"
 $GridViewModel = $foundModelType.Name + "GridViewModel"
 $SearchViewModel = $foundModelType.Name + "SearchCriteria"
-$ViewPath = "Views\"+$modelTypePluralized
+$ViewPath = "$($Area)Views\"+$modelTypePluralized
 
 #grid 
 $ViewType = $GridViewModel
-ApplyTemplate -TemplateFileName "_List" -Project:$WebProject -OutputPath:$ViewPath -OutputFilePostName:'List' -OutputFilePreName:'_' -RepositoryProject:$RepositoryProject -SubRepositoryNameSpace:'Repositories' -WebProject:$WebProject -SubViewModelNameSpace:$SubViewModelNameSpace -SubViewModelMetaDataNameSpace:'Models.MetaData' -ControllerSubNamespace:$ControllerSubNamespace -UsePluralNameInFileName -DefaultImportingNamespaces:$DefaultImportingNamespaces
+ApplyTemplate -TemplateFileName "_List" -Project:$WebProject -OutputPath:$ViewPath -OutputFilePostName:'_List' -OutputFilePreName:'' -RepositoryProject:$RepositoryProject -SubRepositoryNameSpace:'Repositories' -WebProject:$WebProject -SubViewModelNameSpace:$SubViewModelNameSpace -SubViewModelMetaDataNameSpace:'Models.MetaData' -ControllerSubNamespace:$ControllerSubNamespace  -DefaultImportingNamespaces:$DefaultImportingNamespaces -IgnoreModelNameInFile #-UsePluralNameInFileName 
 ApplyTemplate -TemplateFileName "Index" -Project:$WebProject -OutputPath:$ViewPath -OutputFilePostName:'Index' -OutputFilePreName:'' -RepositoryProject:$RepositoryProject -SubRepositoryNameSpace:'Repositories' -WebProject:$WebProject -SubViewModelNameSpace:$SubViewModelNameSpace -SubViewModelMetaDataNameSpace:'Models.MetaData' -ControllerSubNamespace:$ControllerSubNamespace  -DefaultImportingNamespaces:$DefaultImportingNamespaces -IgnoreModelNameInFile
 
 #non-grid related
