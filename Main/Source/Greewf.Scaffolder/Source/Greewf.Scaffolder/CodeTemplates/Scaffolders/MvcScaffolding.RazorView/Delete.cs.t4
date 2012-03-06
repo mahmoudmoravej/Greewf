@@ -20,7 +20,6 @@
 
 <# } #>
 @{
-    ViewBag.Title = "<#= Model.ViewName #>";
 	ViewBag.PageTitle  = string.Format("حذف اطلاعات {0} {1}", "<#= GetDisplayName(modelDataType) #>", Model.<#= GetModelTitleProperty(modelDataType) #>);
 <# if (!String.IsNullOrEmpty(Model.Layout)) { #>
     Layout = "<#= Model.Layout #>";
@@ -56,7 +55,7 @@
         $('#submitDelete').html("<span class='icon16 ajax16-gif'></span>");
         $.ajax({
             type: 'POST',
-            url: window.location,
+            url: '@Request.Url.ToString()',
             cache: false,
             success: function (html) {
                 layoutHelper.windowLayout.CloseAndDone();

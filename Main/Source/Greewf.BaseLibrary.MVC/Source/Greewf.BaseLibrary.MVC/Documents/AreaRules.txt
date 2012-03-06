@@ -1,0 +1,8 @@
+1- namespace correction
+	open xxxAreaRegistration.cs file and correct the namepsace to be same with what you code-generated controller namespace has.
+
+2- open the area\views\web.config and paste the <namespace> section from your root\views\web.config file.
+
+3- copy _ViewStart.cshtml from ~\views to xxx\views folder
+
+4- copy 

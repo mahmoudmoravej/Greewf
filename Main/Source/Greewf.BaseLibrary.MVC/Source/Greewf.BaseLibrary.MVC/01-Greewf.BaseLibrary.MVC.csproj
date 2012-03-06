@@ -108,6 +108,9 @@
     <Compile Include="Logging\LogProfileReader.cs" />
     <Compile Include="OfflineTools\HashStamp.cs" />
     <Compile Include="RedirectToRouteSuccessResult.cs" />
+    <Content Include="Documents\AreaRules.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\Base\Layout.Window.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -142,6 +145,7 @@
     <Content Include="Scripts\Chosen\!!NOTES!!.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\jQuery Text Change Event - ZURB Playground - ZURB.com.htm" />
     <Content Include="Scripts\qTip\jquery.qtip.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -151,6 +155,9 @@
     <Content Include="Scripts\qTip\jquery.qtip.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\qTip\old\jquery.qtip.css" />
+    <Content Include="Scripts\qTip\old\jquery.qtip.min.css" />
+    <Content Include="Scripts\qTip\old\jquery.qtip.min.js" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Documents\Conventions.txt">

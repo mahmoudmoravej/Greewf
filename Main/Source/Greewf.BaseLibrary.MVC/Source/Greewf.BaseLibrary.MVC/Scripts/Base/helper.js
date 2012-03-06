@@ -143,17 +143,23 @@ layoutHelper = new function () {
             window.location = link;
     }
 
-    this.core = new function () {
-        return (parent.$.layoutCore != null) ? parent.$.layoutCore : $.layoutCore;
-    }
+    Object.defineProperty(this, "core", {
+        get: function () {
+            return (parent.$.layoutCore != null) ? parent.$.layoutCore : $.layoutCore;
+        }
+    });
 
-    this.windowLayout = new function () {
-        return (parent.$.layoutCore != null) ? parent.$.windowLayout : $.windowLayout;
-    }
+    Object.defineProperty(this, "windowLayout", {
+        get: function () {
+            return (parent.$.layoutCore != null) ? parent.$.windowLayout : $.windowLayout;
+        }
+    });
 
-    this.tooltipLayout = new function () {
-        return (parent.$.layoutCore != null) ? parent.$.tooltipLayout : $.tooltipLayout;
-    }
+    Object.defineProperty(this, "tooltipLayout", {
+        get: function () {
+            return (parent.$.layoutCore != null) ? parent.$.tooltipLayout : $.tooltipLayout;
+        }
+    });
 
     this.isParentLayoutPresent = function () {
         return (parent.$.layoutCore != null);

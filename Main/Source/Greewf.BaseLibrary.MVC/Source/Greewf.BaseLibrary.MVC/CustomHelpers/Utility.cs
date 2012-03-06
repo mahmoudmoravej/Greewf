@@ -88,7 +88,12 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
             return lst;
         }
 
-        public static MvcForm BeginForm(this AjaxHelper helper,string actionName , object newRouteValues, string[] removingQuerystringKeys, System.Web.Mvc.Ajax.AjaxOptions ajaxOptions)
+        public static MvcForm BeginForm(this AjaxHelper helper, string actionName, object newRouteValues, string[] removingQuerystringKeys, System.Web.Mvc.Ajax.AjaxOptions ajaxOptions)
+        {
+            return BeginForm(helper, actionName, null, newRouteValues, removingQuerystringKeys, ajaxOptions);
+        }
+
+        public static MvcForm BeginForm(this AjaxHelper helper, string actionName, string controllerName, object newRouteValues, string[] removingQuerystringKeys, System.Web.Mvc.Ajax.AjaxOptions ajaxOptions)
         {
             var values = new RouteValueDictionary(newRouteValues);
             foreach (string key in HttpContext.Current.Request.QueryString.AllKeys)
@@ -97,7 +102,10 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                     values.Add(key, HttpContext.Current.Request.QueryString[key]);
             }
 
-            return System.Web.Mvc.Ajax.AjaxExtensions.BeginForm(helper, actionName, values, ajaxOptions);
+            if (controllerName == null)
+                return System.Web.Mvc.Ajax.AjaxExtensions.BeginForm(helper, actionName, values, ajaxOptions);
+            else
+                return System.Web.Mvc.Ajax.AjaxExtensions.BeginForm(helper, actionName, controllerName, values, ajaxOptions);
         }
 
         #endregion
