@@ -37,13 +37,14 @@ namespace Greewf.BaseLibrary.MVC
         /// <summary>
         /// NOTE : the current version clears the WHOLE SESSION...
         /// </summary>
-        public void LogOff()
+        public void LogOff(bool expireBorowserCookie = true)
         {
             //TODO : clearing session is not correct, it should only clear related items or flag them as invalid items!
-            FormsAuthentication.SignOut();
+            if (expireBorowserCookie) FormsAuthentication.SignOut();
             HttpContext.Current.Session.Clear();
             HttpContext.Current.Session.Abandon();
         }
+
     }
 
     /// <summary>
