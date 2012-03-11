@@ -5,4 +5,10 @@
 
 3- copy _ViewStart.cshtml from ~\views to xxx\views folder
 
-4- copy 
+4- copy "puremode" routing rule from global.ascx , change it to match the area coditions and paste it in xxxAreaRegistration.cs file. like this:
+
+            context.MapRoute(
+                "xxx_puremode_id", // Route name
+                "xxx/{controller}/{action}/puremode/{id}", // URL with parameters
+                new { action = "Index", puremode = 1, id = UrlParameter.Optional } // Parameter defaults
+            );
