@@ -27,6 +27,12 @@ How to change to custom templates:(http://blog.stevensanderson.com/2011/04/06/mv
 
 
 samples :
+
+ scaffold projectentity 'Aien.CRM.Biz.Entities.AuditLog' -ProjectCompanyName 'Aien' -ProjectMainName 'CRM'
+
+
+ 
+
  scaffold entity 'Aien.CRM.Biz.Entities.xxxx'       -DbContextType 'Aien.CRM.Dal.CrmContext'       -RepositoryProject '31-CRM.Biz' -WebProject:'50-CRM.UI.Web' -EntityProjectName:'30-CRM.Biz.Entities' -PermissionNameSpaceName 'Aien.CRM.Biz.Entities.Enums.Permissions'       -AutoMapNamespace 'Greewf.BaseLibrary.MVC.Mappers' -CustomizedControllerBaseNamespace 'Greewf.BaseLibrary.MVC' -CustomHelperNamespace 'Greewf.BaseLibrary.MVC.CustomHelpers' -LoggingNamespace 'Greewf.BaseLibrary.MVC.Logging' -LogAttributeNamespace       'Aien.CRM.UI.Web.Logs'
  scaffold entity 'AienTehran.PIN.Biz.Entities.xxxx' -DbContextType 'AienTehran.PIN.Dal.PinContext' -RepositoryProject '31-PIN.Biz' -WebProject:'50-PIN.UI.Web' -EntityProjectName:'30-PIN.Biz.Entities' -PermissionNameSpaceName 'AienTehran.PIN.Biz.Entities.Enums.Permissions' -AutoMapNamespace 'Greewf.BaseLibrary.MVC.Mappers' -CustomizedControllerBaseNamespace 'Greewf.BaseLibrary.MVC' -CustomHelperNamespace 'Greewf.BaseLibrary.MVC.CustomHelpers' -LoggingNamespace 'Greewf.BaseLibrary.MVC.Logging' -LogAttributeNamespace 'AienTehran.PIN.UI.Web.Logs'
 

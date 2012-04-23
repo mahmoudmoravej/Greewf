@@ -68,7 +68,13 @@ namespace Greewf.BaseLibrary.MVC
                 if (HttpContext.Current.User.Identity.IsAuthenticated)
                 {
                     if (HttpContext.Current.Session["userInfo"] == null)
-                        HttpContext.Current.Session["userInfo"] = Membership.GetUser();
+                    {
+                        var user= Membership.GetUser();
+                        if (user == null)
+                            throw new SystemAccessException();
+                        HttpContext.Current.Session["userInfo"] = user;
+                    }
+
                     return (HttpContext.Current.Session["userInfo"] as MembershipUser);
                 }
                 throw new Exception("User is not authenticated yet!");

@@ -69,6 +69,35 @@
   <ItemGroup>
     <Compile Include="Ajax\ResponsiveJson.cs" />
     <Compile Include="Ajax\CustomizedAjaxOption.cs" />
+    <Compile Include="ChangeTracker\AuditingWidget.cs" />
+    <Compile Include="ChangeTracker\ChangeTracker.cs" />
+    <Compile Include="ChangeTracker\ChangeTrackerContext\AuditLog.cs">
+      <DependentUpon>ChangeTrackerContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ChangeTracker\ChangeTrackerContext\AuditLogDetail.cs">
+      <DependentUpon>ChangeTrackerContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext.Context1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ChangeTrackerContext.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext.Extend.cs" />
+    <Compile Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ChangeTrackerContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ChangeTrackerContext.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="ChangeTracker\ChangeTrackerDetailsProvider.cs" />
+    <Compile Include="ChangeTracker\ChangeTrackerEntityDetailsProvider.cs" />
+    <Compile Include="ChangeTracker\DefaultChangeTracker.cs" />
+    <Compile Include="ChangeTracker\ISavingTracker.cs" />
+    <Compile Include="ChangeTracker\TrackChangesAttribute.cs" />
     <Compile Include="CustomHelpers\CheckBoxListFor.cs" />
     <Compile Include="CustomHelpers\ImagePickerFor.cs" />
     <Compile Include="CustomHelpers\PersianDatePickerFor.cs" />
@@ -234,6 +263,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.Config" />
+    <None Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ChangeTrackerContext.Context1.cs</LastGenOutput>
+    </None>
+    <EntityDeploy Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>ChangeTrackerContext1.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ChangeTrackerContext1.cs</LastGenOutput>
+    </None>
     <None Include="Logging\LogContext\LogContext.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>LogContext.Context.cs</LastGenOutput>

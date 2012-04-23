@@ -7,7 +7,8 @@ using System.Security.Principal;
 using Greewf.BaseLibrary.MVC.Security;
 using Greewf.BaseLibrary.MVC.Logging;
 /// ref1 : http://msdn.microsoft.com/en-us/library/eb0zx8fc.aspx
-/// ref2: http://blog.ie-soft.de/post/2007/12/globalasax-events.aspx
+/// ref2 : http://blog.ie-soft.de/post/2007/12/globalasax-events.aspx
+/// ref3 :http://msdn.microsoft.com/en-us/library/1d3t3c61.aspx
 
 
 namespace Greewf.BaseLibrary.MVC
@@ -69,6 +70,8 @@ namespace Greewf.BaseLibrary.MVC
                     querystring += "&iswindow=1";
                 if (Request.QueryString.AllKeys.Contains("includeUrlInContent"))
                     querystring += "&includeUrlInContent=1";
+                if (error is SystemAccessException)
+                    querystring += "&systemAccessError=1";
 
 
                 querystring = querystring.Trim('&');

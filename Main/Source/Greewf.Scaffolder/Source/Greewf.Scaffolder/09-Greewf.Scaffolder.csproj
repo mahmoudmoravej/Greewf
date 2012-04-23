@@ -35,8 +35,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\..\..\..\..\CRM\Main\Source\packages\EntityFramework.4.1.10715.0\lib\EntityFramework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -48,7 +54,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="CodeTemplates\Scaffolders\Entity\Entity.ps1" />
-    <None Include="CodeTemplates\Scaffolders\Entity\ProjectEntity.ps1" />
+    <None Include="CodeTemplates\Scaffolders\Entity\ProjectEntity.ps1">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="CodeTemplates\Scaffolders\Entity\Utilities.ps1" />
     <None Include="CodeTemplates\Scaffolders\MvcScaffolding.Controller\ControllerWithRepository.cs.t4" />
     <None Include="CodeTemplates\Scaffolders\MvcScaffolding.Controller\LogPoints.cs.t4" />
@@ -72,8 +80,12 @@
     <None Include="CodeTemplates\Scaffolders\MvcScaffolding.RazorView\_CreateOrEdit.cs.t4" />
     <None Include="CodeTemplates\Scaffolders\T4Scaffolding.EFRepository\IRepository.cs.t4" />
     <None Include="CodeTemplates\Scaffolders\T4Scaffolding.EFRepository\Repository.cs.t4" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="InstallationDummyFile.txt" />
     <Content Include="ScaffoldingHelp.txt" />
     <Content Include="SqlDocImporter\CommandLineParser.dll" />
     <Content Include="SqlDocImporter\EFTSQLDocumentation.Generator.exe" />
