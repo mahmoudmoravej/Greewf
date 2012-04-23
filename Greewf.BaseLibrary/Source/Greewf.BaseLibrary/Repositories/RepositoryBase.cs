@@ -16,9 +16,11 @@ namespace Greewf.BaseLibrary.Repositories
         where T : DbContext, new()
     {
         protected T context = null;
+        protected ContextManager<T> ContextManager { get; private set; }
 
         protected RepositoryBase(ContextManager<T> contextManager)
         {
+            ContextManager = contextManager;
             if (contextManager == null)
                 context = new T();// throw new Exception("ContextManager cannot be empty for Repository creation");
             else

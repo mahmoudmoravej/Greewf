@@ -21,7 +21,7 @@ namespace Greewf.BaseLibrary.MVC
 
         private new RedirectResult Redirect(string url)
         {
-            return Redirect(url, false , null);
+            return Redirect(url, false, null);
         }
 
         protected RedirectResult Redirect(string url, object model)
@@ -96,7 +96,7 @@ namespace Greewf.BaseLibrary.MVC
             return this.CorrectRedirectToRouteResult(result, true);
         }
 
-        protected RedirectToRouteResult RedirectToSuccessAction(string actionName, object routeValues,object model)
+        protected RedirectToRouteResult RedirectToSuccessAction(string actionName, object routeValues, object model)
         {
             ViewData.Model = model;
             var result = base.RedirectToAction(actionName, routeValues);
@@ -175,7 +175,7 @@ namespace Greewf.BaseLibrary.MVC
         }
 
 
-        protected JsonResult Json(object data,object model)
+        protected JsonResult Json(object data, object model)
         {
             ViewData.Model = model;
             return base.Json(data);
@@ -194,14 +194,20 @@ namespace Greewf.BaseLibrary.MVC
             return null;
         }
 
-        protected internal virtual Dictionary<string,string> GetLogDetails(int logPointId , dynamic model)
+        protected internal virtual Dictionary<string, string> GetLogDetails(int logPointId, dynamic model)
         {
-            return null;        
+            return null;
         }
 
         protected void Log<T>(T logId, object model, string[] exludeModelProperties = null) where T : struct
         {
             Logger.Current.Log(logId, model, exludeModelProperties);
+        }
+
+        public ContextManagerBase ContextManagerBase
+        {
+            get;
+            protected set;
         }
 
     }
@@ -218,7 +224,8 @@ namespace Greewf.BaseLibrary.MVC
         protected Y _contextManager = null;
         public CustomizedControllerBase()
         {
-            _contextManager = new Y(); 
+            _contextManager = new Y();
+            ContextManagerBase = _contextManager;
         }
 
 
