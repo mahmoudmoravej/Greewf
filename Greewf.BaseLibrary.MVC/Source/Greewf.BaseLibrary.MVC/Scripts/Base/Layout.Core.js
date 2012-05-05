@@ -229,7 +229,7 @@
             });
         }
         //non-unobtrusive validation
-        if (Sys.Mvc.FormContext != undefined && Sys.Mvc.FormContext != null) {
+        if (window.Sys && Sys.Mvc && Sys.Mvc.FormContext) {
             Sys.Mvc.FormContext._Application_Load();
         }
     }
