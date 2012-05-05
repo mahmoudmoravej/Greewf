@@ -67,7 +67,7 @@ foreach (ModelProperty property in properties) {
         .ToolBar(commands =>
         {
             commands.Template(@<text><a class="t-button t-grid-add t-button-icon at-rowEdit" style="display:@(Commons.CurrentUser.HasPermission<<#=modelDataType.Name#>Permission>(<#=modelDataType.Name#>Permission.Create) ? "" : "none")"
-                href='@Url.Action("create", "<#= Model.ModelTypePluralized #>")' title='<#=GetDisplayName(modelDataType)#> جدید' newwindow='true' windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'><span
+                href='@Url.Action("create", "<#= Model.ModelTypePluralized #>")' title='<#=GetDisplayName(modelDataType)#> جدید' newwindow='true' ajax='1' windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'><span
                     class="t-icon t-add"></span>اضافه کردن <#=GetDisplayName(modelDataType)#> جدید</a></text>);
         })
         .Scrollable(scrolling => { scrolling.Enabled(false); scrolling.Height("400%"); })
@@ -81,7 +81,6 @@ foreach (ModelProperty property in properties) {
         .Selectable()
         .ClientEvents(o => o.OnRowSelect("Grid<#=Model.ModelTypePluralized#>_selected"))
         .Footer(true)
-
 
 )
 <script type="text/javascript" language="javascript">

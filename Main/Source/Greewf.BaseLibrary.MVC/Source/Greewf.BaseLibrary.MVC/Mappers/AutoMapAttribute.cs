@@ -29,10 +29,15 @@ namespace Greewf.BaseLibrary.MVC.Mappers
                 return;
             }
             var model = filterContext.Controller.ViewData.Model;
-            if (model != null && SourceType.IsAssignableFrom(model.GetType()))
+            if (model != null)
             {
-                var viewModel = controller.ModelMapper.Map(model, DestType);
-                filterContext.Controller.ViewData.Model = viewModel;
+                var modelType = model.GetType();
+                if (/*modelType.IsAssignableFrom(SourceType) &&*/ SourceType.IsAssignableFrom(modelType))
+                //TODO : it should be exactly the same type but I didn't change it because of unexpected side-effects may happen in old projects ( not sure!) : one of the main reason is EF-Code-First proxy classes
+                {
+                    var viewModel = controller.ModelMapper.Map(model, DestType);
+                    filterContext.Controller.ViewData.Model = viewModel;
+                }
             }
 
         }

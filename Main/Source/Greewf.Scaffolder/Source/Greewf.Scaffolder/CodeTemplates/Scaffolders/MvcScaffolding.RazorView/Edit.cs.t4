@@ -37,7 +37,7 @@ if (!String.IsNullOrEmpty(Model.Layout)) {
 @using (Html.BeginForm()) {
     @Html.ValidationSummaryInWindow(false)
     <fieldset>
-        <legend>ویرایش @String.Format("ویرایش {0} {1}","<#= GetDisplayName(modelDataType) #>",Model.<#= GetModelTitleProperty(modelDataType) #>)</legend>
+        <legend>ویرایش @String.Format("{0} {1}","<#= GetDisplayName(modelDataType) #>",Model.<#= GetModelTitleProperty(modelDataType) #>)</legend>
 
 <# foreach (ModelProperty property in GetModelProperties(viewDataType, false).Where(x => x.IsPrimaryKey)) { #>
         @Html.HiddenFor(model => model.<#= property.Name #>)
