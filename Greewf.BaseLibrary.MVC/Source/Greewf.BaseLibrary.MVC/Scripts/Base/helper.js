@@ -72,10 +72,14 @@
         return stringToTrim.replace(/^\s+|\s+$/g, "");
     }
 
-    this.loadAjax = function (url, dest) {
+    this.loadAjax = function (url, dest, doPost, hideAjaxLoader) {
         $.ajax({
+            type: doPost ? "POST" : "GET",
             url: url,
             cache: false,
+            beforeSend: function () {
+                if (!hideAjaxLoader) dest.html('<div class="bigprogress-icon t-content bigprogress-loader"></div>');
+            },
             success: function (html) {
                 dest.html(html);
             },
@@ -84,6 +88,7 @@
             }
         });
     }
+
 
     this.handlePageLeave = function (submitFormId, msg) {
         return; // TODO: has problem in ajax-loaded forms (becuase of same window in all cases)
@@ -172,14 +177,40 @@ layoutHelper = new function () {
         return (parent.$.layoutCore != null) ? parent.$ : $;
     }
 
-    this.setInitialFocus = function () {
-        var x = $(".editor-focus2", layoutHelper.windowLayoutActiveDocument()).filter(":last");
+    this.setInitialFocus = function (container) {
+
+        var containerW;
+        if (container == undefined)
+            containerW = layoutHelper.windowLayoutActiveDocument();
+        else
+            containerW = $(container, layoutHelper.windowLayoutActiveDocument());
+
+        var x = $(".editor-focus2", containerW).filter(":last");
         if (x.length == 0)
-            $(".editor-focus input").filter(":last").focus();
+            $(".editor-focus input", container).filter(":last").focus();
         else {
-            layoutHelper.mainJqObject()(x).data('closeHandler', function () { if ($ != undefined) $(".editor-focus input").filter(":last").focus(); });
+            layoutHelper.mainJqObject()(x).data('closeHandler', function () { if ($ != undefined) $(".editor-focus input", container).filter(":last").focus(); });
         }
     }
+
+    this.handleAutoSubmit = function (containerId) {
+        var changeTimer = containerId + 'ChangeTimer';
+        window[changeTimer] = null;
+
+        $().ready(function () {
+            var f1 = function () {
+                clearTimeout(window[changeTimer]);
+                var self = $(this);
+                window[changeTimer] = setTimeout(function () {
+                    $('.t-button', '#' + containerId).click();
+                }, 800);
+            };
+            var f2 = function () { clearTimeout(window[changeTimer]); };
+            $('input[type^="text"]', '#' + containerId).bind('textchange', f1).keypress(f2);
+            $('select,input[type!="text"]', '#' + containerId).change(f1).keypress(f2);
+        });
+    }
+
 };
 
 telerikHelper = new function () {
@@ -214,6 +245,18 @@ telerikHelper = new function () {
         size = size - $('.t-grouping-header', grid).outerHeight() - $('.t-grid-header', grid).outerHeight() - $('.t-grid-bottom', grid).outerHeight();
         $('.t-grid-content', grid).css("height", size - 3);
     }
+
+    this.attachSpiliterToWindowResize = function (splitterId) {
+        $(window).bind('resize', function () {
+            var splitter = $('#' + splitterId).data('tSplitter');
+            if (splitter != undefined) splitter.resize();
+        });
+        setTimeout(function () {
+            var splitter = $('#' + splitterId).data('tSplitter');
+            if (splitter != undefined) splitter.resize();
+        }, 200); /*oh my god! you should pass a value for "delay"...the init delay is not sufficient*/
+    }
+
 };
 
 mvcHelper = new function () {

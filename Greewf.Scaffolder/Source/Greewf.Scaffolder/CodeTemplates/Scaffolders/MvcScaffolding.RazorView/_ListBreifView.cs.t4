@@ -21,32 +21,23 @@
 <# if(viewDataType != null) { #>
 @model IEnumerable<<#= viewDataType.FullName #>>
 <# } #>
-<script type="text/javascript" language="javascript">
-    function Grid<#=Model.ModelTypePluralized#>_selected(e) {
-
-        var <#=modelDataType.Name#>Details = $('#<#=modelDataType.Name#>Details');
-        if (<#=modelDataType.Name#>Details.length == 0) return;
-        <#=modelDataType.Name#>Id = e.row.cells[0+$('#Grid<#=Model.ModelTypePluralized#>').data('tGrid').groups.length].innerHTML;
-
-        $.ajax({
-            url: '@Url.Action("Details/puremode", "<#= Model.ModelTypePluralized #>")/' + <#=modelDataType.Name#>Id,
-            cache: false,
-            success: function (html) {
-                <#=modelDataType.Name#>Details.html(html);
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                <#=modelDataType.Name#>Details.css('direction', 'ltr').html(xhr.responseText);
-            }
-        });
+<script type="text/javascript" language="javascript"><#=Model.ModelTypePluralized#>
+    function Grid<#=Model.ModelTypePluralized#>BriefView_selected(e) {
+        var layout=layoutHelper.windowLayout;
+        @if (Request.QueryString.AllKeys.Contains("istooltip"))
+        {
+            @:layout=layoutHelper.tooltipLayout;
+        }
+        layout.CloseAndDone({ <#= Model.PrimaryKeyName #>: e.row.cells[0].innerHTML });
     }
 
     function <#=Model.ModelTypePluralized#>GridCallBack() {
-        window.$('#Grid<#= Model.ModelTypePluralized #>').data('tGrid').ajaxRequest();
+        window.$('#Grid<#=Model.ModelTypePluralized#>BriefView').data('tGrid').ajaxRequest();
     }
   
 </script>
 @(Html.Telerik().Grid(Model)
-        .Name("Grid<#= Model.ModelTypePluralized #>")
+        .Name("Grid<#=Model.ModelTypePluralized#>BriefView")
 		.DataKeys(keys =>
 		{
 		   keys.Add(c => c.<#= Model.PrimaryKeyName #>);
@@ -54,56 +45,30 @@
         .Localizable("fa-IR")
         .Pageable(page =>
         {
-            page.PageSize(10);
+            page.PageSize(5);
         })
 		.Columns(columns =>
 		{
 			columns.Bound(o => o.<#= Model.PrimaryKeyName #>).Hidden(true);
-		  	columns.Template(@<text> <a class="t-button t-grid-edit t-button-icon at-rowEdit" href='@Url.Action("edit", "<#= Model.ModelTypePluralized #>", new { item.<#= Model.PrimaryKeyName #> })' title='ویرایش اطلاعات <#= GetDisplayName(modelDataType) #> "@item.<#= GetModelTitleProperty(modelDataType) #>"' newwindow='True' ajax='1' windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'>
-		    	<span class="t-icon t-edit"></span></a></text>)
-				.ClientTemplate("<a class='t-button t-grid-edit t-button-icon at-rowEdit' href='" + Url.Action("edit", "<#= Model.ModelTypePluralized #>") + "/<#= OPENBRACE #>#=<#= Model.PrimaryKeyName#>#<#=CLOSEBRACE #>' title='ویرایش اطلاعات <#= GetDisplayName(modelDataType) #> <#= OPENBRACE #>#=<#= GetModelTitleProperty(modelDataType)#>#<#=CLOSEBRACE #>' newwindow='true' ajax='1' windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'><span class='t-icon t-edit'></span></a>")
-	            .Visible(Commons.CurrentUser.HasPermission<<#=modelDataType.Name#>Permission>(<#=modelDataType.Name#>Permission.Edit) && ViewBag.IsInSearchForm != true)
-				.Width(20);
-		  	columns.Template(@<text> <a class="t-button t-grid-delete t-button-icon at-rowDelete" href='@Url.Action("delete", "<#= Model.ModelTypePluralized #>", new { item.<#= Model.PrimaryKeyName #> })' title='حذف اطلاعات <#= GetDisplayName(modelDataType) #> "@item.<#= GetModelTitleProperty(modelDataType) #>"' newwindow='True' ajax='1' windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'>
-		    	<span class="t-icon t-delete"></span></a></text>)
-				.ClientTemplate("<a class='t-button t-grid-delete t-button-icon at-rowDelete' href='" + Url.Action("delete", "<#= Model.ModelTypePluralized #>") + "/<#= OPENBRACE #>#=<#= Model.PrimaryKeyName#>#<#=CLOSEBRACE #>' title='حذف اطلاعات <#= GetDisplayName(modelDataType) #> <#= OPENBRACE #>#=<#= GetModelTitleProperty(modelDataType)#>#<#=CLOSEBRACE #>' newwindow='true' ajax='1'  windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'><span class='t-icon t-delete'></span></a>")
-	            .Visible(Commons.CurrentUser.HasPermission<<#=modelDataType.Name#>Permission>(<#=modelDataType.Name#>Permission.Delete) && ViewBag.IsInSearchForm != true)
-				.Width(20);
-<#
-List<ModelProperty> properties = GetModelProperties(Model.ViewDataType, true);
-foreach (ModelProperty property in properties) {
-    if (!property.IsPrimaryKey && !property.IsForeignKey) {
-#>
-			columns.Bound(o => o.<#= property.Name #>);
-<#
-    }
-}
-#>
+            columns.Bound(o => o.<#= Model.GetModelTitleProperty(modelDataType) #>);
 		})
         .DataBinding(dataBinding =>
         {
             dataBinding.Server()
-                .Select("Index", "<#= Model.ModelTypePluralized #>",Html.AppendSearchCriteria((bool?)ViewBag.IsInSearchForm, new { ajax = true }));
+                .Select("Index", "<#=Model.ModelTypePluralized#>",Html.AppendSearchCriteria((bool?)ViewBag.IsInSearchForm, new { ajax = true }));
 
             dataBinding.Ajax()
-                .Select("AjaxIndex", "<#= Model.ModelTypePluralized #>", Html.AppendSearchCriteria((bool?)ViewBag.IsInSearchForm)).Enabled(true);
+                .Select("AjaxIndex", "<#=Model.ModelTypePluralized#>", Html.AppendSearchCriteria((bool?)ViewBag.IsInSearchForm)).Enabled(true);
         })
-        .ToolBar(commands =>
-        {
-            commands.Template(@<text><a class="t-button t-grid-add t-button-icon at-rowEdit" style="display:@(Commons.CurrentUser.HasPermission<<#=modelDataType.Name#>Permission>(<#=modelDataType.Name#>Permission.Create) ? "" : "none")"
-                href='@Url.Action("create", "<#= Model.ModelTypePluralized #>")' title='<#=GetDisplayName(modelDataType)#> جدید' newwindow='true' ajax='1' windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'><span
-                    class="t-icon t-add"></span>اضافه کردن <#=GetDisplayName(modelDataType)#> جدید</a></text>);
-        })
-        .Scrollable(scrolling => { scrolling.Enabled(false); scrolling.Height("400%"); })
+        .Scrollable(scrolling => { scrolling.Enabled(true); scrolling.Height("150"); })
         .Sortable(sorting => sorting.Enabled(true).OrderBy(ordering =>
         {
             ordering.Add(c => c.<#= Model.PrimaryKeyName #>);
         }))
         .Pageable(paging => paging.Enabled(true))
-        .Filterable(filtering => filtering.Enabled(true))
-        .Groupable(grouping => grouping.Enabled(true))
+        .Filterable(filtering => filtering.Enabled(false))
         .Selectable()
-        .ClientEvents(o => o.OnRowSelect("Grid<#=Model.ModelTypePluralized#>_selected"))
+        .ClientEvents(o => o.OnRowSelect("Grid<#=Model.ModelTypePluralized#>BriefView_selected"))
         .Footer(true)
 
 )

@@ -191,6 +191,7 @@
     <Content Include="Scripts\qTip\old\jquery.qtip.css" />
     <Content Include="Scripts\qTip\old\jquery.qtip.min.css" />
     <Content Include="Scripts\qTip\old\jquery.qtip.min.js" />
+    <Content Include="Scripts\telerik.menu.min-Corrected jquery live problem.js" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Documents\Conventions.txt">
