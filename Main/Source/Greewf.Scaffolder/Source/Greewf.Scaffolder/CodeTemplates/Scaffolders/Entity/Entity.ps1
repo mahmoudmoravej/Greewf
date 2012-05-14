@@ -130,6 +130,7 @@ $ViewPath = "$($Area)Views\"+$modelTypePluralized
 #grid 
 $ViewType = $GridViewModel
 ApplyTemplate -TemplateFileName "_List" -Project:$WebProject -OutputPath:$ViewPath -OutputFilePostName:'_List' -OutputFilePreName:'' -RepositoryProject:$RepositoryProject -SubRepositoryNameSpace:'Repositories' -WebProject:$WebProject -SubViewModelNameSpace:$SubViewModelNameSpace -SubViewModelMetaDataNameSpace:'Models.MetaData' -ControllerSubNamespace:$ControllerSubNamespace  -DefaultImportingNamespaces:$DefaultImportingNamespaces -IgnoreModelNameInFile #-UsePluralNameInFileName 
+ApplyTemplate -TemplateFileName "_ListBreifView" -Project:$WebProject -OutputPath:$ViewPath -OutputFilePostName:'_ListBreifView' -OutputFilePreName:'' -RepositoryProject:$RepositoryProject -SubRepositoryNameSpace:'Repositories' -WebProject:$WebProject -SubViewModelNameSpace:$SubViewModelNameSpace -SubViewModelMetaDataNameSpace:'Models.MetaData' -ControllerSubNamespace:$ControllerSubNamespace  -DefaultImportingNamespaces:$DefaultImportingNamespaces -IgnoreModelNameInFile #-UsePluralNameInFileName 
 ApplyTemplate -TemplateFileName "Index" -Project:$WebProject -OutputPath:$ViewPath -OutputFilePostName:'Index' -OutputFilePreName:'' -RepositoryProject:$RepositoryProject -SubRepositoryNameSpace:'Repositories' -WebProject:$WebProject -SubViewModelNameSpace:$SubViewModelNameSpace -SubViewModelMetaDataNameSpace:'Models.MetaData' -ControllerSubNamespace:$ControllerSubNamespace  -DefaultImportingNamespaces:$DefaultImportingNamespaces -IgnoreModelNameInFile
 
 #non-grid related

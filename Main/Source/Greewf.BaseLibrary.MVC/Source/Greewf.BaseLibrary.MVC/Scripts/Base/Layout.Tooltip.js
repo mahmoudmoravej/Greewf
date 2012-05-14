@@ -4,6 +4,11 @@
     tooltipLayout = {};
     var lastQtipSender = null;
     var lastQtipContainer = null;
+    var lastTooltip = null;
+
+    tooltipLayout.getTypeCode = function () {
+        return 2; //by convention
+    }    
 
     tooltipLayout.progressHtml = function () {
         return '<div isProgress="1" class="bigprogress-icon t-content" style="min-width:48px;min-height:48px;" ></div>';
@@ -77,7 +82,8 @@
         if (winHeight > 0) $(api.elements.content).height(winHeight); //becuase of bug in qtip we should handle it manually
         $(api.elements.button).attr('title', 'بستن');
 
-        return { widget: { api: api, sender: sender, htmlTag: api.elements.content, ownerWindow: ownerWindow }, widgetTitle: sender.qtip('api') };
+        lastTooltip = { widget: { api: api, sender: sender, htmlTag: api.elements.content, ownerWindow: ownerWindow }, widgetTitle: sender.qtip('api') };
+        return lastTooltip;
 
     }
 
@@ -97,7 +103,9 @@
     }
 
     tooltipLayout.CloseAndDone = function (data, tooltip) {
-        if (tooltip == null) return;
+        if (!tooltip) tooltip = lastTooltip.widget;
+        if (!tooltip) return;
+
         tooltip.api.hide();
         $.layoutCore.handleCloseCallBack(tooltip.sender, data, tooltip.ownerWindow);
     }

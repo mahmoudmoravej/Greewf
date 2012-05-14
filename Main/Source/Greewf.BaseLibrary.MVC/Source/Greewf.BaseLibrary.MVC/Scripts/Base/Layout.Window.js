@@ -8,6 +8,10 @@
     var inAutoClose = false;
     var debugMode = true;
 
+    windowLayout.getTypeCode = function () {
+        return 1;//by convention
+    }    
+
     windowLayout.debug = function (value) {
         if (value != null) debugMode = value;
         return debugMode;

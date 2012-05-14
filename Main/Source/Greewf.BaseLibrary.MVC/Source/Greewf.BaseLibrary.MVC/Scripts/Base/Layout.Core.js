@@ -64,7 +64,7 @@
         var winMax = $(sender).attr('winMax');
         var doAjax = $(sender).attr('ajax');
 
-        link = correctLink(link, doAjax != undefined, true, true);
+        link = correctLink(link, doAjax != undefined, true, true, widgetLayout.getTypeCode());
 
         //ajax or iframe?
         if (doAjax != undefined) {//ajax request : pure mode
@@ -143,13 +143,14 @@
 
     }
 
-    function correctLink(link, isPure, isInWindow, inclueUrlInContent) {
+    function correctLink(link, isPure, isInWindow, inclueUrlInContent, widgetType) {
         if (link.indexOf('?') == -1)
             link = link + "?";
         else
             link = link + "&";
         link = link + (isPure ? checkToPaste(link, 'puremode=1') : checkToPaste(link, 'simplemode=1'));
         if (isInWindow) link = link + checkToPaste(link, '&iswindow=1');
+        if (widgetType == 2) link = link + checkToPaste(link, '&istooltip=1'); //1:window , 2:tooltip
         if (inclueUrlInContent) link = link + checkToPaste(link, '&includeUrlInContent=1');
 
         return link;
@@ -278,7 +279,7 @@
                 if (defaultSubmitButton != null && $(this).data('submitter') == null) $(this).data('submitter', defaultSubmitButton); //asume default button
                 if (handlePageCloserSubmitButtons(this, widgetLayout, widget)) return false; //no submit , just for validation needs
                 changeWidgetTitle(widgetLayout, widgetTitle, 'در حال دریافت...');
-                var link = correctLink(this.action, true, true, true);
+                var link = correctLink(this.action, true, true, true, widgetLayout.getTypeCode());
                 $.ajax({
                     type: this.method.toLowerCase() == 'get' ? 'GET' : 'POST',
                     url: link,
@@ -358,9 +359,9 @@
     layoutCore.openTooltipFor = function (sender, link, settings) {
         var options = null;
         if (settings == null || (settings != null && settings.ajax != false))
-            options = { ajax: '1'};
+            options = { ajax: '1' };
         //if (settings != null && settings.ajax == false)//becuase ajax property value is not important. 
-            //options = { hideEvents: 'unfocus'};
+        //options = { hideEvents: 'unfocus'};
 
         $.extend(options, settings);
 
