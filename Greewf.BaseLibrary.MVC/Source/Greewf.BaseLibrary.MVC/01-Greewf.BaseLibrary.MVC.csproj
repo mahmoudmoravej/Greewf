@@ -154,6 +154,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="Security\PermissionLimiterBase.cs" />
+    <Compile Include="Validators\Localized\FkRequiredAttribute.cs" />
     <Compile Include="Validators\Localized\RangeAttribute.cs" />
     <Compile Include="Validators\Localized\DigitsOnlyAttribute.cs" />
     <Compile Include="Validators\Localized\LengthAttribute.cs" />

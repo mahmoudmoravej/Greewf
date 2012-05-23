@@ -142,9 +142,6 @@ namespace <#= Model.ControllerNamespace #>
             return View(new<#= modelName #>);
         } 
 
-        //
-        // POST: /<#= routingName #>/Create
-
         [HttpPost]
         [AutoMap(typeof(<#= modelName #>), typeof(<#= modelName #>ViewModel))]
         [Permissions(<#= modelName #>Permission.Create)]
@@ -178,9 +175,6 @@ namespace <#= Model.ControllerNamespace #>
 			return View(<#= Repositories[modelType.FullName].VariableName #>.Find(id));
         }
 
-        //
-        // POST: /<#= routingName #>/Edit/5
-
         [HttpPost]
         [Permissions(<#= modelName #>Permission.Edit)]
         [Log(LogPoint.<#= modelName #>Edit, LogModelState.Valid, LogResultType.RedirectToSuccess)]
@@ -207,11 +201,13 @@ namespace <#= Model.ControllerNamespace #>
         [Permissions(<#= modelName #>Permission.Delete)]
         public ActionResult Delete(<#= primaryKeyProperty.Type.AsString #> id)
         {
-            return View(<#= Repositories[modelType.FullName].VariableName #>.Find(id));
-        }
+            var deletingItem = <#= Repositories[modelType.FullName].VariableName #>.Find(id);
 
-        //
-        // POST: /<#= routingName #>/Delete/5
+            if (DeletingCoditionsMet(deletingItem))
+                return View(deletingItem);
+            else
+                return View("DeleteError", deletingItem);
+        }
 
         [HttpPost, ActionName("Delete")]
         [Permissions(<#= modelName #>Permission.Delete)]
@@ -224,6 +220,17 @@ namespace <#= Model.ControllerNamespace #>
 
             return Json(new { result = true }, <#= modelVariable #>Model);
         }
+
+        private bool DeletingCoditionsMet(<#= modelName #> deletingItem)
+        {
+            // follow the following pattern :
+            //int relatedCount = deletingItem.RelatedItems.Count;
+            //if (relatedCount > 0)
+            //    ModelState.AddModelError("", string.Format("وجود {0} آیتم مرتبط", relatedCount));
+
+            return ModelState.IsValid;
+        }
+
 		
 	#endregion
 

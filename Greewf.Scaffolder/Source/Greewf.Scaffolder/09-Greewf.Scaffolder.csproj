@@ -68,6 +68,7 @@
     <None Include="CodeTemplates\Scaffolders\MvcScaffolding.Controller\SearchCriteria.cs.t4" />
     <None Include="CodeTemplates\Scaffolders\MvcScaffolding.Controller\ViewModel.cs.t4" />
     <None Include="CodeTemplates\Scaffolders\MvcScaffolding.Controller\ViewModelMetaData.cs.t4" />
+    <None Include="CodeTemplates\Scaffolders\MvcScaffolding.RazorView\DeleteError.cs.t4" />
     <None Include="CodeTemplates\Scaffolders\MvcScaffolding.RazorView\_ListBreifView.cs.t4" />
     <None Include="CodeTemplates\Scaffolders\MvcScaffolding.RazorView\Delete.cs.t4" />
     <None Include="CodeTemplates\Scaffolders\MvcScaffolding.RazorView\_Details.cs.t4" />

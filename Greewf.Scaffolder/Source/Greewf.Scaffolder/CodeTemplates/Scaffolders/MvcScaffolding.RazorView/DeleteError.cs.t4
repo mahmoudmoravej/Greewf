@@ -30,39 +30,22 @@
 </div>
 <div style="background-color: #FFCC00">
     <h3>
-        <span style="vertical-align: middle" class="icon16 warning48-png"></span>آیا نسبت به حذف این <#= GetDisplayName(modelDataType) #> مطمئن هستید؟</h3>
-    @using (Html.BeginForm())
-    {
-        <p>
-            <button id="cancelDelete" class="t-button" type="button" isPageCloser='1'>
-                <span class="icon16 stop-png"></span>انصراف
-            </button>
-            <span style="float: left">&nbsp;</span>
-            <button id="submitDelete" class="t-button" type="button">
-                <span class="icon16 apply-png"></span>بلی، حذف شود
-            </button>
-            <br />
-            <br />
-        </p>
-    }
+        <span style="vertical-align: middle" class="icon16 error48-png"></span>به دلایل
+        زیر امکان حذف وجود ندارد :</h3>
+    <ul >
+        @foreach (var item in Html.ViewData.ModelState[""].Errors)
+        {
+            <li>@item.ErrorMessage</li>
+        }
+    </ul>
+    <p>
+        <button id="closeDelete" class="t-button" type="button" ispagecloser='1'>
+            <span class="icon16 stop-png"></span>بستن
+        </button>
+        <br />
+        <br />
+    </p>
 </div>
-<script type="text/javascript" language="javascript">
-    $('#submitDelete').click(function () {
-        $('button').attr('disabled', true).addClass('t-state-disabled');
-        $('#submitDelete').html("<span class='icon16 ajax16-gif'></span>");
-        $.ajax({
-            type: 'POST',
-            url: '@Request.Url.ToString()',
-            cache: false,
-            success: function (html) {
-                layoutHelper.getActiveLayout(@Request.QueryString.AllKeys.Contains("istooltip").ToString().ToLower()).CloseAndDone({deleted:true});
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                $('#divContent').css('direction', 'ltr').html(xhr.responseText);
-            }
-        });
-    });
-</script>
 <#+ 
 
 string GetDisplayName(EnvDTE.CodeType type){
