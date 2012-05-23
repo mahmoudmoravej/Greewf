@@ -166,6 +166,12 @@ layoutHelper = new function () {
         }
     });
 
+    this.getActiveLayout = function (isTooltip) {
+        if (isTooltip)
+            return this.tooltipLayout;
+        return this.windowLayout;
+    }
+
     this.isParentLayoutPresent = function () {
         return (parent.$.layoutCore != null);
     }
@@ -178,20 +184,17 @@ layoutHelper = new function () {
     }
 
     this.setInitialFocus = function (container) {
-
-        var containerW;
         if (container == undefined)
-            containerW = layoutHelper.windowLayoutActiveDocument();
-        else
-            containerW = $(container, layoutHelper.windowLayoutActiveDocument());
+            container = layoutHelper.windowLayoutActiveDocument();
 
-        var x = $(".editor-focus2", containerW).filter(":last");
+        var x = $(".editor-focus2", container).filter(":last");
         if (x.length == 0)
             $(".editor-focus input", container).filter(":last").focus();
         else {
             layoutHelper.mainJqObject()(x).data('closeHandler', function () { if ($ != undefined) $(".editor-focus input", container).filter(":last").focus(); });
         }
     }
+
 
     this.handleAutoSubmit = function (containerId) {
         var changeTimer = containerId + 'ChangeTimer';

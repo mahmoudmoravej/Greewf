@@ -17,6 +17,7 @@ namespace Greewf.BaseLibrary.MVC.Validators
             StringLengthAttributeAdapter.SelfRegister();
             DigitsOnlyAttributeAdapter.SelfRegister();
             RangeAttributeAdapter.SelfRegister();
+            FkAttributeAdapter.SelfRegister();
         }
     }
 }
