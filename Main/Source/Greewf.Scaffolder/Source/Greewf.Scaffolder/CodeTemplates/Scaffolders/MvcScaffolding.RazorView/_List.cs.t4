@@ -40,8 +40,9 @@
         });
     }
 
-    function <#=Model.ModelTypePluralized#>GridCallBack() {
-        window.$('#Grid<#= Model.ModelTypePluralized #>').data('tGrid').ajaxRequest();
+    function <#=Model.ModelTypePluralized#>GridCallBack(sender, data, isSuccessfulFlagUp) {
+        if (isSuccessfulFlagUp)
+            window.$('#Grid<#= Model.ModelTypePluralized #>').data('tGrid').ajaxRequest();
     }
   
 </script>

@@ -28,7 +28,7 @@ namespace Greewf.BaseLibrary.MVC.ChangeTracker
             if (controller == null || controller.ContextManagerBase == null) return;
 
             if (controller.ContextManagerBase.ContextBase is ISavingTracker == false)
-                throw new Exception(string.Format("Your DbContext '{Controller.ContextManagerBase.ContextBase}' should implements '{0}' interface in order to support using TrackChangesAttribute.", typeof(ISavingTracker).ToString()));
+                throw new Exception(string.Format("Your DbContext 'Controller.ContextManagerBase.ContextBase' should implements '{0}' interface in order to support using TrackChangesAttribute.", typeof(ISavingTracker).ToString()));
 
             var context = controller.ContextManagerBase.ContextBase as ISavingTracker;
             context.OnSavingChanges += OnSavingChanges;

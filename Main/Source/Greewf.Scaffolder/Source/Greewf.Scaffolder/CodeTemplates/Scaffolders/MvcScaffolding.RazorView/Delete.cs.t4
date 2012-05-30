@@ -38,7 +38,7 @@
                 <span class="icon16 stop-png"></span>انصراف
             </button>
             <span style="float: left">&nbsp;</span>
-            <button id="submitDelete" class="t-button" type="button">
+            <button id="submitDelete" class="t-button" type="submit">
                 <span class="icon16 apply-png"></span>بلی، حذف شود
             </button>
             <br />
@@ -46,23 +46,6 @@
         </p>
     }
 </div>
-<script type="text/javascript" language="javascript">
-    $('#submitDelete').click(function () {
-        $('button').attr('disabled', true).addClass('t-state-disabled');
-        $('#submitDelete').html("<span class='icon16 ajax16-gif'></span>");
-        $.ajax({
-            type: 'POST',
-            url: '@Request.Url.ToString()',
-            cache: false,
-            success: function (html) {
-                layoutHelper.getActiveLayout(@Request.QueryString.AllKeys.Contains("istooltip").ToString().ToLower()).CloseAndDone({deleted:true});
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                $('#divContent').css('direction', 'ltr').html(xhr.responseText);
-            }
-        });
-    });
-</script>
 <#+ 
 
 string GetDisplayName(EnvDTE.CodeType type){

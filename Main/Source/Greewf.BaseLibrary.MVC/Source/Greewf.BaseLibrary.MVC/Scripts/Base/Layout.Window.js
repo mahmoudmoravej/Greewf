@@ -9,8 +9,8 @@
     var debugMode = true;
 
     windowLayout.getTypeCode = function () {
-        return 1;//by convention
-    }    
+        return 1; //by convention
+    }
 
     windowLayout.debug = function (value) {
         if (value != null) debugMode = value;
@@ -204,13 +204,13 @@
         window.core.data('tWindow').content(content);
     }
 
-    windowLayout.CloseAndDone = function (data, widget) {
+    windowLayout.CloseAndDone = function (data, widget, isSuccessfulFlagUp) {
         if (activeWinsQueue.length == 0) return;
         var lw = activeWinsQueue[activeWinsQueue.length - 1];
         inAutoClose = true;
         lw.win.data('tWindow').close();
         inAutoClose = false;
-        $.layoutCore.handleCloseCallBack(lw.sender, data, lw.ownerWindow);
+        $.layoutCore.handleCloseCallBack(lw.sender, data, lw.ownerWindow, isSuccessfulFlagUp);
 
         //        var callBack = $(lw.sender).attr('windowcallback');
         //        if (typeof (callBack) != 'undefined')
