@@ -42,12 +42,12 @@
 
     }
 
-    layoutCore.handleCloseCallBack = function (sender, data, ownerWindow) {
+    layoutCore.handleCloseCallBack = function (sender, data, ownerWindow, isSuccessfulFlagUp) {
         var callBack = $(sender, ownerWindow).attr('windowcallback');
         if (typeof (callBack) != 'undefined')
-            ownerWindow[callBack].apply(this, new Array(sender, data));
+            ownerWindow[callBack].apply(this, new Array(sender, data, isSuccessfulFlagUp));
         else if (typeof (ownerWindow.Layout_DoneSuccessfullyCallBack) != 'undefined')
-            ownerWindow.Layout_DoneSuccessfullyCallBack(sender, data);
+            ownerWindow.Layout_DoneSuccessfullyCallBack(sender, data, isSuccessfulFlagUp);
 
     }
 
@@ -131,7 +131,7 @@
         }
 
         if (link.indexOf("/SavedSuccessfully") > 0 || linkHash.indexOf('successfullysaved') > 0) {
-            widgetLayout.CloseAndDone(location.hash != undefined ? location : null, widget); //when ajax request
+            widgetLayout.CloseAndDone(location.hash != undefined ? location : null, widget, true); //when ajax request
             handled = true;
         }
         else if (link.indexOf("/accessdenied") > 0) {

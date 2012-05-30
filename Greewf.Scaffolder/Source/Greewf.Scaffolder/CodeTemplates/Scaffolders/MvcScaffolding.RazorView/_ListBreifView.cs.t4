@@ -31,8 +31,9 @@
         layout.CloseAndDone({ <#= Model.PrimaryKeyName #>: e.row.cells[0].innerHTML });
     }
 
-    function <#=Model.ModelTypePluralized#>GridCallBack() {
-        window.$('#Grid<#=Model.ModelTypePluralized#>BriefView').data('tGrid').ajaxRequest();
+    function <#=Model.ModelTypePluralized#>GridCallBack(sender, data, isSuccessfulFlagUp) {
+        if (isSuccessfulFlagUp)
+            window.$('#Grid<#=Model.ModelTypePluralized#>BriefView').data('tGrid').ajaxRequest();
     }
   
 </script>

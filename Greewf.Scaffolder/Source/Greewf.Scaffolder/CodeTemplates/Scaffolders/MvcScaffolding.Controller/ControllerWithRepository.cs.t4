@@ -214,11 +214,18 @@ namespace <#= Model.ControllerNamespace #>
         [Log(LogPoint.<#= modelName #>Delete, LogModelState.Always, LogResultType.Always)]
         public ActionResult DeleteConfirmed(<#= primaryKeyProperty.Type.AsString #> id)
         {
-            var <#= modelVariable #>Model = <#= modelName #>ModelMapper.Map(<#= Repositories[modelType.FullName].VariableName #>.Find(id));
-            <#= Repositories[modelType.FullName].VariableName #>.Delete(id);
-            <#= Repositories[modelType.FullName].VariableName #>.Save();
+            var deletingItem = <#= Repositories[modelType.FullName].VariableName #>.Find(id);
+            var <#= modelVariable #>Model = <#= modelName #>ModelMapper.Map(deletingItem);
 
-            return Json(new { result = true }, <#= modelVariable #>Model);
+            if (DeletingCoditionsMet(deletingItem))
+            {
+                <#= Repositories[modelType.FullName].VariableName #>.Delete(id);
+                <#= Repositories[modelType.FullName].VariableName #>.Save();
+
+                return RedirectToSuccessAction(<#= modelVariable #>Model);        
+            }
+            else
+                return View("DeleteError", <#= modelVariable #>Model);
         }
 
         private bool DeletingCoditionsMet(<#= modelName #> deletingItem)

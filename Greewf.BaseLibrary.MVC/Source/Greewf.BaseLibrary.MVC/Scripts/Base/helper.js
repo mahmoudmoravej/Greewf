@@ -226,7 +226,10 @@ telerikHelper = new function () {
         $(sender).find(".t-filter").click(function () {
             setTimeout(function () {
                 $(".t-filter-operator").each(function () {
-                    $(this).val(filter);
+                    if ($(this).data('isDefaultAppliedBefore') == null) {
+                        $(this).val(filter);
+                        $(this).data('isDefaultAppliedBefore', 'true');
+                    }
                 });
             });
         });
@@ -258,6 +261,21 @@ telerikHelper = new function () {
             var splitter = $('#' + splitterId).data('tSplitter');
             if (splitter != undefined) splitter.resize();
         }, 200); /*oh my god! you should pass a value for "delay"...the init delay is not sufficient*/
+    }
+
+    this.handleServerSideModelErrors = function (args) {
+        if (args.textStatus == "modelstateerror" && args.modelState) {
+            var message = "";
+            $.each(args.modelState, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "<br/>";
+                    });
+                }
+            });
+            args.preventDefault();
+            layoutHelper.windowLayout.ShowErrorMessage(message, 'بروز خطا');
+        }
     }
 
 };

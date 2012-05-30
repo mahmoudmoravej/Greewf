@@ -8,7 +8,7 @@
 
     tooltipLayout.getTypeCode = function () {
         return 2; //by convention
-    }    
+    }
 
     tooltipLayout.progressHtml = function () {
         return '<div isProgress="1" class="bigprogress-icon t-content" style="min-width:48px;min-height:48px;" ></div>';
@@ -102,12 +102,12 @@
         tooltip.api.show();
     }
 
-    tooltipLayout.CloseAndDone = function (data, tooltip) {
+    tooltipLayout.CloseAndDone = function (data, tooltip, isSuccessfulFlagUp) {
         if (!tooltip) tooltip = lastTooltip.widget;
         if (!tooltip) return;
 
         tooltip.api.hide();
-        $.layoutCore.handleCloseCallBack(tooltip.sender, data, tooltip.ownerWindow);
+        $.layoutCore.handleCloseCallBack(tooltip.sender, data, tooltip.ownerWindow, isSuccessfulFlagUp);
     }
 
     tooltipLayout.CloseTopMost = function (tooltip/*can be null*/) {
