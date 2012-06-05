@@ -306,7 +306,7 @@
 xcopy /Y /E /D "$(TargetDir)\Documents" "$(SolutionDir)\..\GreewfRelease\Documents\"
 xcopy /Y /D "$(TargetDir)*.dll" "$(SolutionDir)\..\GreewfRelease\Dlls\"
 
-if exist "\\Server\Software\SharedResources\GreewfRelease\" xcopy /Y /E /D "$(SolutionDir)\..\GreewfRelease\*" "\\Server\Software\SharedResources\GreewfRelease\"</PostBuildEvent>
+rem if exist "\\Server\Software\SharedResources\GreewfRelease\" xcopy /Y /E /D "$(SolutionDir)\..\GreewfRelease\*" "\\Server\Software\SharedResources\GreewfRelease\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

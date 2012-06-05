@@ -21,7 +21,8 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
             SimpleHorizontal,
             SimpleVertical,
             Tabular,
-            Chosen
+            Chosen,
+            Tree
         }
 
         public static MvcHtmlString CheckBoxListFor<TModel, TProperty>(this HtmlHelper<TModel> helper, System.Linq.Expressions.Expression<Func<TModel, TProperty>> expression, IEnumerable<SpecialSelectListItem> items, bool readOnly = false, CheckBoxLisLayout layout = CheckBoxLisLayout.SimpleHorizontal)
@@ -76,6 +77,9 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                     break;
                 case CheckBoxLisLayout.Tabular:
                     BuildTabularCheckboxList(helper, name, items, parentItems, checkboxHtmlAttributes, readOnly, output);
+                    break;
+                case CheckBoxLisLayout.Tree:
+                    BuildTreeCheckboxList(helper, name, items, parentItems, checkboxHtmlAttributes, readOnly, output);
                     break;
                 case CheckBoxLisLayout.Chosen:
                     BuildChosenList(helper, name, items, parentItems, checkboxHtmlAttributes, readOnly, output);
@@ -239,6 +243,45 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
             output += option.ToString(TagRenderMode.Normal);
 
             return output;
+        }
+
+        private static void BuildTreeCheckboxList(HtmlHelper helper, string name, IEnumerable<SpecialSelectListItem> items, IEnumerable<SpecialSelectListItem> parentItems, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly, StringBuilder output)
+        {
+
+            if (checkboxHtmlAttributes == null) checkboxHtmlAttributes = new Dictionary<string, object>();
+            if (!checkboxHtmlAttributes.ContainsKey("height")) checkboxHtmlAttributes.Add("height", "500px");
+
+            var treeView = helper.Telerik()
+                .TreeView()
+                .Name(name)
+                .HtmlAttributes(checkboxHtmlAttributes)
+                .ClientEvents(o => o.OnExpand(x => "function(x){$(this).data('tTreeView').collapse($('li',this).not(x));}"))
+                .ToComponent();
+
+            bool firstGroupExpanded = false;
+            foreach (var parentItem in GetParentItems(parentItems))
+            {
+                var treeViewItem = new TreeViewItem() { Text = parentItem.Text };
+                treeView.Items.Add(treeViewItem);
+
+                if (firstGroupExpanded == false)
+                {
+                    treeViewItem.Selected = true;
+                    treeViewItem.Expanded = true;
+                    firstGroupExpanded = true;
+                }
+
+                foreach (var item in GetChidItems(items, parentItem))
+                    treeViewItem.Items.Add(new TreeViewItem()
+                    {
+                        Text = BuidCheckBox(name, checkboxHtmlAttributes, readOnly, item),
+                        Encoded = false
+                    });
+
+            }
+
+            output.Append(treeView.ToHtmlString());
+
         }
 
 
