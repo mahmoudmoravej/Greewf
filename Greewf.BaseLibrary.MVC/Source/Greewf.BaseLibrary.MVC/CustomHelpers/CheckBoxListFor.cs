@@ -22,7 +22,8 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
             SimpleVertical,
             Tabular,
             Chosen,
-            Tree
+            Tree,
+            PanelBar
         }
 
         public static MvcHtmlString CheckBoxListFor<TModel, TProperty>(this HtmlHelper<TModel> helper, System.Linq.Expressions.Expression<Func<TModel, TProperty>> expression, IEnumerable<SpecialSelectListItem> items, bool readOnly = false, CheckBoxLisLayout layout = CheckBoxLisLayout.SimpleHorizontal)
@@ -80,6 +81,9 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                     break;
                 case CheckBoxLisLayout.Tree:
                     BuildTreeCheckboxList(helper, name, items, parentItems, checkboxHtmlAttributes, readOnly, output);
+                    break;
+                case CheckBoxLisLayout.PanelBar:
+                    BuildPanelBaredCheckboxList(helper, name, items, parentItems, checkboxHtmlAttributes, readOnly, output);
                     break;
                 case CheckBoxLisLayout.Chosen:
                     BuildChosenList(helper, name, items, parentItems, checkboxHtmlAttributes, readOnly, output);
@@ -154,7 +158,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                 output.AppendFormat("<td valign='top'><fieldset><legend>{0}</legend>", parentItem.Text);
 
                 foreach (var item in GetChidItems(items, parentItem))
-                    output.Append(BuidCheckBox(name, checkboxHtmlAttributes, readOnly, item));
+                    output.Append(BuildCheckBox(name, checkboxHtmlAttributes, readOnly, item));
 
                 output.Append("</fieldset></td>");
                 if (isVerticalLayout) output.Append("</tr>");
@@ -189,7 +193,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                 string contnt = "";
 
                 foreach (var item in GetChidItems(items, parentItem))
-                    contnt += BuidCheckBox(name, checkboxHtmlAttributes, readOnly, item);
+                    contnt += BuildCheckBox(name, checkboxHtmlAttributes, readOnly, item);
 
                 tabStripItem.Html = contnt;
 
@@ -199,7 +203,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
 
         }
 
-        private static string BuidCheckBox(string name, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly, SpecialSelectListItem item)
+        private static string BuildCheckBox(string name, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly, SpecialSelectListItem item)
         {
             string output = "";
             output = "<div class='fields'><label>";
@@ -274,7 +278,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                 foreach (var item in GetChidItems(items, parentItem))
                     treeViewItem.Items.Add(new TreeViewItem()
                     {
-                        Text = BuidCheckBox(name, checkboxHtmlAttributes, readOnly, item),
+                        Text = BuildCheckBox(name, checkboxHtmlAttributes, readOnly, item),
                         Encoded = false
                     });
 
@@ -284,6 +288,27 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
 
         }
 
+        private static void BuildPanelBaredCheckboxList(HtmlHelper helper, string name, IEnumerable<SpecialSelectListItem> items, IEnumerable<SpecialSelectListItem> parentItems, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly, StringBuilder output)
+        {
+
+            if (checkboxHtmlAttributes == null) checkboxHtmlAttributes = new Dictionary<string, object>();
+            if (!checkboxHtmlAttributes.ContainsKey("height")) checkboxHtmlAttributes.Add("height", "500px");
+
+            var panelBar = helper.Telerik().PanelBar().Name(name).HtmlAttributes(checkboxHtmlAttributes).SelectedIndex(0).ExpandMode(PanelBarExpandMode.Single).ToComponent();
+
+            foreach (var parentItem in GetParentItems(parentItems))
+            {
+                var panelBarItem = new PanelBarItem() { Text = parentItem.Text };
+                panelBar.Items.Add(panelBarItem);
+
+                foreach (var item in GetChidItems(items, parentItem))
+                    panelBarItem.Items.Add(new PanelBarItem() { Text = BuildCheckBox(name, checkboxHtmlAttributes, readOnly, item), Encoded = false });
+
+            }
+
+            output.Append(panelBar.ToHtmlString());
+
+        }        
 
         #endregion
 
