@@ -118,7 +118,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
             //why do we need this when filling at server?
             output.AppendFormat("function {0}() {{ {1} {2} {3} }}",
                 func_ChildLoaded,
-                string.Format("   $('#{0}').data('child-listeners').push(function(){{ {1}(); }}); ", parentKeyName, func_LoadChilds),
+                string.Format("   var x=$('#{0}');if(x.length) x.data('child-listeners').push(function(){{ {1}(); }}); ", parentKeyName, func_LoadChilds),
                 string.Format("   var ddC = $('#{0}').data('tComboBox');", childKeyName),
                 string.Format("   if ((ddC.value() && ddC.value()!=0) && ddC.length==0) {{ {0}(); }}", func_LoadChilds)
             );
