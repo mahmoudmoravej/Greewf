@@ -26,7 +26,7 @@ namespace <#= Model.RepositoryNamespace #>
     var isObjectContext = ((CodeType)Model.DbContextType).IsAssignableTo<System.Data.Objects.ObjectContext>();
 #>
 
-    public interface I<#= modelName #>Repository : IRepositoryBase<<#= modelName #>>
+    public interface I<#= modelName #>Repository : IRepositoryBase<<#= modelName #>,<#= primaryKeyProperty.Type.AsString #>>
     {
     }
 }
