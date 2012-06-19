@@ -10,6 +10,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
+using Greewf.BaseLibrary.Repositories;
 <# foreach(var ns in new[] { Model.ModelTypeNamespace, Model.DbContextNamespace }.Where(x => !string.IsNullOrEmpty(x) && (x != Model.RepositoryNamespace)).Distinct()) { #>
 using <#= ns #>;
 <# } #>
@@ -25,15 +26,7 @@ namespace <#= Model.RepositoryNamespace #>
     var isObjectContext = ((CodeType)Model.DbContextType).IsAssignableTo<System.Data.Objects.ObjectContext>();
 #>
 
-    public interface I<#= modelName #>Repository
+    public interface I<#= modelName #>Repository : IRepositoryBase<<#= modelName #>>
     {
-        IQueryable<<#= modelName #>> All { get; }
-        IQueryable<<#= modelName #>> AllIncluding(params Expression<Func<<#= modelName #>, object>>[] includeProperties);
-		<#= modelName #> Find(<#= primaryKeyProperty.Type.AsString #> id);
-        <#= modelName #> Find(<#= primaryKeyProperty.Type.AsString #> id, params Expression<Func<<#= modelName #>, object>>[] includeProperties);
-        void InsertOrUpdate(<#= modelName #> <#= modelName.ToLower() #>);
-        void Delete(<#= primaryKeyProperty.Type.AsString #> id);
-        void Save();
-		void Detach<#= modelName #>(<#= modelName #> <#= modelName.ToLower() #>);
     }
 }
