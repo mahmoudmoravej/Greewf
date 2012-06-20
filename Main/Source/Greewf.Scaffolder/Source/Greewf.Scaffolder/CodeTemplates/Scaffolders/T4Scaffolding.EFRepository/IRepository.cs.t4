@@ -28,5 +28,6 @@ namespace <#= Model.RepositoryNamespace #>
 
     public interface I<#= modelName #>Repository : IRepositoryBase<<#= modelName #>,<#= primaryKeyProperty.Type.AsString #>>
     {
+        //Put your extensibility codes here...
     }
 }
