@@ -102,7 +102,7 @@ namespace <#= Model.RepositoryNamespace #>
             context.SaveChanges();
         }
 		
-		public void Detach<#= modelName #>(<#= modelName #> <#= modelName.ToLower() #>)
+		public void Detach(<#= modelName #> <#= modelName.ToLower() #>)
 		{
             context.Entry(<#= modelName.ToLower() #>).State = System.Data.EntityState.Detached;
 		}
