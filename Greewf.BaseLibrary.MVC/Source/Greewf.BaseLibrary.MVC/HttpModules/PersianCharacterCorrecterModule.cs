@@ -41,7 +41,7 @@ namespace Greewf.BaseLibrary.MVC.HttpModules
             NameValueCollection formData = HttpContext.Current.Request.Form;
 
             CorrectCollection(HttpContext.Current.Request.Form);
-            CorrectCollection(HttpContext.Current.Request.QueryString);     
+            CorrectCollection(HttpContext.Current.Request.QueryString);
 
         }
 
@@ -61,14 +61,24 @@ namespace Greewf.BaseLibrary.MVC.HttpModules
                 foreach (var key in data.AllKeys)
                 {
                     string value = data[key];
-                    if (value.Contains("ي") || value.Contains("ك"))
-                        data[key] = value.Replace("ي", "ی").Replace("ك", "ک");
+                    if (IsCorrectionNeeded(value))
+                        data[key] = CorrectPersian(value);
                 }
 
                 //set readonly
                 ReadOnlyPropertyInfo.SetValue(data, true, null);
 
             }
+        }
+
+        public static bool IsCorrectionNeeded(string text)
+        {
+            return text.Contains("ي") || text.Contains("ك");
+        }
+
+        public static string CorrectPersian(string text)
+        {
+            return text.Replace("ي", "ی").Replace("ك", "ک");
         }
 
         public void Dispose() { }
