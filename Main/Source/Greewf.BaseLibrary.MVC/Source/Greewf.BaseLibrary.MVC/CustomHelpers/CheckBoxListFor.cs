@@ -26,49 +26,58 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
             PanelBar
         }
 
-        public static MvcHtmlString CheckBoxListFor<TModel, TProperty>(this HtmlHelper<TModel> helper, System.Linq.Expressions.Expression<Func<TModel, TProperty>> expression, IEnumerable<SpecialSelectListItem> items, bool readOnly = false, CheckBoxLisLayout layout = CheckBoxLisLayout.SimpleHorizontal)
+        public enum SelectionMode
         {
-            return CheckBoxListFor(helper, expression, items, null, null, readOnly, layout);
+            Multiple,
+            Single
         }
 
-        public static MvcHtmlString CheckBoxListFor<TModel, TProperty>(this HtmlHelper<TModel> helper, System.Linq.Expressions.Expression<Func<TModel, TProperty>> expression, IEnumerable<SpecialSelectListItem> items, IEnumerable<SpecialSelectListItem> parentItems, bool readOnly = false, CheckBoxLisLayout layout = CheckBoxLisLayout.SimpleHorizontal)
+        public static MvcHtmlString CheckBoxListFor<TModel, TProperty>(this HtmlHelper<TModel> helper, System.Linq.Expressions.Expression<Func<TModel, TProperty>> expression, IEnumerable<SpecialSelectListItem> items, bool readOnly = false, CheckBoxLisLayout layout = CheckBoxLisLayout.SimpleHorizontal, SelectionMode selectionMode = SelectionMode.Multiple)
         {
-            return CheckBoxListFor(helper, expression, items, parentItems, null, readOnly, layout);
+            return CheckBoxListFor(helper, expression, items, null, null, readOnly, layout, selectionMode);
+        }
+
+        public static MvcHtmlString CheckBoxListFor<TModel, TProperty>(this HtmlHelper<TModel> helper, System.Linq.Expressions.Expression<Func<TModel, TProperty>> expression, IEnumerable<SpecialSelectListItem> items, IEnumerable<SpecialSelectListItem> parentItems, bool readOnly = false, CheckBoxLisLayout layout = CheckBoxLisLayout.SimpleHorizontal, SelectionMode selectionMode = SelectionMode.Multiple)
+        {
+            return CheckBoxListFor(helper, expression, items, parentItems, null, readOnly, layout, selectionMode);
         }
 
 
-        public static MvcHtmlString CheckBoxListFor<TModel, TProperty>(this HtmlHelper<TModel> helper, System.Linq.Expressions.Expression<Func<TModel, TProperty>> expression, IEnumerable<SpecialSelectListItem> items, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly = false, CheckBoxLisLayout layout = CheckBoxLisLayout.SimpleHorizontal)
+        public static MvcHtmlString CheckBoxListFor<TModel, TProperty>(this HtmlHelper<TModel> helper, System.Linq.Expressions.Expression<Func<TModel, TProperty>> expression, IEnumerable<SpecialSelectListItem> items, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly = false, CheckBoxLisLayout layout = CheckBoxLisLayout.SimpleHorizontal, SelectionMode selectionMode = SelectionMode.Multiple)
         {
-            return CheckBoxListFor(helper, expression, items, null, checkboxHtmlAttributes, readOnly, layout);
+            return CheckBoxListFor(helper, expression, items, null, checkboxHtmlAttributes, readOnly, layout, selectionMode);
         }
 
-        public static MvcHtmlString CheckBoxListFor<TModel, TProperty>(this HtmlHelper<TModel> helper, System.Linq.Expressions.Expression<Func<TModel, TProperty>> expression, IEnumerable<SpecialSelectListItem> items, IEnumerable<SpecialSelectListItem> parentItems, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly = false, CheckBoxLisLayout layout = CheckBoxLisLayout.SimpleHorizontal)
+        public static MvcHtmlString CheckBoxListFor<TModel, TProperty>(this HtmlHelper<TModel> helper, System.Linq.Expressions.Expression<Func<TModel, TProperty>> expression, IEnumerable<SpecialSelectListItem> items, IEnumerable<SpecialSelectListItem> parentItems, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly = false, CheckBoxLisLayout layout = CheckBoxLisLayout.SimpleHorizontal, SelectionMode selectionMode = SelectionMode.Multiple)
         {
 
             string name = helper.GetFullPropertyName(expression, false);
-            return CheckBoxList(helper, name, items, parentItems, checkboxHtmlAttributes, readOnly, layout);
+            return CheckBoxList(helper, name, items, parentItems, checkboxHtmlAttributes, readOnly, layout, selectionMode);
         }
 
 
-        public static MvcHtmlString CheckBoxList(this HtmlHelper helper, string name, IEnumerable<SpecialSelectListItem> items, bool readOnly = false, CheckBoxLisLayout layout = CheckBoxLisLayout.SimpleHorizontal)
+        public static MvcHtmlString CheckBoxList(this HtmlHelper helper, string name, IEnumerable<SpecialSelectListItem> items, bool readOnly = false, CheckBoxLisLayout layout = CheckBoxLisLayout.SimpleHorizontal, SelectionMode selectionMode = SelectionMode.Multiple)
         {
-            return CheckBoxList(helper, name, items, null, readOnly, layout);
+            return CheckBoxList(helper, name, items, null, readOnly, layout, selectionMode);
         }
 
 
-        public static MvcHtmlString CheckBoxList(this HtmlHelper helper, string name, IEnumerable<SpecialSelectListItem> items, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly = false, CheckBoxLisLayout layout = CheckBoxLisLayout.SimpleHorizontal)
+        public static MvcHtmlString CheckBoxList(this HtmlHelper helper, string name, IEnumerable<SpecialSelectListItem> items, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly = false, CheckBoxLisLayout layout = CheckBoxLisLayout.SimpleHorizontal, SelectionMode selectionMode = SelectionMode.Multiple)
         {
-            return CheckBoxList(helper, name, items, items.Where(o => o.ParentId == null), checkboxHtmlAttributes, readOnly, layout);
+            return CheckBoxList(helper, name, items, items.Where(o => o.ParentId == null), checkboxHtmlAttributes, readOnly, layout, selectionMode);
         }
 
-        public static MvcHtmlString CheckBoxList(this HtmlHelper helper, string name, IEnumerable<SpecialSelectListItem> items, IEnumerable<SpecialSelectListItem> parentItems, object checkboxHtmlAttributes, bool readOnly = false, CheckBoxLisLayout layout = CheckBoxLisLayout.SimpleHorizontal)
+        public static MvcHtmlString CheckBoxList(this HtmlHelper helper, string name, IEnumerable<SpecialSelectListItem> items, IEnumerable<SpecialSelectListItem> parentItems, object checkboxHtmlAttributes, bool readOnly = false, CheckBoxLisLayout layout = CheckBoxLisLayout.SimpleHorizontal, SelectionMode selectionMode = SelectionMode.Multiple)
         {
-            return CheckBoxList(helper, name, items, parentItems, new RouteValueDictionary(checkboxHtmlAttributes), readOnly, layout);
+            return CheckBoxList(helper, name, items, parentItems, new RouteValueDictionary(checkboxHtmlAttributes), readOnly, layout, selectionMode);
         }
-        public static MvcHtmlString CheckBoxList(this HtmlHelper helper, string name, IEnumerable<SpecialSelectListItem> items, IEnumerable<SpecialSelectListItem> parentItems, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly = false, CheckBoxLisLayout layout = CheckBoxLisLayout.SimpleHorizontal)
+        public static MvcHtmlString CheckBoxList(this HtmlHelper helper, string name, IEnumerable<SpecialSelectListItem> items, IEnumerable<SpecialSelectListItem> parentItems, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly = false, CheckBoxLisLayout layout = CheckBoxLisLayout.SimpleHorizontal, SelectionMode selectionMode = SelectionMode.Multiple)
         {
             StringBuilder output = new StringBuilder();
             parentItems = parentItems ?? items.Where(o => o.ParentId == null);
+
+            if (selectionMode == SelectionMode.Single && layout != CheckBoxLisLayout.Chosen)
+                throw new Exception("Single Mode Selection just works in Chosen layout currently! Ask the Greewf owner(s) to implement it if you need it in other layout! ;) ");
 
             switch (layout)
             {
@@ -86,14 +95,14 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                     BuildPanelBaredCheckboxList(helper, name, items, parentItems, checkboxHtmlAttributes, readOnly, output);
                     break;
                 case CheckBoxLisLayout.Chosen:
-                    BuildChosenList(helper, name, items, parentItems, checkboxHtmlAttributes, readOnly, output);
+                    BuildChosenList(helper, name, items, parentItems, checkboxHtmlAttributes, readOnly, output, selectionMode);
                     break;
             }
 
             return new MvcHtmlString(output.ToString());
         }
 
-        private static void BuildChosenList(HtmlHelper helper, string name, IEnumerable<SpecialSelectListItem> items, IEnumerable<SpecialSelectListItem> parentItems, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly, StringBuilder output)
+        private static void BuildChosenList(HtmlHelper helper, string name, IEnumerable<SpecialSelectListItem> items, IEnumerable<SpecialSelectListItem> parentItems, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly, StringBuilder output, SelectionMode selectionMode = SelectionMode.Multiple)
         {
 
             if (checkboxHtmlAttributes == null)
@@ -101,7 +110,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
             else
                 checkboxHtmlAttributes = new RouteValueDictionary(checkboxHtmlAttributes);
 
-            if (!checkboxHtmlAttributes.ContainsKey("multiple"))
+            if (selectionMode == SelectionMode.Multiple && !checkboxHtmlAttributes.ContainsKey("multiple"))
                 checkboxHtmlAttributes.Add("multiple", "multiple");
 
             if (!checkboxHtmlAttributes.ContainsKey("class"))
@@ -112,17 +121,15 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                 checkboxHtmlAttributes.Add("disabled", "disabled");
 
 
-            var tagSelect = helper.ListBox(name, new List<SelectListItem>(), checkboxHtmlAttributes).ToHtmlString();
+            //NOTE!!! : if you pass a name which is defined in your MODEL , its type should be enumerable in multiple selection mode. otherwise get a strange exception which says Null refrence !
+            string tagSelect = "";
+            if (selectionMode == SelectionMode.Multiple)
+                tagSelect = helper.ListBox(name, new List<SelectListItem>(), checkboxHtmlAttributes).ToHtmlString();
+            else
+                tagSelect = helper.DropDownList(name, new List<SelectListItem>(), checkboxHtmlAttributes).ToHtmlString();
+
             output.Append(tagSelect.Substring(0, tagSelect.IndexOf(">") + 1));
-
-            //TagBuilder tagSelect = new TagBuilder("select");
-            //tagSelect.MergeAttribute("name", name);
-            //tagSelect.MergeAttribute("multiple", "multiple");
-
-
-            //tagSelect.AddCssClass("chzn-rtl");
-            // if (readOnly)
-            //   tagSelect.MergeAttribute("disabled", "disabled");
+            output.Append(BuidOption(null, readOnly, new SpecialSelectListItem() { }));//we need it to show " (select...) " item. it is the Chosen rule.
 
             if (items.Count() != parentItems.Count() && parentItems.Count() > 0)
                 foreach (var parentItem in GetParentItems(parentItems))
@@ -131,17 +138,17 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                     tagOptGroup.Attributes.Add("label", parentItem.Text);
 
                     foreach (var item in GetChidItems(items, parentItem))
-                        tagOptGroup.InnerHtml += BuidOption(name, checkboxHtmlAttributes, readOnly, item);
+                        tagOptGroup.InnerHtml += BuidOption(checkboxHtmlAttributes, readOnly, item);
 
                     output.Append(tagOptGroup.ToString());
 
                 }
             else
                 foreach (var item in items)
-                    output.Append(BuidOption(name, checkboxHtmlAttributes, readOnly, item));
+                    output.Append(BuidOption( checkboxHtmlAttributes, readOnly, item));
 
             output.AppendFormat("</{0}>", tagSelect.Substring(1, tagSelect.IndexOf(" ")));
-            output.Append("<script  type='text/javascript' language='javascript'>$(document).ready(function(){$('select[name=\"" + name + "\"]').chosen({no_results_text: 'موردی یافت نشد'});});</script>");
+            output.AppendFormat("<script  type='text/javascript' language='javascript'>$(document).ready(function(){{$('select[name=\"" + name + "\"]').chosen({{no_results_text: 'موردی یافت نشد'{0}}});}});</script>", selectionMode == SelectionMode.Single ? ",allow_single_deselect: true":"");
 
         }
 
@@ -228,7 +235,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
             return output;
         }
 
-        private static string BuidOption(string name, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly, SpecialSelectListItem item)
+        private static string BuidOption(IDictionary<string, object> checkboxHtmlAttributes, bool readOnly, SpecialSelectListItem item)
         {
             string output = "";
             var option = new TagBuilder("option");
@@ -308,7 +315,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
 
             output.Append(panelBar.ToHtmlString());
 
-        }        
+        }
 
         #endregion
 
