@@ -1,40 +1,36 @@
 /*
-	Name: Persian Date
-	Developer : Bahram Maravandi
-	Lastupdate: 24-12-2007
-	Thanks to: Amin Habibi Shahri
+Name: Persian Date
+Developer : Bahram Maravandi
+Lastupdate: 24-12-2007
+Thanks to: Amin Habibi Shahri
 */
 
-var WEEKDAYS = new Array( "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" );
+var WEEKDAYS = new Array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday");
 var PERSIAN_MONTHS = ["فروردین", "اردیبهشت", "خرداد", "تیر", "امرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند"];
-var PERSIAN_DIGITS = ["۰","۱","۲","۳","۴"," ۵","۶","۷","۸","۹"];						  
-var PERSIAN_DAYS = ["اورمزد","بهمن","اردیبهشت","شهریور","سپندارمذ","خرداد","امرداد","دی به آذز","آذز","آبان","خورشید","ماه","تیر","گوش","دی به مهر","مهر","سروش","رشن","فروردین","بهرام","رام","باد","دی به دین","دین","ارد","اشتاد","آسمان","زامیاد","مانتره سپند","انارام","زیادی"];
+var PERSIAN_DIGITS = ["۰", "۱", "۲", "۳", "۴", " ۵", "۶", "۷", "۸", "۹"];
+var PERSIAN_DAYS = ["اورمزد", "بهمن", "اردیبهشت", "شهریور", "سپندارمذ", "خرداد", "امرداد", "دی به آذز", "آذز", "آبان", "خورشید", "ماه", "تیر", "گوش", "دی به مهر", "مهر", "سروش", "رشن", "فروردین", "بهرام", "رام", "باد", "دی به دین", "دین", "ارد", "اشتاد", "آسمان", "زامیاد", "مانتره سپند", "انارام", "زیادی"];
 var PERSIAN_WEEKDAYS = new Array("یکشنبه", "دوشنبه", "سه شنبه", "چهارشنبه", "پنجشنبه", "آدینه", "شنبه");
 
 var GREGORIAN_EPOCH = 1721425.5;
 var PERSIAN_EPOCH = 1948320.5;
 
 /*  MOD  --  Modulus function which works for non-integers.  */
-function mod(a, b)
-{
+function mod(a, b) {
     return a - (b * Math.floor(a / b));
 }
 
-function jwday(j)
-{
+function jwday(j) {
     return mod(Math.floor((j + 1.5)), 7);
 }
 
 //  LEAP_GREGORIAN  --  Is a given year in the Gregorian calendar a leap year ?
-function leap_gregorian(year)
-{
+function leap_gregorian(year) {
     return ((year % 4) == 0) &&
             (!(((year % 100) == 0) && ((year % 400) != 0)));
 }
 
 //  GREGORIAN_TO_JD  --  Determine Julian day number from Gregorian calendar date
-function gregorian_to_jd(year, month, day)
-{
+function gregorian_to_jd(year, month, day) {
     return (GREGORIAN_EPOCH - 1) +
            (365 * (year - 1)) +
            Math.floor((year - 1) / 4) +
@@ -77,14 +73,12 @@ function jd_to_gregorian(jd) {
 }
 
 //  LEAP_PERSIAN  --  Is a given year a leap year in the Persian calendar ?
-function leap_persian(year)
-{
+function leap_persian(year) {
     return ((((((year - ((year > 0) ? 474 : 473)) % 2820) + 474) + 38) * 682) % 2816) < 682;
 }
 
 //  PERSIAN_TO_JD  --  Determine Julian day from Persian date
-function persian_to_jd(year, month, day)
-{
+function persian_to_jd(year, month, day) {
     var epbase, epyear;
 
     epbase = year - ((year >= 0) ? 474 : 473);
@@ -103,8 +97,7 @@ function persian_to_jd(year, month, day)
 
 //  JD_TO_PERSIAN  --  Calculate Persian date from Julian day
 
-function jd_to_persian(jd)
-{
+function jd_to_persian(jd) {
     var year, month, day, depoch, cycle, cyear, ycycle,
         aux1, aux2, yday;
 
@@ -132,19 +125,17 @@ function jd_to_persian(jd)
     return new Array(year, month, day);
 }
 
-function calcPersian(year,month,day)
-{
-    var date,j;
+function calcPersian(year, month, day) {
+    var date, j;
 
-    j = persian_to_jd(year,month,day);
+    j = persian_to_jd(year, month, day);
     date = jd_to_gregorian(j);
     weekday = jwday(j);
-    return new Array(date[0], date[1], date[2],weekday);
+    return new Array(date[0], date[1], date[2], weekday);
 }
 
 //  calcGregorian  --  Perform calculation starting with a Gregorian date
-function calcGregorian(year,month,day)
-{
+function calcGregorian(year, month, day) {
     month--;
 
     var j, weekday;
@@ -157,11 +148,10 @@ function calcGregorian(year,month,day)
     //  Update Persian Calendar
     perscal = jd_to_persian(j);
     weekday = jwday(j);
-    return new Array(perscal[0], perscal[1], perscal[2],weekday);
+    return new Array(perscal[0], perscal[1], perscal[2], weekday);
 }
 
-function getTodayGregorian()
-{
+function getTodayGregorian() {
     var t = new Date();
     var today = new Date();
 
@@ -170,16 +160,15 @@ function getTodayGregorian()
         y += 1900;
     }
 
-    return new Array(y, today.getMonth() + 1, today.getDate(),t.getDay());
+    return new Array(y, today.getMonth() + 1, today.getDate(), t.getDay());
 }
 
-function getTodayPersian()
-{
+function getTodayPersian() {
     var t = new Date();
     var today = getTodayGregorian();
 
-    var persian = calcGregorian(today[0],today[1],today[2]);
-    return new Array(persian[0],persian[1],persian[2],t.getDay());
+    var persian = calcGregorian(today[0], today[1], today[2]);
+    return new Array(persian[0], persian[1], persian[2], t.getDay());
 }
 
 //var gDateOnly = false;
@@ -189,37 +178,43 @@ function getTodayPersian()
 //var gParsiLongFormat = false;
 //Converts a gregorian date to Jalali date for different formats
 //EDITED By Moravej
-function ToPersianDate(gd, gLongFormat, gLongDate, gDateOnly, gParsiLongFormat)
-{
+function ToPersianDate(gd, gLongFormat, gLongDate, gDateOnly, gParsiLongFormat) {
 
-var pa = calcGregorian(gd.getFullYear(),gd.getMonth() +1, gd.getDate());
-var p;
+    var pa = calcGregorian(gd.getFullYear(), gd.getMonth() + 1, gd.getDate());
+    var p;
 
-if (!gDateOnly)
-    if (gLongDate)
-        p = PERSIAN_WEEKDAYS[pa[3]] + "،  " + formatPersian(pa[2]) + " " + PERSIAN_MONTHS[pa[1] - 1] + " " + formatPersian(pa[0]);
+    if (!gDateOnly)
+        if (gLongDate)
+            p = PERSIAN_WEEKDAYS[pa[3]] + "،  " + formatPersian(pa[2]) + " " + PERSIAN_MONTHS[pa[1] - 1] + " " + formatPersian(pa[0]);
+        else
+            p = pa[0] + "/" + zeroPad(pa[1], 2) + "/" + zeroPad(pa[2], 2);
     else
-        p = pa[0] + "/" + zeroPad(pa[1], 2) + "/" + zeroPad(pa[2],2);
-else
-    p = getRefreshLink(pa);
+        p = getRefreshLink(pa);
 
-if (gLongFormat)
-	{	
-		p += '  ';
-		
-		var h = ((gd.getHours()>12)?(gd.getHours()-12):(gd.getHours()===0?12:	gd.getHours()));
-		var min = (gd.getMinutes()<10)?('0' + gd.getMinutes()):(gd.getMinutes())+'';
-		
-		p += '،  ' + h + ':' + min.replace(' ','') + ' ' + 
-			((gd.getHours()>=12)?'ب ظ':'پ ظ');
-	}
+    if (gLongFormat) {
+        //  ORIGINAL : 
+        //		p += '  ';
+        //		
+        //		var h = ((gd.getHours()>12)?(gd.getHours()-12):(gd.getHours()===0?12:	gd.getHours()));
+        //		var min = (gd.getMinutes()<10)?('0' + gd.getMinutes()):(gd.getMinutes())+'';
+        //		
+        //		p += '،  ' + h + ':' + min.replace(' ','') + ' ' + 
+        //			((gd.getHours()>=12)?'ب ظ':'پ ظ');
 
-if (gParsiLongFormat)
-	{
-		p += '،  ' + PERSIAN_DAYS[pa[2]-1] + ' روز';
-	}	
-		
-return p;
+        //changed by Moravej	    		
+        p += ' - ';
+        var h = gd.getHours();
+        h = (h < 10 ? '0' : '') + h.toString();
+        var min = gd.getMinutes();
+        min = (min < 10 ? '0' : '') + min.toString();
+        p += h + ':' + min;
+    }
+
+    if (gParsiLongFormat) {
+        p += '،  ' + PERSIAN_DAYS[pa[2] - 1] + ' روز';
+    }
+
+    return p;
 
 }
 
@@ -229,24 +224,22 @@ function zeroPad(num, places) {
     return Array(+(zero > 0 && zero)).join("0") + num;
 }
 
-function ArrayToPersianDate(pa)
-{
-// calc weekday
-var pd = calcPersian(pa[0],pa[1], pa[2]);
-var gd = calcGregorian(pd[0],pd[1], pd[2]);
-var p = PERSIAN_WEEKDAYS[gd[3]] + "،  " + formatPersian(gd[2]) + " " + PERSIAN_MONTHS[gd[1] -1] + " " + formatPersian(gd[0]);
+function ArrayToPersianDate(pa) {
+    // calc weekday
+    var pd = calcPersian(pa[0], pa[1], pa[2]);
+    var gd = calcGregorian(pd[0], pd[1], pd[2]);
+    var p = PERSIAN_WEEKDAYS[gd[3]] + "،  " + formatPersian(gd[2]) + " " + PERSIAN_MONTHS[gd[1] - 1] + " " + formatPersian(gd[0]);
 
-return p;
+    return p;
 
 }
 
-function ArrayToGregorianDate(pa)
-{
-// calc weekday
-var pd = calcPersian(pa[0],pa[1], pa[2]);
-var p = pd[0] + "-" + ((pd[1] < 10) ? "0" + pd[1] : pd[1]) + "-" + ((pd[2] < 10) ? "0" + pd[2] : pd[2]);
+function ArrayToGregorianDate(pa) {
+    // calc weekday
+    var pd = calcPersian(pa[0], pa[1], pa[2]);
+    var p = pd[0] + "-" + ((pd[1] < 10) ? "0" + pd[1] : pd[1]) + "-" + ((pd[2] < 10) ? "0" + pd[2] : pd[2]);
 
-return p;
+    return p;
 
 }
 
@@ -255,17 +248,15 @@ return p;
 // added by Bahram Maravandi
 // 13 Feb 2007,  24 Bahman 1385
 //
-function formatPersian(num)
-{
-   var tmp = num;
-   tmp = tmp.toString(); 
+function formatPersian(num) {
+    var tmp = num;
+    tmp = tmp.toString();
 
-   for(var i=0; i < 10; i++)
-   {	
-	for(var z=0; z < tmp.length; z++)
-		tmp = tmp.replace(i , PERSIAN_DIGITS[i]);	
-   }
-   
-   tmp = tmp.replace(" ",'');
-   return tmp;
+    for (var i = 0; i < 10; i++) {
+        for (var z = 0; z < tmp.length; z++)
+            tmp = tmp.replace(i, PERSIAN_DIGITS[i]);
+    }
+
+    tmp = tmp.replace(" ", '');
+    return tmp;
 }
