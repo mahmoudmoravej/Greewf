@@ -227,9 +227,19 @@ namespace Greewf.BaseLibrary.MVC
         {
             _contextManager = new Y();
             ContextManagerBase = _contextManager;
+            _uoR = CreateUnitOfRepositoriesInstance();
         }
 
-        protected abstract Z UoR { get; }
+        private Z _uoR;
+        protected Z UoR
+        {
+            get
+            {
+                return _uoR;
+            }
+        }
+
+        protected abstract Z CreateUnitOfRepositoriesInstance();
 
     }
 
