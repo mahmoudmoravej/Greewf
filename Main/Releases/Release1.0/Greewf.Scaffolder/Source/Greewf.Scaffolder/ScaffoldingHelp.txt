@@ -1,0 +1,77 @@
+﻿NOTE!!!:
+	در کنسول پکیج منجر ، دقت کنید که پکیج سورس بر روی همه ست شده باشد
+
+scaffold Controller 'AienTehran.PIN.Biz.Entities.xxx' -DbContextType 'AienTehran.PIN.Dal.PINContext'  -Repository 
+
+just controller:
+scaffold Controller 'AienTehran.PIN.Biz.Entities.xxx' -DbContextType 'AienTehran.PIN.Dal.PINContext' -NoChildItems 
+scaffold Controller 'AienTehran.PIN.Biz.Entities.xxx' -DbContextType 'AienTehran.PIN.Dal.PINContext' -NoChildItems -Repository 
+
+just repository:
+	scaffold Repository 'AienTehran.PIN.Biz.Entities.xxx' -DbContextType 'AienTehran.PIN.Dal.PINContext'
+
+
+
+
+How to change to custom templates:(http://blog.stevensanderson.com/2011/04/06/mvcscaffolding-overriding-the-t4-templates/)
+
+ Scaffold CustomTemplate View Create
+ Scaffold CustomTemplate View _CreateOrEdit
+ Scaffold CustomTemplate View Details
+ Scaffold CustomTemplate View Edit
+ Scaffold CustomTemplate View Index
+
+ Scaffold CustomTemplate Controller ControllerWithContext
+ Scaffold CustomTemplate Controller ControllerWithRepository
+ Scaffold CustomTemplate Repository Repository
+
+
+samples :
+
+ scaffold projectentity 'Aien.CRM.Biz.Entities.AuditLog' -ProjectCompanyName 'Aien' -ProjectMainName 'CRM'
+
+
+ 
+
+ scaffold entity 'Aien.CRM.Biz.Entities.xxxx'       -DbContextType 'Aien.CRM.Dal.CrmContext'       -RepositoryProject '31-CRM.Biz' -WebProject:'50-CRM.UI.Web' -EntityProjectName:'30-CRM.Biz.Entities' -PermissionNameSpaceName 'Aien.CRM.Biz.Entities.Enums.Permissions'       -AutoMapNamespace 'Greewf.BaseLibrary.MVC.Mappers' -CustomizedControllerBaseNamespace 'Greewf.BaseLibrary.MVC' -CustomHelperNamespace 'Greewf.BaseLibrary.MVC.CustomHelpers' -LoggingNamespace 'Greewf.BaseLibrary.MVC.Logging' -LogAttributeNamespace       'Aien.CRM.UI.Web.Logs'
+ scaffold entity 'AienTehran.PIN.Biz.Entities.xxxx' -DbContextType 'AienTehran.PIN.Dal.PinContext' -RepositoryProject '31-PIN.Biz' -WebProject:'50-PIN.UI.Web' -EntityProjectName:'30-PIN.Biz.Entities' -PermissionNameSpaceName 'AienTehran.PIN.Biz.Entities.Enums.Permissions' -AutoMapNamespace 'Greewf.BaseLibrary.MVC.Mappers' -CustomizedControllerBaseNamespace 'Greewf.BaseLibrary.MVC' -CustomHelperNamespace 'Greewf.BaseLibrary.MVC.CustomHelpers' -LoggingNamespace 'Greewf.BaseLibrary.MVC.Logging' -LogAttributeNamespace 'AienTehran.PIN.UI.Web.Logs'
+
+ scaffold entity 'EnergyPars.Ncc.Biz.Entities.xxxx' -DbContextType 'EnergyPars.Ncc.Dal.NccContext' -RepositoryProject '31-NCC.Biz' -WebProject:'50-NCC.UI.Web' -EntityProjectName:'30-NCC.Biz.Entities' -PermissionNameSpaceName 'EnergyPars.Ncc.Biz.Entities.Enums.Permissions' -AutoMapNamespace 'Greewf.BaseLibrary.MVC.Mappers' -CustomizedControllerBaseNamespace 'Greewf.BaseLibrary.MVC' -CustomHelperNamespace 'Greewf.BaseLibrary.MVC.CustomHelpers' -LoggingNamespace 'Greewf.BaseLibrary.MVC.Logging' -LogAttributeNamespace 'EnergyPars.Ncc.UI.Web.Logs'
+
+
+
+ ----------------------------------------P O W E R   S H E L L   H E L P--------------------------------------------
+  get-command *-service
+
+  $z=1,2,3											(defininf array)
+  get-member -inputobject $z						(get array properties)
+  $z=$z+4											(extending array)
+
+  (get-project).properties| get-member				(get current project's properties structure)
+
+  get-help get-member								(help of command let)
+
+  "" vs ''											(double qouetes make replacement but singe qoute not) like : "it is $x book"
+  defining special functions :
+								$source = @"
+									public class MyHelper
+									{
+										public static string ToLowerFirstChar(string input)
+										{
+											return char.ToLower(input[0]) + input.Substring(1);
+										}
+									}
+								"@
+
+								Add-Type -TypeDefinition $source
+
+								$variableTag = [MyHelper]::ToLowerFirstChar($ModelType)
+
+[Reflection.Assembly]::Load("EnvDTE")				(load EnvDTE assembly from GAC)
+  ------------------------------------------------------------------------------------------------------------------
+  refrencecs:
+	http://ss64.com/ps/
+	http://powergui.org/index.jspa
+	http://powerguivsx.codeplex.com/
+	http://technet.microsoft.com/en-us/library/bb978526.aspx
+	http://mvcscaffolding.codeplex.com/wikipage?title=T4Scaffolding%27s%20cmdlets%20for%20use%20in%20custom%20scaffolders&referringTitle=Documentation (special commands for mvc-scaffolding)
