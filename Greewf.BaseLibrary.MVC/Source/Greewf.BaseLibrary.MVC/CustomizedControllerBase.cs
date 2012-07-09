@@ -217,8 +217,7 @@ namespace Greewf.BaseLibrary.MVC
     /// </summary>
     /// <typeparam name="T">The main related Entity the current controller should work on</typeparam>
     /// <typeparam name="Y">The main Context Manager</typeparam>
-    /// <typeparam name="Z">UnitOfRepository Interface class</typeparam>
-    public abstract class CustomizedControllerBase<T, Y, Z> : CustomizedControllerBase
+    public abstract class CustomizedControllerBase<T, Y> : CustomizedControllerBase
         where T : class ,new()
         where Y : ContextManagerBase, new()
     {
@@ -229,7 +228,6 @@ namespace Greewf.BaseLibrary.MVC
             ContextManagerBase = _contextManager;
         }
 
-        protected abstract Z UoR { get; }
 
     }
 
