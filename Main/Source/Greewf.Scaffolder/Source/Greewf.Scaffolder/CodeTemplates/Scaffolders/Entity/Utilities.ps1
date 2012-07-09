@@ -25,7 +25,9 @@ function ApplyTemplate(
 	[string]$OutputFilePostName,
 	[string]$OutputFilePreName,
 	[string]$RepositoryProject,
+	[string]$RepositoryInterfaceProject,
 	[string]$SubRepositoryNameSpace,
+	[string]$SubRepositoryInterfaceNameSpace,
 	[string]$WebProject,
 	[string]$SubViewModelNameSpace,
 	[string]$SubViewModelMetaDataNameSpace,
@@ -53,13 +55,21 @@ function ApplyTemplate(
 		$primaryKey = Get-PrimaryKey $foundModelType.FullName -Project $Project -ErrorIfNotFound
 		if (!$primaryKey) { return }
 
-		$foundDbContextType = Get-ProjectType $DbContextType -Project $Project
+		#some projects may not have context 
+		$foundDbContextType = Get-ProjectType $DbContextType -Project $Project -ErrorAction SilentlyContinue
+		if ($foundDbContextType){
+			$DbContextNamespace =  $foundDbContextType.Namespace.FullName
+			$DbContextType = [MarshalByRefObject]$foundDbContextType
+		}
+		
 
 		$modelTypePluralized = Get-PluralizedWord $foundModelType.Name
 		$defaultNamespace = (Get-Project $Project).Properties.Item("DefaultNamespace").Value
 		
 		$defaultRepositoryProjectNamespace = (Get-Project $RepositoryProject).Properties.Item("DefaultNamespace").Value
 		$repositoryNamespace = [T4Scaffolding.Namespaces]::Normalize($defaultRepositoryProjectNamespace + "." + $SubRepositoryNameSpace)
+		$defaultRepositoryInterfaceProjectNamespace = (Get-Project $RepositoryInterfaceProject).Properties.Item("DefaultNamespace").Value
+		$repositoryInterfaceNamespace = [T4Scaffolding.Namespaces]::Normalize($defaultRepositoryInterfaceProjectNamespace + "." + $SubRepositoryInterfaceNameSpace)
 		$defaultWebProjectNamespace = (Get-Project $WebProject).Properties.Item("DefaultNamespace").Value		
 		$ViewModelNameSpace = [T4Scaffolding.Namespaces]::Normalize($defaultWebProjectNamespace + "." + $SubViewModelNameSpace)
 		$ViewModelMetaDataNameSpace = [T4Scaffolding.Namespaces]::Normalize($defaultWebProjectNamespace + "." + $SubViewModelMetaDataNameSpace)
@@ -97,12 +107,13 @@ function ApplyTemplate(
 				DefaultNamespace = $defaultNamespace; 
 				RepositoryNamespace = $repositoryNamespace;
 				RepositoriesNamespace =$repositoryNamespace;
+				RepositoryInterfaceNamespace = $repositoryInterfaceNamespace;
 				ControllerNamespace  = $ControllerNamespace;
 				ControllerName = $ControllerName;
 				ModelTypeNamespace = $modelTypeNamespace; 
 				ModelTypePluralized = [string]$modelTypePluralized; 
-				DbContextNamespace = $foundDbContextType.Namespace.FullName;
-				DbContextType = [MarshalByRefObject]$foundDbContextType;
+				DbContextNamespace =  $DbContextNamespace;
+				DbContextType = $DbContextType;
 				ViewModelNameSpace = $ViewModelNameSpace;
 				ViewModelMetaDataNameSpace = $ViewModelMetaDataNameSpace;
 				RelatedEntities = $relatedEntities;

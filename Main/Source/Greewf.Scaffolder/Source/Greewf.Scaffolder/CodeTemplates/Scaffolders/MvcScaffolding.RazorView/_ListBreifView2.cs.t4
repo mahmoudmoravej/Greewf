@@ -51,7 +51,7 @@
 		.Columns(columns =>
 		{
 			columns.Bound(o => o.<#= Model.PrimaryKeyName #>).Hidden(true);
-            columns.Bound(o => o.<#= GetModelTitleProperty(modelDataType) #>);
+            columns.Bound(o => o.<#= Model.GetModelTitleProperty(modelDataType) #>);
 		})
         .DataBinding(dataBinding =>
         {

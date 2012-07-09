@@ -12,70 +12,27 @@
 <#@ import namespace="System.Data.Objects.DataClasses" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Reflection" #>
-<#@ import namespace="EnvDTE" #>
 <# var viewDataType = (EnvDTE.CodeType) Model.ViewDataType; #>
 <# var modelDataType = (EnvDTE.CodeType) Model.ModelType; #>
-<# string OPENBRACE= "<"; #>
-<# string CLOSEBRACE = ">"; #>
-<# var entityDataType = (EnvDTE.CodeType) Model.ModelType; #>
 <# if(viewDataType != null) { #>
-@model IEnumerable<<#= viewDataType.FullName #>>
+@model <#= viewDataType.FullName #>
 <# } #>
-<script type="text/javascript" language="javascript"><#=Model.ModelTypePluralized#>
-    function Grid<#=Model.ModelTypePluralized#>BriefView_selected(e) {
-        var layout=layoutHelper.windowLayout;
-        @if (Request.QueryString.AllKeys.Contains("istooltip"))
-        {
-            @:layout=layoutHelper.tooltipLayout;
-        }
-        layout.CloseAndDone({ <#= Model.PrimaryKeyName #>: e.row.cells[0].innerHTML });
+<div class="div-table">
+</div>
+<#
+string titleFieldName=GetModelTitleProperty(modelDataType);
+foreach (ModelProperty property in GetModelProperties(Model.ViewDataType, true)) {
+    if (!property.IsPrimaryKey && !property.IsForeignKey) {
+#>
+
+    <div class="div-table-row">
+	    <div class='display-label'>@Html.LabelFor(model => model.<#= property.Name #>)</div>
+	    <div class='display-field<#= property.Name == titleFieldName ? " emphasize":"" #>'>@<#= property.ValueExpression #></div>
+    </div>
+<#
     }
-
-    function <#=Model.ModelTypePluralized#>GridCallBack(sender, data, isSuccessfulFlagUp) {
-        if (isSuccessfulFlagUp)
-            window.$('#Grid<#=Model.ModelTypePluralized#>BriefView').data('tGrid').ajaxRequest();
-    }
-  
-</script>
-@(Html.Telerik().Grid(Model)
-        .Name("Grid<#=Model.ModelTypePluralized#>BriefView")
-		.DataKeys(keys =>
-		{
-		   keys.Add(c => c.<#= Model.PrimaryKeyName #>);
-		})
-        .Localizable("fa-IR")
-        .Pageable(page =>
-        {
-            page.PageSize(5);
-        })
-		.Columns(columns =>
-		{
-			columns.Bound(o => o.<#= Model.PrimaryKeyName #>).Hidden(true);
-            columns.Bound(o => o.<#= GetModelTitleProperty(modelDataType) #>);
-		})
-        .DataBinding(dataBinding =>
-        {
-            dataBinding.Server()
-                .Select("Index", "<#=Model.ModelTypePluralized#>",Html.AppendSearchCriteria((bool?)ViewBag.IsInSearchForm, new { ajax = true }));
-
-            dataBinding.Ajax()
-                .Select("AjaxIndex", "<#=Model.ModelTypePluralized#>", Html.AppendSearchCriteria((bool?)ViewBag.IsInSearchForm)).Enabled(true);
-        })
-        .Scrollable(scrolling => { scrolling.Enabled(true); scrolling.Height("150"); })
-        .Sortable(sorting => sorting.Enabled(true).OrderBy(ordering =>
-        {
-            ordering.Add(c => c.<#= Model.PrimaryKeyName #>);
-        }))
-        .Pageable(paging => paging.Enabled(true))
-        .Filterable(filtering => filtering.Enabled(false))
-        .Selectable()
-        .ClientEvents(o => o.OnRowSelect("Grid<#=Model.ModelTypePluralized#>BriefView_selected"))
-        .Footer(true)
-
-)
-<br />
-
-
+}
+#>
 <#+
 /*
 																	!!!!!!!!!!!!!!NOTE!!!!!!!!!!! : 
@@ -114,7 +71,7 @@ List<ModelProperty> GetModelProperties(EnvDTE.CodeType typeInfo, bool includeUnb
             prop.ValueExpression = "String.Format(\"{0:F}\", " + prop.ValueExpression + ")";
         }
         else if (prop.Type.UnderlyingTypeIs<DateTime>()) {
-            prop.ValueExpression = "String.Format(\"{0:g}\", " + prop.ValueExpression + ")";
+            prop.ValueExpression = "Html.DisplayFor(model => model."+prop.Name+")";//" String.Format(\"{0:g}\", " + prop.ValueExpression + ")"; By Moravej
         }
 		else if (!IsBindableType(prop.Type)) {
 			prop.ValueExpression = GetValueExpression("Model." + prop.Name, (EnvDTE.CodeType)prop.Type.CodeType);
@@ -132,7 +89,7 @@ string GetValueExpression(string propertyExpression, EnvDTE.CodeType propertyTyp
 		var chosenSubproperty = propertyType.DisplayColumnProperty() ?? propertyType.FindProperty(displayPropertyNames);
 		if (chosenSubproperty != null) {
 			var toStringSuffix = chosenSubproperty.Type.AsFullName == "System.String" ? "" : ".ToString()";
-			return String.Format("({0} == null ? \"None\" : {0}.{1}{2})", propertyExpression, chosenSubproperty.Name, toStringSuffix);
+			return String.Format("({0} == null ? \"هیچکدام\" : {0}.{1}{2})", propertyExpression, chosenSubproperty.Name, toStringSuffix);
 		}
 	}
 	return "Html.DisplayTextFor(_ => " + propertyExpression + ").ToString()";
@@ -169,24 +126,6 @@ bool IsBindableType(EnvDTE.CodeTypeRef type) {
 }
 
 
-string GetDisplayName(EnvDTE.CodeType type){
-	if (string.IsNullOrWhiteSpace(type.DocComment))
-		return type.Name;
-	return GetCleanDocument(type.DocComment);
-}
-string GetCleanDocument(string doc)
-{	
-	return 
-		doc
-		.Replace("<doc>","")
-		.Replace("</doc>","")
-		.Replace("<summary>","")
-		.Replace("</summary>","")
-		.Replace("\r","")
-		.Replace("\n","")
-		.Replace(@"///","")
-		.Trim();
-}
 static string[] titlePropertyNames = new[] { "Name", "Title", "LastName","Lastname", "Surname", "Subject", "Count" };
 string GetModelTitleProperty(EnvDTE.CodeType modelType) {
 	if (modelType != null) {
