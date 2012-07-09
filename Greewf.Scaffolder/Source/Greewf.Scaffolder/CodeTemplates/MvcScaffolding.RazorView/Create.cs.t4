@@ -1,5 +1,5 @@
 ﻿<#@ Template Language="C#" HostSpecific="True" Inherits="DynamicTransform" #>
-<#@ Output extension="cshtml" encoding="UTF8" #>
+<#@ Output extension="cshtml" encoding="UTF8"#>
 <#@ assembly name="System.ComponentModel.DataAnnotations" #>
 <#@ assembly name="System.Core" #>
 <#@ assembly name="System.Data.Entity" #>
@@ -12,78 +12,41 @@
 <#@ import namespace="System.Data.Objects.DataClasses" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Reflection" #>
-<#@ import namespace="EnvDTE" #>
 <# var viewDataType = (EnvDTE.CodeType) Model.ViewDataType; #>
 <# var modelDataType = (EnvDTE.CodeType) Model.ModelType; #>
-<# string OPENBRACE= "<"; #>
-<# string CLOSEBRACE = ">"; #>
-<# var entityDataType = (EnvDTE.CodeType) Model.ModelType; #>
+
 <# if(viewDataType != null) { #>
-@model IEnumerable<<#= viewDataType.FullName #>>
+@model <#= viewDataType.FullName #>
 <# } #>
-<script type="text/javascript" language="javascript"><#=Model.ModelTypePluralized#>
-    function Grid<#=Model.ModelTypePluralized#>BriefView_selected(e) {
-        var layout=layoutHelper.windowLayout;
-        @if (Request.QueryString.AllKeys.Contains("istooltip"))
-        {
-            @:layout=layoutHelper.tooltipLayout;
-        }
-        layout.CloseAndDone({ <#= Model.PrimaryKeyName #>: e.row.cells[0].innerHTML });
-    }
+@{
+    ViewBag.PageTitle = "تعریف <#= GetDisplayName(modelDataType) #> جدید";
+<#
+if (!String.IsNullOrEmpty(Model.Layout)) {
+#>
+    Layout = "<#= Model.Layout #>";
+<#
+}
+#>
+}
 
-    function <#=Model.ModelTypePluralized#>GridCallBack(sender, data, isSuccessfulFlagUp) {
-        if (isSuccessfulFlagUp)
-            window.$('#Grid<#=Model.ModelTypePluralized#>BriefView').data('tGrid').ajaxRequest();
-    }
-  
-</script>
-@(Html.Telerik().Grid(Model)
-        .Name("Grid<#=Model.ModelTypePluralized#>BriefView")
-		.DataKeys(keys =>
-		{
-		   keys.Add(c => c.<#= Model.PrimaryKeyName #>);
-		})
-        .Localizable("fa-IR")
-        .Pageable(page =>
-        {
-            page.PageSize(5);
-        })
-		.Columns(columns =>
-		{
-			columns.Bound(o => o.<#= Model.PrimaryKeyName #>).Hidden(true);
-            columns.Bound(o => o.<#= GetModelTitleProperty(modelDataType) #>);
-		})
-        .DataBinding(dataBinding =>
-        {
-            dataBinding.Server()
-                .Select("Index", "<#=Model.ModelTypePluralized#>",Html.AppendSearchCriteria((bool?)ViewBag.IsInSearchForm, new { ajax = true }));
+<# if(Model.ReferenceScriptLibraries) { #>
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
 
-            dataBinding.Ajax()
-                .Select("AjaxIndex", "<#=Model.ModelTypePluralized#>", Html.AppendSearchCriteria((bool?)ViewBag.IsInSearchForm)).Enabled(true);
-        })
-        .Scrollable(scrolling => { scrolling.Enabled(true); scrolling.Height("150"); })
-        .Sortable(sorting => sorting.Enabled(true).OrderBy(ordering =>
-        {
-            ordering.Add(c => c.<#= Model.PrimaryKeyName #>);
-        }))
-        .Pageable(paging => paging.Enabled(true))
-        .Filterable(filtering => filtering.Enabled(false))
-        .Selectable()
-        .ClientEvents(o => o.OnRowSelect("Grid<#=Model.ModelTypePluralized#>BriefView_selected"))
-        .Footer(true)
-
-)
-<br />
+<# } #>
+@using (Html.BeginForm()) {
+    @Html.ValidationSummaryInWindow(false)
+    <fieldset>
+        <legend><#= GetDisplayName(modelDataType) #> جدید</legend>
+		@Html.Partial("_CreateOrEdit", Model)
+        <p>
+			<button class="t-button" type="submit"><span class="icon16 filesave-png"></span>ذخیره اطلاعات <#= GetDisplayName(modelDataType) #></button><br />		
+        </p>
+    </fieldset>
+}
 
 
 <#+
-/*
-																	!!!!!!!!!!!!!!NOTE!!!!!!!!!!! : 
-																	!!!!!!!!!!!!!!NOTE!!!!!!!!!!! : 
-			becuase of the problem which is mentioned in "http://mvcscaffolding.codeplex.com/workitem/36" I should disable "prop.IsReadable()" code 
-																	!!!!!!!!!!!!!!NOTE!!!!!!!!!!! : 
-																	!!!!!!!!!!!!!!NOTE!!!!!!!!!!! : 
-*/
 // Describes the information about a property on the model
 class ModelProperty {
     public string Name { get; set; }
@@ -143,14 +106,14 @@ List<ModelProperty> GetEligibleProperties(EnvDTE.CodeType typeInfo, bool include
     List<ModelProperty> results = new List<ModelProperty>();
 	if (typeInfo != null) {
 		foreach (var prop in typeInfo.VisibleMembers().OfType<EnvDTE.CodeProperty>()) {
-			if (/*prop.IsReadable() && BY Mahmoud Moravej */ !prop.HasIndexParameters() && (includeUnbindableProperties || IsBindableType(prop.Type))) {
+			if (prop.IsReadable() && !prop.HasIndexParameters() && (includeUnbindableProperties || IsBindableType(prop.Type))) {
 				results.Add(new ModelProperty {
 					Name = prop.Name,
 					ValueExpression = "Model." + prop.Name,
 					Type = prop.Type,
 					IsPrimaryKey = Model.PrimaryKeyName == prop.Name,
 					IsForeignKey = ParentRelations.Any(x => x.RelationProperty == prop),
-					IsReadOnly = false//!prop.IsWriteable() BY Mahmoud Moravej
+					IsReadOnly = !prop.IsWriteable()
 				});
 			}
 		}
@@ -167,7 +130,6 @@ IEnumerable<RelatedEntityInfo> ParentRelations {
 bool IsBindableType(EnvDTE.CodeTypeRef type) {
     return type.UnderlyingIsPrimitive() || bindableNonPrimitiveTypes.Any(x => type.UnderlyingTypeIs(x));
 }
-
 
 string GetDisplayName(EnvDTE.CodeType type){
 	if (string.IsNullOrWhiteSpace(type.DocComment))
@@ -186,15 +148,5 @@ string GetCleanDocument(string doc)
 		.Replace("\n","")
 		.Replace(@"///","")
 		.Trim();
-}
-static string[] titlePropertyNames = new[] { "Name", "Title", "LastName","Lastname", "Surname", "Subject", "Count" };
-string GetModelTitleProperty(EnvDTE.CodeType modelType) {
-	if (modelType != null) {
-		var chosenSubproperty = modelType.FindProperty(titlePropertyNames);
-		if (chosenSubproperty != null) {
-			return chosenSubproperty.Name;
-		}
-	}
-	return Model.PrimaryKeyName;
 }
 #>
