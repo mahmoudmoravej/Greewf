@@ -302,9 +302,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y /E /D "$(TargetDir)\Scripts" "$(SolutionDir)\..\GreewfRelease\Scripts\"
-xcopy /Y /E /D "$(TargetDir)\Documents" "$(SolutionDir)\..\GreewfRelease\Documents\"
-xcopy /Y /D "$(TargetDir)*.dll" "$(SolutionDir)\..\GreewfRelease\Dlls\"
+    <PostBuildEvent>xcopy /Y /E /D "$(TargetDir)\Scripts" "$(SolutionDir)\GreewfRelease\Scripts\"
+xcopy /Y /E /D "$(TargetDir)\Documents" "$(SolutionDir)\GreewfRelease\Documents\"
+xcopy /Y /D "$(TargetDir)*.dll" "$(SolutionDir)\GreewfRelease\Dlls\"
 
 rem if exist "\\Server\Software\SharedResources\GreewfRelease\" xcopy /Y /E /D "$(SolutionDir)\..\GreewfRelease\*" "\\Server\Software\SharedResources\GreewfRelease\"</PostBuildEvent>
   </PropertyGroup>
