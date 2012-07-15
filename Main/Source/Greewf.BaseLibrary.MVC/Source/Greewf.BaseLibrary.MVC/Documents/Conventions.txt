@@ -13,7 +13,7 @@ link style :
 	winDisableBackHide = در صورتی که می خواهید پنجره پشتی در زمان باز شدن پنجره جدید مخفی نشود
 	winNoModal= آیا نمایش به صورت مودال نباشد
 	winNoMaximaizable = ماکیزمایز پذیر نباشد!
-	windowcallback = function (url,data){}
+	windowcallback = function (url,data,isSuccessfulFlagUp){}
 	responsiveAjax = اگر اکشنی که انجام می دهد نتیجه اش یک متنی است که تنها می بایست در پنجره مربوطه نمایش داده شود. مثلا وقتی کالا به سبد خرید اضافه می شود و نتیجه این است که "کالا اضافه شد" از این موارد استفاده می شود.
 	tooltipWindow=  آیا در یک تول تیپ باز کند؟
 	
