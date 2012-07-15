@@ -114,6 +114,11 @@
         if (tooltip != null) tooltip.api.hide();
     }
 
+    tooltipLayout.ResizeToContent = function () {
+        if (lastTooltip == null) return;
+        $.layoutCore.resizeToContent($.tooltipLayout, lastTooltip.widget, lastTooltip.widgetTitle);
+    }
+
     tooltipLayout.maximize = function (win) {
         // win.data('tWindow').maximize();
     }

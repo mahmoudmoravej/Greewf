@@ -2,7 +2,7 @@
 
     if ($.windowLayout != undefined) return; //I don't know why this object call more than once. this insure us to hace only one instance per page
     windowLayout = {};
-    var activeWinsQueue = new Array(); // {sender: xxx, win:xxx,ownerWindow:xxx}
+    var activeWinsQueue = new Array(); // activeWinsQueue.push({ win: w, sender: sender, ownerWindow: ownerWindow, isModal: isModal, widget: widget });  +   widget = { core: w, htmlTag: w, ownerWindow: ownerWindow, sender: sender };
     var messageWins = new Array(); //{win:xxx , type:xxx}
     var inAutoHide;
     var inAutoClose = false;
@@ -226,6 +226,14 @@
         lw.win.data('tWindow').close();
         inAutoClose = false;
     }
+
+    windowLayout.ResizeToContent = function () {
+        if (activeWinsQueue.length == 0) return;
+        var lw = activeWinsQueue[activeWinsQueue.length - 1];
+        var winTitle = $('span.t-window-title', lw.win);
+        $.layoutCore.resizeToContent($.windowLayout, lw.widget, winTitle);
+    }
+
 
     windowLayout.maximize = function (win) {
         win.core.data('tWindow').maximize();
