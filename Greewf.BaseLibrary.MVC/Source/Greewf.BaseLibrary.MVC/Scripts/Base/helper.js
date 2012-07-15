@@ -72,7 +72,7 @@
         return stringToTrim.replace(/^\s+|\s+$/g, "");
     }
 
-    this.loadAjax = function (url, dest, doPost, hideAjaxLoader) {
+    this.loadAjax = function (url, dest, doPost, hideAjaxLoader, successPostBack) {
         $.ajax({
             type: doPost ? "POST" : "GET",
             url: url,
@@ -82,6 +82,7 @@
             },
             success: function (html) {
                 dest.html(html);
+                if (successPostBack) successPostBack();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 dest.html(xhr.responseText);

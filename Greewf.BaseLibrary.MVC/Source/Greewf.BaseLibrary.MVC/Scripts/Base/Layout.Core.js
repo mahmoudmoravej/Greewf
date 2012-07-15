@@ -222,6 +222,14 @@
         }
     }
 
+    layoutCore.resizeToContent = function (widgetLayout, widget, widgetTitle) {
+        var contentContainer = $('#addedAjaxWindowContentContainer', widget.htmlTag);
+        var winWidth = $(widget.sender).attr('winwidth');
+        var winHeight = $(widget.sender).attr('winheight');
+        var winMax = $(widget.sender).attr('winMax');
+        correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, true, contentContainer.outerHeight(), contentContainer.outerWidth());
+    }
+
     function enableValidation(widgetLayout, widget) {
         //unobtrusive validation
         if ($.validator.unobtrusive != undefined && $.validator.unobtrusive != null) {
