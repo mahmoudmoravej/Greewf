@@ -227,11 +227,11 @@
         inAutoClose = false;
     }
 
-    windowLayout.ResizeToContent = function () {
+    windowLayout.MaximizeToContent = function (adjustCenter) {
         if (activeWinsQueue.length == 0) return;
         var lw = activeWinsQueue[activeWinsQueue.length - 1];
         var winTitle = $('span.t-window-title', lw.win);
-        $.layoutCore.resizeToContent($.windowLayout, lw.widget, winTitle);
+        $.layoutCore.maximizeToContent($.windowLayout, lw.widget, winTitle, adjustCenter);
     }
 
 
@@ -239,18 +239,28 @@
         win.core.data('tWindow').maximize();
     }
 
+    windowLayout.isMaximized = function (win) {
+        return $('.t-window-actions .t-restore', win.htmlTag).length > 0;
+    }
+
     windowLayout.center = function (win) {
         win.core.data('tWindow').center();
     }
 
-    windowLayout.setHeight = function (win, height) {
-        win.core.data('tWindow').height = height;
-        $(win.core.data('tWindow').element).find(".t-window-content").height(height);
+    windowLayout.setHeight = function (win, height, justGrow) {
+        var cnt = $(win.core.data('tWindow').element).find(".t-window-content");
+        if (justGrow == false || cnt.height() < height) {
+            win.core.data('tWindow').height = height;
+            cnt.height(height);
+        }
     }
 
-    windowLayout.setWidth = function (win, width) {
-        win.core.data('tWindow').width = width;
-        $(win.core.data('tWindow').element).find(".t-window-content").width(width);
+    windowLayout.setWidth = function (win, width, justGrow) {
+        var cnt = $(win.core.data('tWindow').element).find(".t-window-content");
+        if (justGrow == false || cnt.width() < width) {
+            win.core.data('tWindow').width = width;
+            cnt.width(width);
+        }
     }
 
     windowLayout.getTitleHeight = function (winTitle) {

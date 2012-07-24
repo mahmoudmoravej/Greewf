@@ -114,24 +114,29 @@
         if (tooltip != null) tooltip.api.hide();
     }
 
-    tooltipLayout.ResizeToContent = function () {
+    tooltipLayout.MaximizeToContent = function (adjustCenter) {
         if (lastTooltip == null) return;
-        $.layoutCore.resizeToContent($.tooltipLayout, lastTooltip.widget, lastTooltip.widgetTitle);
+        $.layoutCore.maximizeToContent($.tooltipLayout, lastTooltip.widget, lastTooltip.widgetTitle, adjustCenter);
     }
 
     tooltipLayout.maximize = function (win) {
         // win.data('tWindow').maximize();
     }
 
+    tooltipLayout.isMaximized = function (win) {
+        return false; //$('.t-window-actions .t-restore', win.htmlTag).length > 0;
+    }
+
+
     tooltipLayout.center = function (win) {
         //  win.data('tWindow').center();
     }
 
-    tooltipLayout.setHeight = function (win, height) {
+    tooltipLayout.setHeight = function (win, height, justGrow) {
         //  $(win.data('tWindow').element).find(".t-window-content").height(height);
     }
 
-    tooltipLayout.setWidth = function (win, width) {
+    tooltipLayout.setWidth = function (win, width, justGrow) {
         //  $(win.data('tWindow').element).find(".t-window-content").width(width);
     }
 

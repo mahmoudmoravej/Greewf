@@ -63,6 +63,7 @@
         var maximaizable = $(sender).attr('winNoMaximaizable') == undefined;
         var winMax = $(sender).attr('winMax');
         var doAjax = $(sender).attr('ajax');
+        var autoGrowingSize = $(sender).attr('autoGrowingSize');
 
         link = correctLink(link, doAjax != undefined, true, true, widgetLayout.getTypeCode());
 
@@ -72,6 +73,7 @@
                 $('#addedAjaxWindowContentContainer', widget.htmlTag).attr('contentLoaded', 'true');
                 var contentContainer = $('#addedAjaxWindowContentContainer', widget.htmlTag);
                 correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, true, contentContainer.outerHeight(), contentContainer.outerWidth());
+                setAutoSizeGrower(autoGrowingSize, widgetLayout, widget, widgetTitle);
             });
 
         }
@@ -85,6 +87,7 @@
                 //$(this).css('visibility', 'visible'); //1:jquery hide/show methods makes some problem with inner content,2:making invisible makes problem in first field focusing
                 changeWidgetTitle(widgetLayout, widgetTitle, title == '' ? (this.contentWindow.document != undefined ? this.contentWindow.document.title : '') : title);
                 correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, getIframeResizingCondition(this), $(this.contentWindow.document.body).outerHeight(), $(this.contentWindow.document.body).outerWidth());
+                setAutoSizeGrower(autoGrowingSize, widgetLayout, widget, widgetTitle);
 
                 handleSpecialPagesByLink(widgetLayout, widget, this.contentWindow.location);
 
@@ -95,23 +98,40 @@
 
     }
 
+    function setAutoSizeGrower(autoGrowingSize, widgetLayout, widget, widgetTitle) {
+        if (autoGrowingSize == null || widget == null) return;
+        if (widget.autoSizeGrowerCallBack) clearInterval(widget.autoSizeGrowerCallBack);
+        widget.autoSizeGrowerCallBack =
+            setInterval(function () {
+                if (widget.htmlTag[0].parentElement == null) clearInterval(widget.autoSizeGrowerCallBack);
+                try {
+                    layoutCore.maximizeToContent(widgetLayout, widget, widgetTitle, true);                
+                } catch (e) {
+                    clearInterval(widget.autoSizeGrowerCallBack);
+                }
+            },500);
+    }
+
     layoutCore.widgetActivated = function (widgetLayout, widget, widgetTitle) {
         sender = widget.sender;
         var doAjax = $(sender).attr('ajax');
         var winWidth = $(sender).attr('winwidth');
         var winHeight = $(sender).attr('winheight');
         var winMax = $(sender).attr('winMax');
+        var autoGrowingSize = $(sender).attr('autoGrowingSize');
 
         if (doAjax != undefined) {//ajax request : pure mode
             if ($('#addedAjaxWindowContentContainer', widget.htmlTag).attr('contentLoaded') == undefined) return; //dont correct size if the content is not loaded
             var contentContainer = $('#addedAjaxWindowContentContainer', widget.htmlTag);
             correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, true, contentContainer.outerHeight(), contentContainer.outerWidth());
+            setAutoSizeGrower(autoGrowingSize, widgetLayout, widget, widgetTitle);
         }
         else {//iframe
             var frame = $("iframe", widget.htmlTag)[0]; //note : just one iframe is alowed
             if ($(frame).data('contentLoaded') == true) return; //dont correct size if the content is not loaded
 
             correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, getIframeResizingCondition(frame), $(frame.contentWindow.document.body).outerHeight(), $(frame.contentWindow.document.body).outerWidth());
+            setAutoSizeGrower(autoGrowingSize, widgetLayout, widget, widgetTitle);
         }
 
     }
@@ -201,33 +221,39 @@
 
     }
 
-    function correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, correctionCondition, contentHieght, contentWidth) {
+    function correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, correctionCondition, contentHieght, contentWidth, justGrow, discardCentering) {
         if (winMax != undefined) widgetLayout.maximize(widget);
+        if (widgetLayout.isMaximized(widget)) return;
         //correct windget size
         if (winMax == undefined && correctionCondition == true) {
             if (winHeight == undefined) {
                 var maxHeight = $(window).height() - 100;
                 var newHeight = contentHieght + widgetLayout.getTitleHeight(widgetTitle);
                 if (newHeight > maxHeight) newHeight = maxHeight;
-                widgetLayout.setHeight(widget, newHeight);
+                widgetLayout.setHeight(widget, newHeight, justGrow);
             }
             if (winWidth == undefined) {
                 var maxWidth = $(window).width() - 100;
                 var newWidth = contentWidth; //indeed it get its value from the window
                 if (newWidth > maxWidth) newWidth = maxWidth;
-                widgetLayout.setWidth(widget, newWidth);
+                widgetLayout.setWidth(widget, newWidth, justGrow);
             }
+            if (discardCentering) return;
             if (winWidth == undefined || winHeight == undefined)
                 widgetLayout.center(widget);
         }
     }
 
-    layoutCore.resizeToContent = function (widgetLayout, widget, widgetTitle) {
-        var contentContainer = $('#addedAjaxWindowContentContainer', widget.htmlTag);
+    layoutCore.maximizeToContent = function (widgetLayout, widget, widgetTitle, adjustCenter) {
+        var widgetHtmlTag = $(widget.htmlTag);
+        var contentContainer = $('#addedAjaxWindowContentContainer', widgetHtmlTag);
+        if (contentContainer.length == 0) return; //TODO : iframes resizing is not supported yet.
         var winWidth = $(widget.sender).attr('winwidth');
         var winHeight = $(widget.sender).attr('winheight');
         var winMax = $(widget.sender).attr('winMax');
-        correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, true, contentContainer.outerHeight(), contentContainer.outerWidth());
+        var realWidth = Math.max(contentContainer[0].scrollWidth, contentContainer.outerWidth());
+        var realHeight = Math.max(contentContainer[0].scrollHeight, contentContainer.outerHeight());
+        correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, true, realHeight, realWidth, true, adjustCenter != true);
     }
 
     function enableValidation(widgetLayout, widget) {
