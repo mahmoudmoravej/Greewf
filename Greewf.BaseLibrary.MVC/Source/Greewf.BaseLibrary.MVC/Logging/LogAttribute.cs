@@ -59,6 +59,8 @@ namespace Greewf.BaseLibrary.MVC.Logging
 
             if (logOnResultType == LogResultType.Always)
                 return true;
+            else if ((logOnResultType & LogResultType.SuccessView) > 0 && actionResult is SuccessViewResult)
+                return true;
             else if ((logOnResultType & LogResultType.View) > 0 && actionResult is ViewResultBase)
                 return true;
             else if (actionResult is RedirectToRouteResult || actionResult is RedirectResult)
@@ -112,7 +114,8 @@ namespace Greewf.BaseLibrary.MVC.Logging
         View = 1,
         Redirect = 2,
         RedirectToSuccess = 4,
-        Always = View | Redirect | RedirectToSuccess
+        SuccessView = 8,
+        Always = View | Redirect | RedirectToSuccess | SuccessView
     }
 
 }

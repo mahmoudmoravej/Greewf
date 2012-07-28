@@ -21,10 +21,11 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
           IEnumerable<TProperty> allItems,
           Func<TProperty, SelectListItem> selectListItemGenerator,
           object htmlAttributes = null,
-          bool isRigidList = false)
+          bool isRigidList = false,
+          string onClientChange = null)
         {
             string fullHtmlName = helper.GetFullPropertyName(expressionKey, false);
-            return CompoundComboListForParent(helper, fullHtmlName, allItems, selectListItemGenerator, htmlAttributes, isRigidList);
+            return CompoundComboListForParent(helper, fullHtmlName, allItems, selectListItemGenerator, htmlAttributes, isRigidList, onClientChange);
         }
 
         public static MvcHtmlString CompoundComboListForParent<TModel, TProperty>(
@@ -33,12 +34,14 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
             IEnumerable<TProperty> allItems,
             Func<TProperty, SelectListItem> selectListItemGenerator,
             object htmlAttributes = null,
-            bool isRigidList = false)
+            bool isRigidList = false,
+            string onClientChange = null)
         {
             string fullHtmlName = name;
             //string changeJsFunction = name.Replace(".", "_") + "Changed";
 
             StringBuilder output = new StringBuilder();
+            onClientChange = string.IsNullOrWhiteSpace(onClientChange) ? "" : onClientChange + "();";
 
             if (isRigidList)
             {
@@ -52,7 +55,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                         .SelectedIndex(int.MaxValue)
                         .ClientEvents(o => o
                             .OnLoad(x => "function(){$(this).data('child-listeners',[]);}")
-                            .OnChange(x => "function(){$($(this).data('child-listeners')).each(function(i,o){ o(); });}"))
+                            .OnChange(x => string.Format("function(){{$($(this).data('child-listeners')).each(function(i,o){{ o(); }}); {0} }}", onClientChange)))
                         .HtmlAttributes(htmlAttributes)
                     //.Value("")
                         .BindTo(allItems.Select(selectListItemGenerator)).ToHtmlString())
@@ -70,7 +73,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                         .Encode(false)
                         .ClientEvents(o => o
                             .OnLoad(x => "function(){$(this).data('child-listeners',[]);}")
-                            .OnChange(x => "function(){$($(this).data('child-listeners')).each(function(i,o){ o(); });}"))
+                            .OnChange(x => string.Format("function(){{$($(this).data('child-listeners')).each(function(i,o){{ o(); }}); {0} }}", onClientChange)))
                     //.ClientEvents(o => o.OnChange(x => "function(){" + changeJsFunction + "();}"))
                         .HtmlAttributes(htmlAttributes)
                         .BindTo(allItems.Select(selectListItemGenerator)).ToHtmlString()
@@ -92,7 +95,8 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
             string childsLoaderUrlParameterName,
             object htmlAttributes = null,
             bool isParentToo = false,
-            bool isRigidList = false)
+            bool isRigidList = false,
+            string onClientChange = null)
         {
 
             string childKeyName = helper.GetFullPropertyName(expressionKey);
@@ -107,6 +111,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
             //string func_ParentChanged = parentKeyName + "Changed";
 
             StringBuilder output = new StringBuilder();
+            onClientChange = string.IsNullOrWhiteSpace(onClientChange) ? "" : onClientChange + "();";
             //string changeJsFunction = childFullHtmlName.Replace(".", "_") + "Changed";
 
 
@@ -145,14 +150,15 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                         .Encode(false)
                         .ClientEvents(o => o.OnLoad(x => "function(){$(this).data('child-listeners',[]); " + func_ChildLoaded + "();}"))
                         .HtmlAttributes(htmlAttributes)
-                    //.Value("")
                         .BindTo(allItems.Where(o => (parentValue != null) && parentMatcher(o, parentValue)).Select(selectListItemGenerator));
 
                 if (isParentToo)
                     telerikDropDown.ClientEvents(o => o
-                        //.OnLoad(x => "function(){$(this).data('child-listeners',[]);}")
-                        .OnChange(x => "function(){$($(this).data('child-listeners')).each(function(i,o){ o(); });}"));
-                        //telerikDropDown.ClientEvents(o => o.OnChange(changeJsFunction));
+                        .OnChange(x => string.Format("function(){{$($(this).data('child-listeners')).each(function(i,o){{ o(); }}); {0} }}", onClientChange)));
+                else if (onClientChange.Length > 0)
+                    telerikDropDown.ClientEvents(o => o
+                        .OnChange(x => string.Format("function(){{ {0} }}", onClientChange)));
+
 
                 output.Append(telerikDropDown.ToHtmlString());
             }
@@ -171,8 +177,10 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
 
                 if (isParentToo)
                     telerikCombo.ClientEvents(o => o
-                        //.OnLoad(x => "function(){$(this).data('child-listeners',[]);}")
-                        .OnChange(x => "function(){$($(this).data('child-listeners')).each(function(i,o){ o(); });}"));
+                        .OnChange(x => string.Format("function(){{$($(this).data('child-listeners')).each(function(i,o){{ o(); }}); {0} }}",onClientChange)));
+                else if (onClientChange.Length > 0)
+                    telerikCombo.ClientEvents(o => o
+                        .OnChange(x => string.Format("function(){{ {0} }}", onClientChange)));
 
                 output.Append(telerikCombo.ToHtmlString());
 

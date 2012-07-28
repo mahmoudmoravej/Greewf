@@ -1,5 +1,4 @@
-﻿
-(function ($) {
+﻿(function ($) {
     layoutCore = {};
     var widgetManager = { changeTitle: '' };
 
@@ -63,7 +62,6 @@
         var maximaizable = $(sender).attr('winNoMaximaizable') == undefined;
         var winMax = $(sender).attr('winMax');
         var doAjax = $(sender).attr('ajax');
-        var autoGrowingSize = $(sender).attr('autoGrowingSize');
 
         link = correctLink(link, doAjax != undefined, true, true, widgetLayout.getTypeCode());
 
@@ -73,7 +71,7 @@
                 $('#addedAjaxWindowContentContainer', widget.htmlTag).attr('contentLoaded', 'true');
                 var contentContainer = $('#addedAjaxWindowContentContainer', widget.htmlTag);
                 correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, true, contentContainer.outerHeight(), contentContainer.outerWidth());
-                setAutoSizeGrower(autoGrowingSize, widgetLayout, widget, widgetTitle);
+                setAutoGrowingSize(sender, widgetLayout, widget, widgetTitle);
             });
 
         }
@@ -87,7 +85,7 @@
                 //$(this).css('visibility', 'visible'); //1:jquery hide/show methods makes some problem with inner content,2:making invisible makes problem in first field focusing
                 changeWidgetTitle(widgetLayout, widgetTitle, title == '' ? (this.contentWindow.document != undefined ? this.contentWindow.document.title : '') : title);
                 correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, getIframeResizingCondition(this), $(this.contentWindow.document.body).outerHeight(), $(this.contentWindow.document.body).outerWidth());
-                setAutoSizeGrower(autoGrowingSize, widgetLayout, widget, widgetTitle);
+                setAutoGrowingSize(sender, widgetLayout, widget, widgetTitle);
 
                 handleSpecialPagesByLink(widgetLayout, widget, this.contentWindow.location);
 
@@ -98,18 +96,27 @@
 
     }
 
-    function setAutoSizeGrower(autoGrowingSize, widgetLayout, widget, widgetTitle) {
-        if (autoGrowingSize == null || widget == null) return;
+    function getGrowingSizeOptions(sender) {
+        var s = $(sender);
+        return {
+            enabled: s.attr('autoGrowingSize') != null || s.attr('autoCenteredGrowingSize') != null,
+            autoCenter: s.attr('autoCenteredGrowingSize') != null
+        };
+    }
+
+    function setAutoGrowingSize(sender, widgetLayout, widget, widgetTitle) {
+        var options = getGrowingSizeOptions(sender);
+        if (!options.enabled || widget == null) return;
         if (widget.autoSizeGrowerCallBack) clearInterval(widget.autoSizeGrowerCallBack);
         widget.autoSizeGrowerCallBack =
             setInterval(function () {
                 if (widget.htmlTag[0].parentElement == null) clearInterval(widget.autoSizeGrowerCallBack);
                 try {
-                    layoutCore.maximizeToContent(widgetLayout, widget, widgetTitle, true);                
+                    layoutCore.maximizeToContent(widgetLayout, widget, widgetTitle, options.autoCenter);
                 } catch (e) {
                     clearInterval(widget.autoSizeGrowerCallBack);
                 }
-            },500);
+            }, 500);
     }
 
     layoutCore.widgetActivated = function (widgetLayout, widget, widgetTitle) {
@@ -118,20 +125,19 @@
         var winWidth = $(sender).attr('winwidth');
         var winHeight = $(sender).attr('winheight');
         var winMax = $(sender).attr('winMax');
-        var autoGrowingSize = $(sender).attr('autoGrowingSize');
 
         if (doAjax != undefined) {//ajax request : pure mode
             if ($('#addedAjaxWindowContentContainer', widget.htmlTag).attr('contentLoaded') == undefined) return; //dont correct size if the content is not loaded
             var contentContainer = $('#addedAjaxWindowContentContainer', widget.htmlTag);
             correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, true, contentContainer.outerHeight(), contentContainer.outerWidth());
-            setAutoSizeGrower(autoGrowingSize, widgetLayout, widget, widgetTitle);
+            setAutoGrowingSize(sender, widgetLayout, widget, widgetTitle);
         }
         else {//iframe
             var frame = $("iframe", widget.htmlTag)[0]; //note : just one iframe is alowed
             if ($(frame).data('contentLoaded') == true) return; //dont correct size if the content is not loaded
 
             correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, getIframeResizingCondition(frame), $(frame.contentWindow.document.body).outerHeight(), $(frame.contentWindow.document.body).outerWidth());
-            setAutoSizeGrower(autoGrowingSize, widgetLayout, widget, widgetTitle);
+            setAutoGrowingSize(sender, widgetLayout, widget, widgetTitle);
         }
 
     }
@@ -226,21 +232,22 @@
         if (widgetLayout.isMaximized(widget)) return;
         //correct windget size
         if (winMax == undefined && correctionCondition == true) {
+            var changingDone = false;
             if (winHeight == undefined) {
                 var maxHeight = $(window).height() - 100;
                 var newHeight = contentHieght + widgetLayout.getTitleHeight(widgetTitle);
                 if (newHeight > maxHeight) newHeight = maxHeight;
-                widgetLayout.setHeight(widget, newHeight, justGrow);
+                changingDone = changingDone  || widgetLayout.setHeight(widget, newHeight, justGrow);
             }
             if (winWidth == undefined) {
                 var maxWidth = $(window).width() - 100;
                 var newWidth = contentWidth; //indeed it get its value from the window
                 if (newWidth > maxWidth) newWidth = maxWidth;
-                widgetLayout.setWidth(widget, newWidth, justGrow);
+                changingDone = changingDone || widgetLayout.setWidth(widget, newWidth, justGrow);
             }
             if (discardCentering) return;
             if (winWidth == undefined || winHeight == undefined)
-                widgetLayout.center(widget);
+                if (changingDone) widgetLayout.center(widget);
         }
     }
 

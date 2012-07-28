@@ -134,10 +134,12 @@
 
     tooltipLayout.setHeight = function (win, height, justGrow) {
         //  $(win.data('tWindow').element).find(".t-window-content").height(height);
+        return false;
     }
 
     tooltipLayout.setWidth = function (win, width, justGrow) {
         //  $(win.data('tWindow').element).find(".t-window-content").width(width);
+        return false;
     }
 
     tooltipLayout.getTitleHeight = function (winTitle) {

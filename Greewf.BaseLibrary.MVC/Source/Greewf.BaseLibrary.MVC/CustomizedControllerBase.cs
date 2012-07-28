@@ -181,6 +181,12 @@ namespace Greewf.BaseLibrary.MVC
             return base.Json(data);
         }
 
+        protected SuccessViewResult SuccessView(string viewName, object model)
+        {
+            ViewData.Model = model;
+            return new SuccessViewResult() { TempData = this.TempData, ViewName = viewName, ViewData = this.ViewData };
+        }
+
 
         protected internal virtual ModelPermissionLimiters GetModelLimiterFunctions(dynamic model)
         {
@@ -319,6 +325,9 @@ namespace Greewf.BaseLibrary.MVC
         }
     }
 
+    public class SuccessViewResult : ViewResult
+    {
+    }
 
     public class ModelPermissionLimiters
     {
