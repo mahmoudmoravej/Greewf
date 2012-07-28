@@ -252,7 +252,9 @@
         if (justGrow == false || cnt.height() < height) {
             win.core.data('tWindow').height = height;
             cnt.height(height);
+            return true;
         }
+        return false;
     }
 
     windowLayout.setWidth = function (win, width, justGrow) {
@@ -260,7 +262,9 @@
         if (justGrow == false || cnt.width() < width) {
             win.core.data('tWindow').width = width;
             cnt.width(width);
+            return true;
         }
+        return false;
     }
 
     windowLayout.getTitleHeight = function (winTitle) {
