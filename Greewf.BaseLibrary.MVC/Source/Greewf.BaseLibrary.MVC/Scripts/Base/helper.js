@@ -189,10 +189,22 @@ layoutHelper = new function () {
             container = layoutHelper.windowLayoutActiveDocument();
 
         var x = $(".editor-focus2", container).filter(":last");
-        if (x.length == 0)
+        if (x.length == 0) {
+            makeFocusToInput($, container);
+        }
+        else {
+            layoutHelper.mainJqObject()(x).data('closeHandler', function () { if ($ != undefined) makeFocusToInput($, container); });
+        }
+    }
+
+    function makeFocusToInput($, container) {
+        var frame = $('.editor-focus iframe', container);
+        if (frame.length == 0)
             $(".editor-focus input", container).filter(":last").focus();
         else {
-            layoutHelper.mainJqObject()(x).data('closeHandler', function () { if ($ != undefined) $(".editor-focus input", container).filter(":last").focus(); });
+            frame = frame.filter(":last");
+            frame.focus();
+            $('html', frame.content).focus();
         }
     }
 
