@@ -44,10 +44,6 @@
 		   keys.Add(c => c.<#= Model.PrimaryKeyName #>);
 		})
         .Localizable("fa-IR")
-        .Pageable(page =>
-        {
-            page.PageSize(5);
-        })
 		.Columns(columns =>
 		{
 			columns.Bound(o => o.<#= Model.PrimaryKeyName #>).Hidden(true);
@@ -66,7 +62,7 @@
         {
             ordering.Add(c => c.<#= Model.PrimaryKeyName #>);
         }))
-        .Pageable(paging => paging.Enabled(true))
+        .Pageable(paging => paging.Enabled(true).PageSize(5))
         .Filterable(filtering => filtering.Enabled(false))
         .Selectable()
         .ClientEvents(o => o.OnRowSelect("Grid<#=Model.ModelTypePluralized#>BriefView_selected"))

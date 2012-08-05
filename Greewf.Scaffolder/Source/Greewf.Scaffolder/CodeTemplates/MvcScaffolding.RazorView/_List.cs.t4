@@ -44,10 +44,6 @@
 		   keys.Add(c => c.<#= Model.PrimaryKeyName #>);
 		})
         .Localizable("fa-IR")
-        .Pageable(page =>
-        {
-            page.PageSize(10);
-        })
 		.Columns(columns =>
 		{
 			columns.Bound(o => o.<#= Model.PrimaryKeyName #>).Hidden(true);
@@ -91,7 +87,7 @@ foreach (ModelProperty property in properties) {
         {
             ordering.Add(c => c.<#= Model.PrimaryKeyName #>);
         }))
-        .Pageable(paging => paging.Enabled(true))
+        .Pageable(paging => paging.Enabled(true).PageSize(10))
         .Filterable(filtering => filtering.Enabled(true))
         .Groupable(grouping => grouping.Enabled(true))
         .Selectable()

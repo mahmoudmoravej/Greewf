@@ -24,9 +24,8 @@ using <#= ns #>;
 <# } #>
 
 //TODO : 
-// 1- complete the PermissionCordinator in order to support your limitter permissions (if any)
-// 3- complete the GetModelLimiterFunctions method if required
-// 4- modify ApplySearchCriteria method to satisfy your needs. 
+// 1- complete the GetModelLimiterFunctions method if required
+// 2- modify ApplySearchCriteria method to satisfy your needs. 
 
 namespace <#= Model.ControllerNamespace #>
 {   
