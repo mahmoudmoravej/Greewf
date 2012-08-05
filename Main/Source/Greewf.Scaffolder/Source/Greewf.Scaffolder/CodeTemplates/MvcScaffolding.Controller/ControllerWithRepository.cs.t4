@@ -38,6 +38,9 @@ namespace <#= Model.ControllerNamespace #>
 	var relatedEntities = ((IEnumerable)Model.RelatedEntities).OfType<RelatedEntityInfo>();
 	var primaryKeyProperty = modelType.VisibleMembers().OfType<CodeProperty>().Single(x => x.Name == Model.PrimaryKey);
 	var routingName = Regex.Replace(Model.ControllerName, "Controller$", "", RegexOptions.IgnoreCase);
+	var allProperties =  modelType.VisibleMembers().OfType<CodeProperty>();
+	var propertiesToInclude = relatedEntities.Select(relation => relation.LazyLoadingProperty).Where(x => x != null);
+
 #>
     public class <#= Model.ControllerName #> : CustomizedController< <#= modelName #>,<#= modelName #>ViewModel>
     {
@@ -51,7 +54,12 @@ namespace <#= Model.ControllerNamespace #>
         {
             if (criteria != null)
             {
-				//TODO : write filtering code
+				//TODO : write filtering code or correct and uncomment the below codes
+                <#    foreach(var prop in allProperties.Where (x => !propertiesToInclude.Contains(x)) ) { #>
+
+                if (criteria.<#= prop.Name  #> != null)
+                    q = q.Where(o => o.<#= prop.Name  #> == criteria.<#= prop.Name  #>);
+                <#    } #> 
 			}
             return q;
         }
@@ -60,12 +68,10 @@ namespace <#= Model.ControllerNamespace #>
         {
 
 <#
-	var propertiesToInclude = relatedEntities.Select(relation => relation.LazyLoadingProperty).Where(x => x != null);
 	var includeExpression = String.Join(", ", propertiesToInclude.Select(x => String.Format("{0} => {0}.{1}", modelVariable, x.Name)));
 	if (!string.IsNullOrEmpty(includeExpression)) {
 		includeExpression = "Including(" + includeExpression + ")";
 	}
-	var allProperties =  modelType.VisibleMembers().OfType<CodeProperty>();
 	var allPropertyAssignments = String.Join(",\r\n ", allProperties.Select(x => String.Format("{0} = r.{0}", x.Name)));
 	
 #>			var q =
