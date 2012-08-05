@@ -286,15 +286,18 @@ namespace <#= Model.ControllerNamespace #>
         {
             //TODO : uncomment and correct these if you have permission based on the entity creator or any other rules
 			//if (model is <#= modelName #>ViewModel)
-            //    return new ModelPermissionLimiters()
+            //{
+            //    var result = new List<PermissionLimiterBase>();
+            //    result.Add(new PermissionLimiter()
+			//		  .ForOwnsPermissionsOf(PermissionEntity.<#=modelNamePlural#>)
+			//		  .MakeLimitsBy(() => (model as <#= modelName #>ViewModel).UserId == Commons.CurrentUser.UserId)
+            //        .Message(() => "فقط مجاز به تغییر موارد ایجادی خود هستید")
+            //        .OrPart());
+            //    return new ModelPermissionLimiters
             //    {
-            //        OrBase = true,
-            //        LimiterFunctions = new PermissionLimiterBase[1] { 
-			//				new PermissionLimiter()
-			//				.ForOwnsPermissionsOf(PermissionEntity.<#=modelNamePlural#>)
-			//				.MakeLimitsBy(() => (model as <#= modelName #>ViewModel).UserName == Commons.CurrentUser.UserName)
-            //        }                                                      
+            /         LimiterFunctions = result.ToArray()
             //    };
+            //}
             return null;
         }
 	
