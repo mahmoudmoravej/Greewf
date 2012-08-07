@@ -74,6 +74,8 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
         public static MvcHtmlString CheckBoxList(this HtmlHelper helper, string name, IEnumerable<SpecialSelectListItem> items, IEnumerable<SpecialSelectListItem> parentItems, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly = false, CheckBoxLisLayout layout = CheckBoxLisLayout.SimpleHorizontal, SelectionMode selectionMode = SelectionMode.Multiple)
         {
             StringBuilder output = new StringBuilder();
+
+            bool noParent = parentItems == null;
             parentItems = parentItems ?? items.Where(o => o.ParentId == null);
 
             if (selectionMode == SelectionMode.Single && layout != CheckBoxLisLayout.Chosen)
@@ -83,7 +85,10 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
             {
                 case CheckBoxLisLayout.SimpleHorizontal:
                 case CheckBoxLisLayout.SimpleVertical:
-                    BuildFieldSetCheckboxList(name, items, parentItems, checkboxHtmlAttributes, readOnly, layout, output);
+                    if (noParent)
+                        BuildSimpleCheckboxList(name, items, parentItems, checkboxHtmlAttributes, readOnly, layout, output);
+                    else
+                        BuildFieldSetCheckboxList(name, items, parentItems, checkboxHtmlAttributes, readOnly, layout, output);
                     break;
                 case CheckBoxLisLayout.Tabular:
                     BuildTabularCheckboxList(helper, name, items, parentItems, checkboxHtmlAttributes, readOnly, output);
@@ -145,10 +150,10 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                 }
             else
                 foreach (var item in items)
-                    output.Append(BuidOption( checkboxHtmlAttributes, readOnly, item));
+                    output.Append(BuidOption(checkboxHtmlAttributes, readOnly, item));
 
             output.AppendFormat("</{0}>", tagSelect.Substring(1, tagSelect.IndexOf(" ")));
-            output.AppendFormat("<script  type='text/javascript' language='javascript'>$(document).ready(function(){{$('select[name=\"" + name + "\"]').chosen({{no_results_text: 'موردی یافت نشد'{0}}});}});</script>", selectionMode == SelectionMode.Single ? ",allow_single_deselect: true":"");
+            output.AppendFormat("<script  type='text/javascript' language='javascript'>$(document).ready(function(){{$('select[name=\"" + name + "\"]').chosen({{no_results_text: 'موردی یافت نشد'{0}}});}});</script>", selectionMode == SelectionMode.Single ? ",allow_single_deselect: true" : "");
 
         }
 
@@ -169,6 +174,25 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
 
                 output.Append("</fieldset></td>");
                 if (isVerticalLayout) output.Append("</tr>");
+            }
+
+            if (!isVerticalLayout) output.Append("</tr>");
+            output.Append("</table>");
+        }
+
+        private static void BuildSimpleCheckboxList(string name, IEnumerable<SpecialSelectListItem> items, IEnumerable<SpecialSelectListItem> parentItems, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly, CheckBoxLisLayout layout, StringBuilder output)
+        {
+            output.Append("<table>");
+            bool isVerticalLayout = layout == CheckBoxLisLayout.SimpleVertical;
+
+            if (!isVerticalLayout) output.Append("<tr>");
+
+            foreach (var item in items)
+            {
+                if (isVerticalLayout)
+                    output.Append("<tr><td>" + BuildCheckBox(name, checkboxHtmlAttributes, readOnly, item) + "</td></tr>");
+                else
+                    output.Append("<td>" + BuildCheckBox(name, checkboxHtmlAttributes, readOnly, item) + "</td>");
             }
 
             if (!isVerticalLayout) output.Append("</tr>");
