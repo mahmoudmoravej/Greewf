@@ -9,19 +9,54 @@ namespace Greewf.BaseLibrary.MVC.Ajax
 {
     public enum ResponsiveJsonType
     {
-        Information=0,
-        Success =1,
-        Warning=2,
-        Faield=3,
+        Information = 0,
+        Success = 1,
+        Warning = 2,
+        Faield = 3,
     }
 
     public class ResponsiveJsonResult : JsonResult
     {
 
+        public ResponsiveJsonResult()
+        {
+            JsonRequestBehavior = JsonRequestBehavior.AllowGet;
+        }
+
         public ResponsiveJsonResult(ResponsiveJsonType type, string message)
         {
             Message = message;
             ResponseType = type;
+            JsonRequestBehavior = JsonRequestBehavior.AllowGet;
+
+        }
+
+        public ResponsiveJsonResult(ModelStateDictionary modelState)
+        {
+            string result = "<ul>";
+            JsonRequestBehavior = JsonRequestBehavior.AllowGet;
+            ResponseType = ResponsiveJsonType.Faield;
+
+            foreach (var item in modelState)
+            {
+                foreach (var err in item.Value.Errors)
+                {
+                    if (!string.IsNullOrEmpty(err.ErrorMessage))
+                        result += "<li>" + err.ErrorMessage + "</li>";
+                    if (err.Exception != null)
+                        result += "<li>" + err.Exception.ToString() + "</li>";
+                }
+            }
+
+            result += "</ul>";
+
+            Message = result;
+
+        }
+
+        public override void ExecuteResult(ControllerContext context)
+        {
+            base.ExecuteResult(context);
         }
 
         private string _message;
