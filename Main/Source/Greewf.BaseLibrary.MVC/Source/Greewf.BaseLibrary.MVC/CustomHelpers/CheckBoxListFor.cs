@@ -75,8 +75,12 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
         {
             StringBuilder output = new StringBuilder();
 
-            bool noParent = parentItems == null;
-            parentItems = parentItems ?? items.Where(o => o.ParentId == null);
+            bool noParent =false;
+            if (parentItems == null)
+            {
+                parentItems = items.Where(o => o.ParentId == null);
+                noParent = parentItems.Count() == items.Count();
+            }
 
             if (selectionMode == SelectionMode.Single && layout != CheckBoxLisLayout.Chosen)
                 throw new Exception("Single Mode Selection just works in Chosen layout currently! Ask the Greewf owner(s) to implement it if you need it in other layout! ;) ");

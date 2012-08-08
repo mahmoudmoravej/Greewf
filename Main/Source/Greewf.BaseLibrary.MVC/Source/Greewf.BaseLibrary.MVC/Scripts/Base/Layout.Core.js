@@ -80,6 +80,7 @@
 
 
             $("iframe", widget.htmlTag).load(function () {//note : just one iframe is alowed
+                if (handleSpecialPages(widgetLayout, widget, this.contentWindow.location, null, this.contentWindow.document.body.innerText, true)) return;
                 $(this).data('contentLoaded', true);
                 $('div[isProgress]', $(this).parent()).hide();
                 //$(this).css('visibility', 'visible'); //1:jquery hide/show methods makes some problem with inner content,2:making invisible makes problem in first field focusing
@@ -87,7 +88,6 @@
                 correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, getIframeResizingCondition(this), $(this.contentWindow.document.body).outerHeight(), $(this.contentWindow.document.body).outerWidth());
                 setAutoGrowingSize(sender, widgetLayout, widget, widgetTitle);
 
-                handleSpecialPagesByLink(widgetLayout, widget, this.contentWindow.location);
 
             });
         }
@@ -146,6 +146,32 @@
         return $(frame).attr('isrefresh') != 'true' && frame.contentWindow.location.toString().indexOf("/SavedSuccessfully") == -1 && frame.contentWindow.location.hash.toString().indexOf('successfullysaved') == -1;
     }
 
+    function handleSpecialPages(widgetLayout, widget, location, linkHash, data, isIframeBody) {
+        var handled = handleSpecialPagesByLink(widgetLayout, widget, location, linkHash);
+        if (handled) return true;
+        var jsonResponse = null;
+        //maybe response json results
+        if (typeof (data) === "string") {//means html data. but it may be a json data in Iframe mode
+            if (isIframeBody)
+                try {
+                    jsonResponse = $.parseJSON(data);
+                } catch (e) {
+                    return false;
+                }
+        }
+        else //it is json result in ajax mode
+            jsonResponse = data;
+
+        if (jsonResponse) {
+            var isSuccessFlagUp = handleResponsiveJsonResult(jsonResponse);
+            widgetLayout.CloseAndDone(location.hash != undefined ? location : null, widget, isSuccessFlagUp); //when ajax request
+            handled = true;
+        }
+
+        return handled;
+
+    }
+
     function handleSpecialPagesByLink(widgetLayout, widget, location, linkHash) {
         var handled = false;
         var link = location;
@@ -202,12 +228,15 @@
     }
 
     function insertAjaxContent(widgetLayout, widget, widgetTitle, title, link, html) {
+
         widgetLayout.setContent(widget, '<div id="addedAjaxWindowContentContainer" link="' + link + '">' + html + '</div>');
         var urlData = $('#currentPageUrl', widget.htmlTag); //when redirecting in ajax request
         if (urlData.length > 0) {
             link = urlData.text();
             $('#addedAjaxWindowContentContainer', widget.htmlTag).attr('link', link);
         }
+
+        if (handleSpecialPages(widgetLayout, widget, link, null, html, false)) return;
 
         //handle page title
         var pageContentTitle = $('#currentPageTitle', widget.htmlTag);
@@ -218,12 +247,10 @@
                 changeWidgetTitle(widgetLayout, widgetTitle, '');
 
         //handle validation+content
-        if (!handleSpecialPagesByLink(widgetLayout, widget, link)) {//the page is not closed
-            if (widgetTitle != null && title != null && title != '') changeWidgetTitle(widgetLayout, widgetTitle, title);
-            enableValidation(widgetLayout, widget);
-            ajaxifyInnerForms(widgetLayout, widget, widgetTitle);
-            handleCloseButtons(widgetLayout, widget);
-        }
+        if (widgetTitle != null && title != null && title != '') changeWidgetTitle(widgetLayout, widgetTitle, title);
+        enableValidation(widgetLayout, widget);
+        ajaxifyInnerForms(widgetLayout, widget, widgetTitle);
+        handleCloseButtons(widgetLayout, widget);
 
     }
 
@@ -237,7 +264,7 @@
                 var maxHeight = $(window).height() - 100;
                 var newHeight = contentHieght + widgetLayout.getTitleHeight(widgetTitle);
                 if (newHeight > maxHeight) newHeight = maxHeight;
-                changingDone = changingDone  || widgetLayout.setHeight(widget, newHeight, justGrow);
+                changingDone = changingDone || widgetLayout.setHeight(widget, newHeight, justGrow);
             }
             if (winWidth == undefined) {
                 var maxWidth = $(window).width() - 100;
@@ -429,19 +456,41 @@
             url: link.href,
             cache: false,
             success: function (json) {
-                if (json.ResponseType == 0)//information
-                    layoutHelper.windowLayout.ShowInformationMessage(json.Message, '');
-                else if (json.ResponseType == 1)//success
-                    layoutHelper.windowLayout.ShowSuccessMessage(json.Message, '');
-                else if (json.ResponseType == 2)//warning
-                    layoutHelper.windowLayout.ShowWarningMessage(json.Message, 'هشدار');
-                else if (json.ResponseType == 3)//failed
-                    layoutHelper.windowLayout.ShowErrorMessage(json.Message, 'بروز خطا');
+                handleResponsiveJsonResult(json);
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 layoutHelper.windowLayout.ShowErrorMessage('<div style="overflow:auto;direction:ltr;max-width:400px;max-height:300px">' + xhr.responseText + '</div>', 'بروز خطا');
             }
         });
+    }
+
+    function handleResponsiveJsonResult(json, widgetLayout, widget, location, linkHash) {
+
+        var isSuccessFlagUp = false;
+
+        if (json.ResponseType == 0)//information
+        {
+            isSuccessFlagUp = true;
+            layoutHelper.windowLayout.ShowInformationMessage(json.Message, '');
+        }
+        else if (json.ResponseType == 1)//success
+        {
+            isSuccessFlagUp = true;
+            layoutHelper.windowLayout.ShowSuccessMessage(json.Message, '');
+        }
+        else if (json.ResponseType == 2)//warning
+        {
+            isSuccessFlagUp = false;
+            layoutHelper.windowLayout.ShowWarningMessage(json.Message, 'هشدار');
+        }
+        else if (json.ResponseType == 3)//failed
+        {
+            isSuccessFlagUp = false;
+            layoutHelper.windowLayout.ShowErrorMessage(json.Message, 'بروز خطا');
+        }
+        return isSuccessFlagUp;
+
+
     }
 
     layoutCore.showSuccessMessage = function (msg, title) {
