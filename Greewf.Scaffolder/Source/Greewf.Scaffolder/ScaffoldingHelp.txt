@@ -2,11 +2,11 @@
 	در کنسول پکیج منجر ، دقت کنید که پکیج سورس بر روی همه ست شده باشد
 
 samples :
- scaffold projectentity 'AienTehran.Safat.Biz.Entities.xxxx' -Area 'XXXXX'
- 
- OR 
+1- scaffold projectentity 'AienTehran.Safat.Biz.Entities.xxxx' -Area 'XXXXX' 
 
- scaffold projectentity 'yyyyyy.Safat.Biz.Entities.xxxx' -ProjectCompanyName 'yyyyy' -ProjectMainName 'tttt'
+2- scaffold projectentity 'AienTehran.Safat.Biz.Entities.xxxx' -Area 'XXXXX' -PrimaryKey 'ZZZZ' # اگر کلید اصلی را خود تعریف می کنید
+ 
+3- scaffold projectentity 'yyyyyy.Safat.Biz.Entities.xxxx' -ProjectCompanyName 'yyyyy' -ProjectMainName 'tttt'
 
 
 
@@ -39,7 +39,11 @@ samples :
 								$variableTag = [MyHelper]::ToLowerFirstChar($ModelType)
 
 [Reflection.Assembly]::Load("EnvDTE")												(load EnvDTE assembly from GAC)
-$DTE.ExecuteCommand("TextTransformation.TransformAllTemplates")						
+$DTE.ExecuteCommand("TextTransformation.TransformAllTemplates")			
+
+$g.members | foreach { if ($_.Name -eq 'IssueNumber'){ return $_.Name }}
+												در اعضای آن می گردد و اگر نام آن برابر مقدار داده شده بود آنرا باز می گرداند
+			
   ------------------------------------------------------------------------------------------------------------------
   refrencecs:
 	http://ss64.com/ps/
