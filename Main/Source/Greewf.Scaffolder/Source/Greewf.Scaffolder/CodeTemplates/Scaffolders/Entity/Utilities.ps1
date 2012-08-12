@@ -32,6 +32,7 @@ function ApplyTemplate(
 	[string]$SubViewModelNameSpace,
 	[string]$SubViewModelMetaDataNameSpace,
 	[string]$ControllerSubNamespace,
+	[string]$PrimaryKey=$PrimaryKey, # NOTE : This helps to avoid passing PrimaryKey parameter for each call. This assignment retrieve $PrimaryKey value for "current" context from $PrimaryKey of the "caller" context(no error exception thrown if not found).
 	[string[]]$DefaultImportingNamespaces=$null,
 	[switch]$UsePluralNameInFileName=$false,
 	[switch]$IgnoreModelNameInFile=$false,
@@ -52,7 +53,16 @@ function ApplyTemplate(
 			$foundViewTypeName =$foundViewType.Name
 		}
 
-		$primaryKey = Get-PrimaryKey $foundModelType.FullName -Project $Project -ErrorIfNotFound
+		if (!$PrimaryKey){
+			$primaryKey = Get-PrimaryKey $foundModelType.FullName -Project $Project -ErrorIfNotFound
+		}
+		else{#check to see if the passed PK is valid or not
+			if (($foundModelType.Members | foreach { if ($_.Name -eq $PrimaryKey){ return $true }}) -ne $true)
+			{
+				Write-Host "The passed PrimaryKey parameter('$PrimaryKey') not found!" -ForegroundColor:Red
+				$primaryKey=$null;				
+			}
+		}
 		if (!$primaryKey) { return }
 
 		#some projects may not have context 

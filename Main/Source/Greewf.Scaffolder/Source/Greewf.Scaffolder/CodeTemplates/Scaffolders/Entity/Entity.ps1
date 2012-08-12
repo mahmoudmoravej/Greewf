@@ -1,6 +1,7 @@
 [T4Scaffolding.Scaffolder(Description = "complete scaffolder for entity")][CmdletBinding()]
 param(        
 	[Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]$ModelType,
+	[string]$PrimaryKey=$null,
 	[string]$DbContextType,
 	[string]$CodeLanguage,
 	[string]$RepositoryProject,
