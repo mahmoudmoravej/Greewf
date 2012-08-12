@@ -28,16 +28,7 @@
         if (<#=modelDataType.Name#>Details.length == 0) return;
         <#=modelDataType.Name#>Id = e.row.cells[0+$('#Grid<#=Model.ModelTypePluralized#>').data('tGrid').groups.length].innerHTML;
 
-        $.ajax({
-            url: '@Url.Action("Details/puremode", "<#= Model.ModelTypePluralized #>")/' + <#=modelDataType.Name#>Id,
-            cache: false,
-            success: function (html) {
-                <#=modelDataType.Name#>Details.html(html);
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                <#=modelDataType.Name#>Details.css('direction', 'ltr').html(xhr.responseText);
-            }
-        });
+        jsHelper.loadAjax('@Url.Action("Details/puremode", "<#= Model.ModelTypePluralized #>")/' + <#=modelDataType.Name#>Id, <#=modelDataType.Name#>Details, true, true);
     }
 
     function <#=Model.ModelTypePluralized#>GridCallBack(sender, data, isSuccessfulFlagUp) {
@@ -53,10 +44,6 @@
 		   keys.Add(c => c.<#= Model.PrimaryKeyName #>);
 		})
         .Localizable("fa-IR")
-        .Pageable(page =>
-        {
-            page.PageSize(10);
-        })
 		.Columns(columns =>
 		{
 			columns.Bound(o => o.<#= Model.PrimaryKeyName #>).Hidden(true);
@@ -100,7 +87,7 @@ foreach (ModelProperty property in properties) {
         {
             ordering.Add(c => c.<#= Model.PrimaryKeyName #>);
         }))
-        .Pageable(paging => paging.Enabled(true))
+        .Pageable(paging => paging.Enabled(true).PageSize(10))
         .Filterable(filtering => filtering.Enabled(true))
         .Groupable(grouping => grouping.Enabled(true))
         .Selectable()

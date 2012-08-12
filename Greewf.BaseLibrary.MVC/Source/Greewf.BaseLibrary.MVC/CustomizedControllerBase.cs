@@ -9,6 +9,7 @@ using System.Text;
 using System.Data.Entity;
 using Greewf.BaseLibrary.Repositories;
 using Greewf.BaseLibrary.MVC.Logging;
+using Greewf.BaseLibrary.MVC.Ajax;
 
 namespace Greewf.BaseLibrary.MVC
 {
@@ -181,6 +182,31 @@ namespace Greewf.BaseLibrary.MVC
             return base.Json(data);
         }
 
+        /// <summary>
+        /// توجه : اگر نمیخواهید چیزی لاگ شود modelToLog را null بفرستید
+        /// </summary>
+        /// <param name="responseType"></param>
+        /// <param name="message"></param>
+        /// <param name="modelToLog">مدلی که می خواهید لاگ شود. اگر نمی خواهید چیزی لاگ شود آنرا null بفرستید</param>
+        /// <returns></returns>
+        protected ResponsiveJsonResult ResponsiveJson(ResponsiveJsonType responseType, string message, object modelToLog)
+        {
+            ViewData.Model = modelToLog;
+            return new ResponsiveJsonResult(responseType, message);
+        }
+
+        /// <summary>
+        /// توجه : اگر نمیخواهید چیزی لاگ شود modelToLog را null بفرستید
+        /// </summary>
+        /// <param name="modelState"></param>
+        /// <param name="modelToLog">مدلی که می خواهید لاگ شود. اگر نمی خواهید چیزی لاگ شود آنرا null بفرستید</param>
+        /// <returns></returns>
+        protected ResponsiveJsonResult ResponsiveJson(ModelStateDictionary modelState, object modelToLog)
+        {
+            ViewData.Model = modelToLog;
+            return new ResponsiveJsonResult(modelState);
+        }
+
         protected SuccessViewResult SuccessView(string viewName, object model)
         {
             ViewData.Model = model;
@@ -332,5 +358,15 @@ namespace Greewf.BaseLibrary.MVC
     public class ModelPermissionLimiters
     {
         public PermissionLimiterBase[] LimiterFunctions { get; set; }
+    }
+
+    public enum ActionType
+    {
+        Create,
+        Edit,
+        Delete,
+        Search,
+        Index,
+        View
     }
 }
