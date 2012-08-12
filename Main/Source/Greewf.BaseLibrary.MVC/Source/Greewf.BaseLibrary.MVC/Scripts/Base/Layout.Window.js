@@ -249,7 +249,7 @@
 
     windowLayout.setHeight = function (win, height, justGrow) {
         var cnt = $(win.core.data('tWindow').element).find(".t-window-content");
-        if (justGrow == false || cnt.height() < height) {
+        if (justGrow == false || height - cnt.height() >= 1) {
             win.core.data('tWindow').height = height;
             cnt.height(height);
             return true;
@@ -259,7 +259,7 @@
 
     windowLayout.setWidth = function (win, width, justGrow) {
         var cnt = $(win.core.data('tWindow').element).find(".t-window-content");
-        if (justGrow == false || cnt.width() < width) {
+        if (justGrow == false || (width - cnt.width() >= 1)) {
             win.core.data('tWindow').width = width;
             cnt.width(width);
             return true;

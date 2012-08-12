@@ -24,9 +24,8 @@ using <#= ns #>;
 <# } #>
 
 //TODO : 
-// 1- complete the PermissionCordinator in order to support your limitter permissions (if any)
-// 3- complete the GetModelLimiterFunctions method if required
-// 4- modify ApplySearchCriteria method to satisfy your needs. 
+// 1- complete the GetModelLimiterFunctions method if required
+// 2- modify ApplySearchCriteria method to satisfy your needs. 
 
 namespace <#= Model.ControllerNamespace #>
 {   
@@ -38,6 +37,9 @@ namespace <#= Model.ControllerNamespace #>
 	var relatedEntities = ((IEnumerable)Model.RelatedEntities).OfType<RelatedEntityInfo>();
 	var primaryKeyProperty = modelType.VisibleMembers().OfType<CodeProperty>().Single(x => x.Name == Model.PrimaryKey);
 	var routingName = Regex.Replace(Model.ControllerName, "Controller$", "", RegexOptions.IgnoreCase);
+	var allProperties =  modelType.VisibleMembers().OfType<CodeProperty>();
+	var propertiesToInclude = relatedEntities.Select(relation => relation.LazyLoadingProperty).Where(x => x != null);
+
 #>
     public class <#= Model.ControllerName #> : CustomizedController< <#= modelName #>,<#= modelName #>ViewModel>
     {
@@ -51,7 +53,12 @@ namespace <#= Model.ControllerNamespace #>
         {
             if (criteria != null)
             {
-				//TODO : write filtering code
+				//TODO : write filtering code or correct and uncomment the below codes
+                <#    foreach(var prop in allProperties.Where (x => !propertiesToInclude.Contains(x)) ) { #>
+
+                if (criteria.<#= prop.Name  #> != null)
+                    q = q.Where(o => o.<#= prop.Name  #> == criteria.<#= prop.Name  #>);
+                <#    } #> 
 			}
             return q;
         }
@@ -60,12 +67,10 @@ namespace <#= Model.ControllerNamespace #>
         {
 
 <#
-	var propertiesToInclude = relatedEntities.Select(relation => relation.LazyLoadingProperty).Where(x => x != null);
 	var includeExpression = String.Join(", ", propertiesToInclude.Select(x => String.Format("{0} => {0}.{1}", modelVariable, x.Name)));
 	if (!string.IsNullOrEmpty(includeExpression)) {
 		includeExpression = "Including(" + includeExpression + ")";
 	}
-	var allProperties =  modelType.VisibleMembers().OfType<CodeProperty>();
 	var allPropertyAssignments = String.Join(",\r\n ", allProperties.Select(x => String.Format("{0} = r.{0}", x.Name)));
 	
 #>			var q =
@@ -118,17 +123,37 @@ namespace <#= Model.ControllerNamespace #>
 
 	#region Utilities
 
-        private void PrepareViewBagLists(bool isCreateOrEdit)
+        private void PrepareViewBagLists(ActionType actionType, object data)
         {
-<# foreach(var relatedEntity in relatedEntities.Where(x => x.RelationType == RelationType.Parent)) { #>
-			ViewBag.Possible<#= relatedEntity.RelationNamePlural #> = <#= Repositories[relatedEntity.RelatedEntityType.FullName].VariableName #>.All;
-<# } #>
-
-   			if (isCreateOrEdit)
+            if (actionType == ActionType.Create || actionType == ActionType.Edit || actionType == ActionType.Search)
             {
-				//TODO:move only create/edit specific viewbag items to here
-			}
+<# foreach(var relatedEntity in relatedEntities.Where(x => x.RelationType == RelationType.Parent)) { #>
+			    ViewBag.Possible<#= relatedEntity.RelationNamePlural #> = <#= Repositories[relatedEntity.RelatedEntityType.FullName].VariableName #>.All;
+<# } #>
+            }
+
+            if (actionType == ActionType.Create || actionType == ActionType.Edit)
+            {
+                //TODO:move only create/edit specific viewbag items to here
+                var model = data as <#= modelName #>ViewModel;
+            }
+            else if (actionType == ActionType.Search)
+            {
+                //TODO:move only search specific viewbag items to here
+                var model = data as <#= modelName #>SearchCriteria;
+            }
 		}		
+
+        //NOTE : It is important to validate the ViewModel because of additional data it may have against Entity.
+        private bool ValidateModel(<#= modelName #>ViewModel model, ActionType actionType)
+        {
+            if (!ModelState.IsValid) return false;
+
+            //TODO : PUT YOUE CODE HERE
+
+            return ModelState.IsValid;
+        }
+
 
 	#endregion
 
@@ -138,7 +163,7 @@ namespace <#= Model.ControllerNamespace #>
         public ActionResult Create()
         {
 			var new<#= modelName #> = new <#= modelName #>ViewModel();
-			PrepareViewBagLists(true);
+			PrepareViewBagLists(ActionType.Create, new<#= modelName #>);
             return View(new<#= modelName #>);
         } 
 
@@ -146,11 +171,10 @@ namespace <#= Model.ControllerNamespace #>
         [AutoMap(typeof(<#= modelName #>), typeof(<#= modelName #>ViewModel))]
         [Permissions(<#= modelName #>Permission.Create)]
         [Log(LogPoint.<#= modelName #>Create, LogModelState.Valid, LogResultType.RedirectToSuccess)]
-        public ActionResult Create(<#= modelName #>ViewModel <#= modelVariable #>Model)
-        {
-			var <#= modelVariable #> = <#= modelName #>ModelMapper.Map(<#= modelVariable #>Model);
-			
-            if (ModelState.IsValid) {
+        public ActionResult Create(<#= modelName #>ViewModel model)
+        {			
+            if (ValidateModel(model, ActionType.Create))
+  			    var <#= modelVariable #> = <#= modelName #>ModelMapper.Map(model);
                 <#= Repositories[modelType.FullName].VariableName #>.InsertOrUpdate(<#= modelVariable #>);
                 <#= Repositories[modelType.FullName].VariableName #>.Save();
 				
@@ -158,8 +182,8 @@ namespace <#= Model.ControllerNamespace #>
             } 
 			else 
 			{
-				PrepareViewBagLists(true);
-	            return View(<#= modelVariable #>);
+				PrepareViewBagLists(ActionType.Create, model);
+	            return View(model);
 			}
         }
         
@@ -171,25 +195,32 @@ namespace <#= Model.ControllerNamespace #>
         [Permissions(<#= modelName #>Permission.Edit)]
         public ActionResult Edit(<#= primaryKeyProperty.Type.AsString #> id)
         {
-			PrepareViewBagLists(true);
-			return View(<#= Repositories[modelType.FullName].VariableName #>.Find(id));
+            var entity = <#= Repositories[modelType.FullName].VariableName #>.Find(id);
+			PrepareViewBagLists(ActionType.Edit, entity);
+			return View(entity);
         }
 
         [HttpPost]
         [Permissions(<#= modelName #>Permission.Edit)]
         [Log(LogPoint.<#= modelName #>Edit, LogModelState.Valid, LogResultType.RedirectToSuccess)]
-        public ActionResult Edit(<#= modelName #>ViewModel <#= modelVariable #>Model)
+        [ActionName("Edit")]
+        public ActionResult EditPost(<#= primaryKeyProperty.Type.AsString #> id)
         {
-            if (ModelState.IsValid) {
-				var old<#= modelName #> = <#= Repositories[modelType.FullName].VariableName #>.Find(<#= modelVariable #>Model.<#= primaryKeyProperty.Name #>);
+            var old<#= modelName #> = <#= Repositories[modelType.FullName].VariableName #>.Find(model.<#= primaryKeyProperty.Name #>);
+            var model = EntityModelMapper.Map(old<#= modelName #>);
+            ModelState.Clear();
+            TryUpdateModel(model);//We need this to have a model with "complete" data in validation phase. 
+
+            if (ValidateModel(model, ActionType.Edit))
+				
 				UpdateModel(old<#= modelName #>);
                 <#= Repositories[modelType.FullName].VariableName #>.InsertOrUpdate(old<#= modelName #>);
                 <#= Repositories[modelType.FullName].VariableName #>.Save();
 				return Redirect(Url.Action("edit"), true, <#= modelName #>ModelMapper.Map(old<#= modelName #>));
 
             } else {
-				PrepareViewBagLists(true);
-	            return View(<#= modelVariable #>Model);
+				PrepareViewBagLists(ActionType.Edit, model);
+	            return View(model);
 			}
         }
 
@@ -246,15 +277,16 @@ namespace <#= Model.ControllerNamespace #>
         [Permissions(<#= modelName #>Permission.View)]
         public ActionResult Search()
         {
-            PrepareViewBagLists(false);
-            return View();
+            var criteria = new <#= modelName #>SearchCriteria();
+            PrepareViewBagLists(ActionType.Search, criteria);
+            return View(criteria);
         }
 
         [HttpPost]
         [Permissions(<#= modelName #>Permission.View)]
         public ActionResult Search(<#= modelName #>SearchCriteria criteria)
         {
-            PrepareViewBagLists(false);
+            PrepareViewBagLists(ActionType.Search, criteria);
             ViewBag.SearchResult = Get<#= modelNamePlural #>(criteria);
 
             return View(criteria);
@@ -280,15 +312,18 @@ namespace <#= Model.ControllerNamespace #>
         {
             //TODO : uncomment and correct these if you have permission based on the entity creator or any other rules
 			//if (model is <#= modelName #>ViewModel)
-            //    return new ModelPermissionLimiters()
+            //{
+            //    var result = new List<PermissionLimiterBase>();
+            //    result.Add(new PermissionLimiter()
+			//		  .ForOwnsPermissionsOf(PermissionEntity.<#=modelNamePlural#>)
+			//		  .MakeLimitsBy(() => (model as <#= modelName #>ViewModel).UserId == Commons.CurrentUser.UserId)
+            //        .Message(() => "فقط مجاز به تغییر موارد ایجادی خود هستید")
+            //        .OrPart());
+            //    return new ModelPermissionLimiters
             //    {
-            //        OrBase = true,
-            //        LimiterFunctions = new PermissionLimiterBase[1] { 
-			//				new PermissionLimiter()
-			//				.ForOwnsPermissionsOf(PermissionEntity.<#=modelNamePlural#>)
-			//				.MakeLimitsBy(() => (model as <#= modelName #>ViewModel).UserName == Commons.CurrentUser.UserName)
-            //        }                                                      
+            /         LimiterFunctions = result.ToArray()
             //    };
+            //}
             return null;
         }
 	

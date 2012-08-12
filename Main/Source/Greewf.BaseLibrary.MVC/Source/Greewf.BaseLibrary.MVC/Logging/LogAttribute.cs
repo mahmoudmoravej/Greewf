@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.Security.Authentication;
 using System.Security;
 using Greewf.BaseLibrary.MVC.Logging.LogContext;
+using Greewf.BaseLibrary.MVC.Ajax;
 
 
 namespace Greewf.BaseLibrary.MVC.Logging
@@ -78,6 +79,11 @@ namespace Greewf.BaseLibrary.MVC.Logging
 
                 }
             }
+            else if (actionResult is ResponsiveJsonResult)
+            {
+                if ((logOnResultType & LogResultType.SuccessResponsiveJson) > 0 && (actionResult as ResponsiveJsonResult).ResponseType == ResponsiveJsonType.Success)
+                    return true;
+            }
 
             return false;
         }
@@ -115,7 +121,8 @@ namespace Greewf.BaseLibrary.MVC.Logging
         Redirect = 2,
         RedirectToSuccess = 4,
         SuccessView = 8,
-        Always = View | Redirect | RedirectToSuccess | SuccessView
+        SuccessResponsiveJson = 16,
+        Always = View | Redirect | RedirectToSuccess | SuccessView | SuccessResponsiveJson
     }
 
 }

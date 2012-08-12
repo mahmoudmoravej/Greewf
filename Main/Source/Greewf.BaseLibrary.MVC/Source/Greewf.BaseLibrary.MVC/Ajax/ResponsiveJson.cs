@@ -18,12 +18,12 @@ namespace Greewf.BaseLibrary.MVC.Ajax
     public class ResponsiveJsonResult : JsonResult
     {
 
-        public ResponsiveJsonResult()
+        internal ResponsiveJsonResult()
         {
             JsonRequestBehavior = JsonRequestBehavior.AllowGet;
         }
 
-        public ResponsiveJsonResult(ResponsiveJsonType type, string message)
+        internal ResponsiveJsonResult(ResponsiveJsonType type, string message)
         {
             Message = message;
             ResponseType = type;
@@ -31,7 +31,7 @@ namespace Greewf.BaseLibrary.MVC.Ajax
 
         }
 
-        public ResponsiveJsonResult(ModelStateDictionary modelState)
+        internal ResponsiveJsonResult(ModelStateDictionary modelState)
         {
             string result = "<ul>";
             JsonRequestBehavior = JsonRequestBehavior.AllowGet;

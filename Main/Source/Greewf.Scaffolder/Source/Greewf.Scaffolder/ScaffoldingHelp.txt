@@ -3,6 +3,10 @@
 
 samples :
  scaffold projectentity 'AienTehran.Safat.Biz.Entities.xxxx' -Area 'XXXXX'
+ 
+ OR 
+
+ scaffold projectentity 'yyyyyy.Safat.Biz.Entities.xxxx' -ProjectCompanyName 'yyyyy' -ProjectMainName 'tttt'
 
 
 
