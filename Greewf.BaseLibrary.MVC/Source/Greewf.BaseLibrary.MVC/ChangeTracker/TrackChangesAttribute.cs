@@ -12,7 +12,7 @@ using System.Data.Entity;
 
 namespace Greewf.BaseLibrary.MVC.ChangeTracker
 {
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public abstract class TrackChangesAttributeBase : ActionFilterAttribute
     {
 

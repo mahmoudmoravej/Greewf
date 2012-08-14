@@ -33,6 +33,7 @@
         <span style="vertical-align: middle" class="icon16 warning48-png"></span>آیا نسبت به حذف این <#= GetDisplayName(modelDataType) #> مطمئن هستید؟</h3>
     @using (Html.BeginForm())
     {
+        @Html.AntiForgeryToken("<#=modelDataType.Name#>Delete")
         <p>
             <button id="cancelDelete" class="t-button" type="button" isPageCloser='1'>
                 <span class="icon16 stop-png"></span>انصراف

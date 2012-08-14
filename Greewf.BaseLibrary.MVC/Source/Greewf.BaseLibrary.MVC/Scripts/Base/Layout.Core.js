@@ -2,6 +2,11 @@
     layoutCore = {};
     var widgetManager = { changeTitle: '' };
 
+    layoutCore.options = {
+        notifySuccess: false,
+        notifySuccessMessage: "تغییرات با موفقیت ذخیره شد"
+    }
+
     layoutCore.progressHtml = function (widgetLayout) {
         return widgetLayout.progressHtml();
     }
@@ -184,6 +189,13 @@
 
         if (link.indexOf("/SavedSuccessfully") > 0 || linkHash.indexOf('successfullysaved') > 0) {
             widgetLayout.CloseAndDone(location.hash != undefined ? location : null, widget, true); //when ajax request
+            if (layoutCore.options.notifySuccess && jQuery.noticeAdd) {
+                jQuery.noticeAdd({
+                    text: layoutCore.options.notifySuccessMessage,
+                    stay: false,
+                    stayTime: 2000
+                });
+            }
             handled = true;
         }
         else if (link.indexOf("/accessdenied") > 0) {
