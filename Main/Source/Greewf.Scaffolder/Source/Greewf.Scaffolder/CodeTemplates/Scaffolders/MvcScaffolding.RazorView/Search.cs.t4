@@ -43,6 +43,7 @@ if (!String.IsNullOrEmpty(Model.Layout)) {
 {
     using (Ajax.BeginForm("search", new { puremode = 1 , isCurrentPageCallBack = 1 }, new string[] { "simplemode" }, new Greewf.BaseLibrary.MVC.Ajax.CustomizedAjaxOption("searchResult"+ fldstId, "bigprogress-icon t-content")))
     {
+    @Html.AntiForgeryToken("<#=modelDataType.Name#>Search")
     <fieldset id='@(fldstId)'>
         <legend>جستجوی <#= GetDisplayName(modelDataType) #>...</legend>
 		@Html.Partial("_SearchCriteria", Model)

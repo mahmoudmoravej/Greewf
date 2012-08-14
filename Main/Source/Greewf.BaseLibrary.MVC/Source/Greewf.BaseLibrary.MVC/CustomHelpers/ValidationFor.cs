@@ -31,6 +31,23 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
 
         }
 
+        public static MvcHtmlString ValidationStarFor<TModel, TProperty>(this HtmlHelper<TModel> helper, System.Linq.Expressions.Expression<Func<TModel, TProperty>> expression)
+        {
+            string star = "";
+            string starHtml = "<span class='field-validation-star'></span>";
+
+            var metadata = ModelMetadata.FromLambdaExpression(expression, helper.ViewData);
+
+            //if (DataAnnotationsModelValidatorProvider.AddImplicitRequiredAttributeForValueTypes == true && !metadata.IsNullableValueType)
+            //    star = starHtml;
+            if (metadata.IsRequired)
+                star = starHtml;
+
+            return new MvcHtmlString(star);
+
+        }
+
+
         #endregion
 
     }

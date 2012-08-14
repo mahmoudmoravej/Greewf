@@ -67,7 +67,9 @@ namespace <#=        Model.ViewModelNameSpace #>
             codeType.TypeKind == vsCMTypeRef.vsCMTypeRefLong ||
             codeType.TypeKind == vsCMTypeRef.vsCMTypeRefShort || 
             codeType.AsString == "Guid" ||
-            codeType.AsString == "DateTime"
+            codeType.AsString == "DateTime" ||
+            codeType.AsString == "System.Guid" ||
+            codeType.AsString == "System.DateTime"
             )
             return false;
         return true;

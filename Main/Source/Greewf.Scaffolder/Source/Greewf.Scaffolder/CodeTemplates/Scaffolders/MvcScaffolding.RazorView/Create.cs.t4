@@ -35,7 +35,8 @@ if (!String.IsNullOrEmpty(Model.Layout)) {
 
 <# } #>
 @using (Html.BeginForm()) {
-    @Html.ValidationSummaryInWindow(false)
+    @Html.ValidationSummaryInWindow(false, "خطاهای پر کردن فرم")
+    @Html.AntiForgeryToken("<#=modelDataType.Name#>Create")
     <fieldset>
         <legend><#= GetDisplayName(modelDataType) #> جدید</legend>
 		@Html.Partial("_CreateOrEdit", Model)

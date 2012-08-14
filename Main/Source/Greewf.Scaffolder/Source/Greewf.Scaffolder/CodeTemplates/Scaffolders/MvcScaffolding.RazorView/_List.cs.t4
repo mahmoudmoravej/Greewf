@@ -47,16 +47,6 @@
 		.Columns(columns =>
 		{
 			columns.Bound(o => o.<#= Model.PrimaryKeyName #>).Hidden(true);
-		  	columns.Template(@<text> <a class="t-button t-grid-edit t-button-icon at-rowEdit" href='@Url.Action("edit", "<#= Model.ModelTypePluralized #>", new { item.<#= Model.PrimaryKeyName #> })' title='ویرایش اطلاعات <#= GetDisplayName(modelDataType) #> "@item.<#= GetModelTitleProperty(modelDataType) #>"' newwindow='True' ajax='1' windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'>
-		    	<span class="t-icon t-edit"></span></a></text>)
-				.ClientTemplate("<a class='t-button t-grid-edit t-button-icon at-rowEdit' href='" + Url.Action("edit", "<#= Model.ModelTypePluralized #>") + "/<#= OPENBRACE #>#=<#= Model.PrimaryKeyName#>#<#=CLOSEBRACE #>' title='ویرایش اطلاعات <#= GetDisplayName(modelDataType) #> <#= OPENBRACE #>#=<#= GetModelTitleProperty(modelDataType)#>#<#=CLOSEBRACE #>' newwindow='true' ajax='1' windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'><span class='t-icon t-edit'></span></a>")
-	            .Visible(Commons.CurrentUser.HasPermission<<#=modelDataType.Name#>Permission>(<#=modelDataType.Name#>Permission.Edit) && ViewBag.IsInSearchForm != true)
-				.Width(20);
-		  	columns.Template(@<text> <a class="t-button t-grid-delete t-button-icon at-rowDelete" href='@Url.Action("delete", "<#= Model.ModelTypePluralized #>", new { item.<#= Model.PrimaryKeyName #> })' title='حذف اطلاعات <#= GetDisplayName(modelDataType) #> "@item.<#= GetModelTitleProperty(modelDataType) #>"' newwindow='True' ajax='1' windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'>
-		    	<span class="t-icon t-delete"></span></a></text>)
-				.ClientTemplate("<a class='t-button t-grid-delete t-button-icon at-rowDelete' href='" + Url.Action("delete", "<#= Model.ModelTypePluralized #>") + "/<#= OPENBRACE #>#=<#= Model.PrimaryKeyName#>#<#=CLOSEBRACE #>' title='حذف اطلاعات <#= GetDisplayName(modelDataType) #> <#= OPENBRACE #>#=<#= GetModelTitleProperty(modelDataType)#>#<#=CLOSEBRACE #>' newwindow='true' ajax='1'  windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'><span class='t-icon t-delete'></span></a>")
-	            .Visible(Commons.CurrentUser.HasPermission<<#=modelDataType.Name#>Permission>(<#=modelDataType.Name#>Permission.Delete) && ViewBag.IsInSearchForm != true)
-				.Width(20);
 <#
 List<ModelProperty> properties = GetModelProperties(Model.ViewDataType, true);
 foreach (ModelProperty property in properties) {
@@ -67,6 +57,16 @@ foreach (ModelProperty property in properties) {
     }
 }
 #>
+		  	columns.Template(@<text> <a class="t-button t-grid-edit t-button-icon at-rowEdit" href='@Url.Action("edit", "<#= Model.ModelTypePluralized #>", new { item.<#= Model.PrimaryKeyName #> })' title='ویرایش اطلاعات <#= GetDisplayName(modelDataType) #> "@item.<#= GetModelTitleProperty(modelDataType) #>"' newwindow='True' ajax='1' windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'>
+		    	<span class="t-icon t-edit"></span></a></text>)
+				.ClientTemplate("<a class='t-button t-grid-edit t-button-icon at-rowEdit' href='" + Url.Action("edit", "<#= Model.ModelTypePluralized #>") + "/<#= OPENBRACE #>#=<#= Model.PrimaryKeyName#>#<#=CLOSEBRACE #>' title='ویرایش اطلاعات <#= GetDisplayName(modelDataType) #> <#= OPENBRACE #>#=<#= GetModelTitleProperty(modelDataType)#>#<#=CLOSEBRACE #>' newwindow='true' ajax='1' windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'><span class='t-icon t-edit'></span></a>")
+	            .Visible(Commons.CurrentUser.HasPermission<<#=modelDataType.Name#>Permission>(<#=modelDataType.Name#>Permission.Edit) && ViewBag.IsInSearchForm != true)
+				.Width(20);
+		  	columns.Template(@<text> <a class="t-button t-grid-delete t-button-icon at-rowDelete" href='@Url.Action("delete", "<#= Model.ModelTypePluralized #>", new { item.<#= Model.PrimaryKeyName #> })' title='حذف اطلاعات <#= GetDisplayName(modelDataType) #> "@item.<#= GetModelTitleProperty(modelDataType) #>"' newwindow='True' ajax='1' windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'>
+		    	<span class="t-icon t-delete"></span></a></text>)
+				.ClientTemplate("<a class='t-button t-grid-delete t-button-icon at-rowDelete' href='" + Url.Action("delete", "<#= Model.ModelTypePluralized #>") + "/<#= OPENBRACE #>#=<#= Model.PrimaryKeyName#>#<#=CLOSEBRACE #>' title='حذف اطلاعات <#= GetDisplayName(modelDataType) #> <#= OPENBRACE #>#=<#= GetModelTitleProperty(modelDataType)#>#<#=CLOSEBRACE #>' newwindow='true' ajax='1'  windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'><span class='t-icon t-delete'></span></a>")
+	            .Visible(Commons.CurrentUser.HasPermission<<#=modelDataType.Name#>Permission>(<#=modelDataType.Name#>Permission.Delete) && ViewBag.IsInSearchForm != true)
+				.Width(20);
 		})
         .DataBinding(dataBinding =>
         {

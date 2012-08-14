@@ -24,31 +24,25 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
             string name = helper.ViewData.TemplateInfo.GetFullHtmlFieldName(ExpressionHelper.GetExpressionText(expression));
             var value = ModelMetadata.FromLambdaExpression(expression, helper.ViewData).Model as DateTime?;
             return PersianDatePicker(helper, name, value, htmlAttributes, readOnly);
+
         }
 
 
-        public static MvcHtmlString PersianDatePicker(this HtmlHelper helper, string name, DateTime? value, IDictionary<string, object> htmlAttributes, bool readOnly = false)
+        public static MvcHtmlString PersianDatePicker(this HtmlHelper helper, string name, DateTime? value, IDictionary<string, object> htmlAttributes, bool readOnly = false, bool enableTextEntering = false)
         {
 
             StringBuilder output = new StringBuilder();
+
             string inputName = name;
+            if (name == "")
+                inputName= helper.ViewData.TemplateInfo.GetFullHtmlFieldName("");           
             string inputId = inputName.Replace(".", "");
 
-            var input = new TagBuilder("input");
+            var attrs = htmlAttributes ?? new Dictionary<string, object>();
+            attrs["class"] = "pcalendar";
+            if (!enableTextEntering) attrs["readOnly"] = "readOnly";
 
-            if (htmlAttributes != null)
-                foreach (var item in htmlAttributes)
-                    input.MergeAttribute(item.Key, item.Value as string);
-
-            input.MergeAttribute("type", "text");
-            input.MergeAttribute("class", "pcalendar");
-            input.MergeAttribute("readonly", "readonly");
-            input.MergeAttribute("value", Greewf.BaseLibrary.Global.DisplayDate(value));
-            input.MergeAttribute("id", inputId);
-            input.MergeAttribute("name", inputName);
-
-
-
+            var input = helper.TextBox(name, Greewf.BaseLibrary.Global.DisplayDate(value), attrs);
             var span = new TagBuilder("span");
 
             if (!readOnly)
@@ -66,9 +60,9 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
 
             }
             else//readonly
-                input.MergeAttribute("disabled", "disabled");
+                attrs["disabled"]= "disabled";
 
-            output.Append(input.ToString(TagRenderMode.SelfClosing));
+            output.Append(input.ToHtmlString());
             output.Append(span.ToString());
 
             return new MvcHtmlString(output.ToString());
