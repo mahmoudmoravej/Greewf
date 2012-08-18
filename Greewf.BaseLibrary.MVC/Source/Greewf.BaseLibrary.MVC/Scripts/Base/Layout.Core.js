@@ -4,7 +4,9 @@
 
     layoutCore.options = {
         notifySuccess: false,
-        notifySuccessMessage: "تغییرات با موفقیت ذخیره شد"
+        notifySuccessMessage: "تغییرات با موفقیت ذخیره شد",
+        ajax: false,
+        window: { autoCenteredGrowingSize: false , autoGrowingSize: false }
     }
 
     layoutCore.progressHtml = function (widgetLayout) {
@@ -67,11 +69,12 @@
         var maximaizable = $(sender).attr('winNoMaximaizable') == undefined;
         var winMax = $(sender).attr('winMax');
         var doAjax = $(sender).attr('ajax');
+        doAjax = doAjax != undefined ? true : layoutCore.options.ajax;
 
-        link = correctLink(link, doAjax != undefined, true, true, widgetLayout.getTypeCode());
+        link = correctLink(link, doAjax, true, true, widgetLayout.getTypeCode());
 
         //ajax or iframe?
-        if (doAjax != undefined) {//ajax request : pure mode
+        if (doAjax) {//ajax request : pure mode
             loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, function () {
                 $('#addedAjaxWindowContentContainer', widget.htmlTag).attr('contentLoaded', 'true');
                 var contentContainer = $('#addedAjaxWindowContentContainer', widget.htmlTag);
@@ -103,9 +106,12 @@
 
     function getGrowingSizeOptions(sender) {
         var s = $(sender);
+        var autoGrowingSize = s.attr('autoGrowingSize') != null ? true : layoutCore.options.window.autoGrowingSize;
+        var autoCenteredGrowingSize = s.attr('autoCenteredGrowingSize') != null ? true : layoutCore.options.window.autoCenteredGrowingSize;
+
         return {
-            enabled: s.attr('autoGrowingSize') != null || s.attr('autoCenteredGrowingSize') != null,
-            autoCenter: s.attr('autoCenteredGrowingSize') != null
+            enabled: autoGrowingSize || autoCenteredGrowingSize,
+            autoCenter: autoCenteredGrowingSize
         };
     }
 
@@ -130,8 +136,9 @@
         var winWidth = $(sender).attr('winwidth');
         var winHeight = $(sender).attr('winheight');
         var winMax = $(sender).attr('winMax');
+        doAjax = doAjax != undefined ? true : layoutCore.options.ajax;
 
-        if (doAjax != undefined) {//ajax request : pure mode
+        if (doAjax) {//ajax request : pure mode
             if ($('#addedAjaxWindowContentContainer', widget.htmlTag).attr('contentLoaded') == undefined) return; //dont correct size if the content is not loaded
             var contentContainer = $('#addedAjaxWindowContentContainer', widget.htmlTag);
             correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, true, contentContainer.outerHeight(), contentContainer.outerWidth());
