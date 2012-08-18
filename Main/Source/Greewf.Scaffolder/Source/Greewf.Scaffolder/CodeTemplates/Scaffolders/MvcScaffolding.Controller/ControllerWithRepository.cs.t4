@@ -26,6 +26,7 @@ using <#= ns #>;
 //TODO : 
 // 1- complete the GetModelLimiterFunctions method if required
 // 2- modify ApplySearchCriteria method to satisfy your needs. 
+// 3- complete GetSensitiveDataFields method to prevent some client-side attack senarios.
 
 namespace <#= Model.ControllerNamespace #>
 {   
@@ -142,7 +143,27 @@ namespace <#= Model.ControllerNamespace #>
                 //TODO:move only search specific viewbag items to here
                 var model = data as <#= modelName #>SearchCriteria;
             }
-		}		
+		}
+
+        protected override SensetiveFields<<#= modelName #>ViewModel> GetSensitiveDataFields(<#= modelName #>ViewModel oldEntity, ActionType actionType, bool? isHttpPost = null)
+        {
+            //TODO : Complete this method like the following sample:
+
+            //if (actionType == ActionType.Edit && isHttpPost == true)
+            //{
+            //    if (oldEntity.xxx.HasValue)
+            //        return new SensetiveFields<EntityViewModel>()
+            //            .Add(o => o.xxx)
+            //            .Add(o => o.yyy)
+            //            .Add(o => o.zzz);
+            //    else
+            //        return new SensetiveFields<EntityViewModel>()
+            //            .Add(o => o.ttt);
+            //}
+
+            return null;
+
+        }		
 
         //NOTE : It is important to validate the ViewModel because of additional data it may have against Entity.
         private bool ValidateModel(<#= modelName #>ViewModel model, ActionType actionType)
@@ -212,11 +233,11 @@ namespace <#= Model.ControllerNamespace #>
             var old<#= modelName #> = <#= Repositories[modelType.FullName].VariableName #>.Find(id);
             var model = EntityModelMapper.Map(old<#= modelName #>);
             ModelState.Clear();
-            TryUpdateModel(model);//We need this to have a model with "complete" data in validation phase. 
+            TryUpdateModel(model, old<#= modelName #>, ActionType.Edit, true);//We need this to have a model with "complete" data in validation phase. 
 
             if (ValidateModel(model, ActionType.Edit))
 			{	
-				UpdateModel(old<#= modelName #>);
+                UpdateModel(old<#= modelName #>, old<#= modelName #>, ActionType.Edit, true);
                 <#= Repositories[modelType.FullName].VariableName #>.InsertOrUpdate(old<#= modelName #>);
                 <#= Repositories[modelType.FullName].VariableName #>.Save();
 				return Redirect(Url.Action("edit"), true, <#= modelName #>ModelMapper.Map(old<#= modelName #>));

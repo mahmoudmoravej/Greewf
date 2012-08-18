@@ -10,6 +10,7 @@ using System.Data.Entity;
 using Greewf.BaseLibrary.Repositories;
 using Greewf.BaseLibrary.MVC.Logging;
 using Greewf.BaseLibrary.MVC.Ajax;
+using System.Linq.Expressions;
 
 namespace Greewf.BaseLibrary.MVC
 {
@@ -248,11 +249,13 @@ namespace Greewf.BaseLibrary.MVC
     /// 
     /// </summary>
     /// <typeparam name="T">The main related Entity the current controller should work on</typeparam>
+    /// <typeparam name="VM">The default ViewModel the current controller should work on</typeparam>
     /// <typeparam name="Y">The main Context Manager</typeparam>
-    /// <typeparam name="Z">UnitOfRepository Interface class</typeparam>
-    public abstract class CustomizedControllerBase<T, Y, Z> : CustomizedControllerBase
+    /// <typeparam name="Z">UnitOfRepository Interface class</typeparam>    
+    public abstract class CustomizedControllerBase<T, VM, Y, Z> : CustomizedControllerBase
         where T : class ,new()
         where Y : ContextManagerBase, new()
+        where VM : class , new()
     {
         protected Y _contextManager = null;
         public CustomizedControllerBase()
@@ -272,6 +275,35 @@ namespace Greewf.BaseLibrary.MVC
         }
 
         protected abstract Z CreateUnitOfRepositoriesInstance();
+
+        protected virtual SensetiveFields<VM> GetSensitiveDataFields(T oldEntity, ActionType actionType, bool? isHttpPost = null)
+        {
+            return null;
+        }
+
+        protected bool TryUpdateModel<M>(M model, T oldEntity, ActionType actionType, bool? isPOST = null) where M : class, new()
+        {
+            var sensitiveData = GetSensitiveDataFields(oldEntity, actionType, isPOST);
+            return TryUpdateModel(model, null, null, sensitiveData == null ? null : sensitiveData.ToStringArray());
+        }
+
+        protected void UpdateModel<M>(M model, T oldEntity, ActionType actionType, bool? isPOST = null) where M : class, new()
+        {
+            var sensitiveData = GetSensitiveDataFields(oldEntity, actionType, isPOST);
+            UpdateModel(model, null, null, sensitiveData == null ? null : sensitiveData.ToStringArray());
+        }
+
+
+        //protected virtual SensetiveFields<M> GetSensitiveDataFields<M>(T oldEntity, ActionType actionType, bool? isHttpPost = null) where M : class, new()
+        //{
+        //    return null;
+        //}
+
+        //protected bool TryUpdateModel<M>(M model, T oldEntity, ActionType actionType, bool? isPOST = null) where M : class, new()
+        //{
+        //    var sensitiveData = GetSensitiveDataFields<M>(oldEntity, actionType, isPOST);
+        //    return TryUpdateModel(model, null, null, sensitiveData == null ? null : sensitiveData.ToStringArray());
+        //}
 
     }
 
@@ -368,5 +400,20 @@ namespace Greewf.BaseLibrary.MVC
         Search,
         Index,
         View
+    }
+
+    public class SensetiveFields<T> : List<Expression<Func<T, object>>>
+    {
+        public new SensetiveFields<T> Add(Expression<Func<T, object>> field)
+        {
+            base.Add(field);
+            return this;
+        }
+
+        public string[] ToStringArray()
+        {
+            return this.Select(o => ((MemberExpression)((UnaryExpression)o.Body).Operand).Member.Name).ToArray();
+        }
+
     }
 }
