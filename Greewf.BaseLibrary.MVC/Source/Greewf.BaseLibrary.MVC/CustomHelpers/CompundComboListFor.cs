@@ -125,15 +125,17 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                 func_ChildLoaded,
                 string.Format("   var x=$('#{0}');if(x.length) x.data('child-listeners').push(function(){{ {1}(); }}); ", parentKeyName, func_LoadChilds),
                 string.Format("   var ddC = $('#{0}').data('tComboBox');", childKeyName),
-                string.Format("   if ((ddC.value() && ddC.value()!=0) && ddC.length==0) {{ {0}(); }}", func_LoadChilds)
+                string.Format("   if ((!ddC.value() || ddC.value()==0)) {{ {0}(true); }}", func_LoadChilds)
             );
 
 
-            output.AppendFormat("function {0}() {{ {1} {2} {3} {4} }}",
+            output.AppendFormat("function {0}(inLoadPhase) {{ {1} {2} {3} {4} {5} {6} }}",
                 func_LoadChilds,
                 string.Format("var ddP = $('#{0}').data('tComboBox');", parentKeyName),//tDropDownList
                 string.Format("var ddC = $('#{0}').data('tComboBox');if(ddC==undefined) {{return;}}", childKeyName),//in some senarios (when the control is load through ajax) ddC is null!
-                              "ddC.dataBind({}); if(!(ddP.value() && ddP.value()!=0)) {return;} ddC.disable();ddP.disable();",// means : if ddP has not value
+                              "if (inLoadPhase && (ddC.value() && ddC.value()!=0)) return;",//in load phase and child has value so return.
+                string.Format("ddC.dataBind({{}}); $($('#{0}').data('child-listeners')).each(function(i,o){{ o(); }});", childKeyName),// means : if ddP has not value
+                              "if(!(ddP.value() && ddP.value()!=0)) {return;} ddC.disable();ddP.disable();",// means : if ddP has not value
                 string.Format("$.ajax({{ type: 'POST',url: '{0}',data: '{1}=' + ddP.value(),success: function (data) {{ddC.enable();ddP.enable();ddC.dataBind(data);}},error: function (req, status, error) {{ddC.enable();ddP.enable();alert('خطا در دریافت اطلاعات')}} }});", GetUrl(childsLoaderUrl), childsLoaderUrlParameterName)
             );
 
@@ -177,7 +179,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
 
                 if (isParentToo)
                     telerikCombo.ClientEvents(o => o
-                        .OnChange(x => string.Format("function(){{$($(this).data('child-listeners')).each(function(i,o){{ o(); }}); {0} }}",onClientChange)));
+                        .OnChange(x => string.Format("function(){{$($(this).data('child-listeners')).each(function(i,o){{ o(); }}); {0} }}", onClientChange)));
                 else if (onClientChange.Length > 0)
                     telerikCombo.ClientEvents(o => o
                         .OnChange(x => string.Format("function(){{ {0} }}", onClientChange)));
