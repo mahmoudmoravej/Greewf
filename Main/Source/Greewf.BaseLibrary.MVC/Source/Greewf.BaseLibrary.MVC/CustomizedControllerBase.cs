@@ -412,7 +412,13 @@ namespace Greewf.BaseLibrary.MVC
 
         public string[] ToStringArray()
         {
-            return this.Select(o => ((MemberExpression)((UnaryExpression)o.Body).Operand).Member.Name).ToArray();
+            return this.Select(o =>
+            {
+                if (o.Body is UnaryExpression)
+                    return ((MemberExpression)((UnaryExpression)o.Body).Operand).Member.Name;
+                else
+                    return ExpressionHelper.GetExpressionText(o);
+            }).ToArray();
         }
 
     }
