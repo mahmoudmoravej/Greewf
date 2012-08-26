@@ -145,7 +145,7 @@ namespace <#= Model.ControllerNamespace #>
             }
 		}
 
-        protected override SensetiveFields<<#= modelName #>ViewModel> GetSensitiveDataFields(<#= modelName #>ViewModel oldEntity, ActionType actionType, bool? isHttpPost = null)
+        protected override SensetiveFields<<#= modelName #>ViewModel> GetSensitiveDataFields(<#= modelName #> oldEntity, ActionType actionType, bool? isHttpPost = null)
         {
             //TODO : Complete this method like the following sample:
 
