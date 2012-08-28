@@ -51,6 +51,13 @@ use :
 	3. or add class manually : <span class="icon16 filename-xxx"></span>  ::don't forget to use icon16 class name
 
 
-controller : 
-implement these if needed :
-	public override string GetModelOwnerUserName(object model);
+Messages in client side(javascript) : 
+Question(sample) : 
+	
+	NOTE: the 3d parameter and all of its value are optional.
+	layoutHelper.core.ShowQuestionMessage('...آیا',
+										 'عنوان...', 
+										 { callBack: function (a) { alert(a); }, 
+										   focusToYes: false, 
+										   yesText: '....', 
+										   noText: '....' });

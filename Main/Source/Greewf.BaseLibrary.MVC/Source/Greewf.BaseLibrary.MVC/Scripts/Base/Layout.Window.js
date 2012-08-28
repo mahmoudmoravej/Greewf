@@ -37,6 +37,10 @@
         return showMessage(msg, title, 2);
     }
 
+    windowLayout.ShowQuestionMessage = function (msg, title, options) {
+        return showMessage(msg, title, 5, null, options);
+    }
+
     windowLayout.progressHtml = function () {
         return '<div isProgress="1" class="bigprogress-icon t-content" style="width:99%;height:97%;position:absolute;" ></div>';
     }
@@ -59,8 +63,29 @@
         }
     }
 
-    showMessage = function (msg, title, type) {
-        template = "<table style='width:300px;'><tr><td><img class='###' src='data:image/gif;base64,R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' /></td><td style='vertical-align:middle;width:100%;white-space: nowrap;'>$$$</td></tr></table><button class='t-button editor-focus2' style='float:left'><span class='icon16 stop-png'></span>&nbsp;بستن</button>";
+    var messageTemplateBase = "<table style='width:300px;'><tr><td><img class='###1' src='data:image/gif;base64,R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' /></td><td style='vertical-align:middle;width:100%;white-space: nowrap;'>###2</td></tr></table>";
+    var commonMessageTemplate = messageTemplateBase + "<button class='t-button editor-focus2' style='float:left'><span class='icon16 stop-png'></span>&nbsp;بستن</button>";
+    var questionTemplate = messageTemplateBase + "<button class='t-button g-no ###3' style='float:left;margin-right:5px;'><span class='icon16 stop-png'></span>&nbsp;###5</button><button class='t-button ###4 g-yes' style='float:left;'><span class='icon16 apply-png'></span>&nbsp;###6</button>";
+
+    showMessage = function (msg, title, type, ignoreTemplate, options) {
+
+        var options = $.extend({ focusToYes: false, yesText: 'بلی', noText: 'خیر', callBack: null }, options, { callBackHandled: null/*internal use*/ });
+        var msgHtml = "";
+        if (ignoreTemplate)
+            msgHtml = msg;
+        else if (type == 5)//question
+        {
+            msgHtml = questionTemplate
+                .replace('###2', msg)
+                .replace('###1', getMessageIcon(type))
+                .replace('###3', options.focusToYes ? '' : 'editor-focus2')
+                .replace('###4', options.focusToYes ? 'editor-focus2' : '')
+                .replace('###5', options.noText)
+                .replace('###6', options.yesText);
+        }
+        else //other types
+            msgHtml = commonMessageTemplate.replace('###2', msg).replace('###1', getMessageIcon(type));
+
         var oldWin = null;
         $(messageWins).each(function (i, o) { if (o.type == type) oldWin = o; });
 
@@ -76,10 +101,11 @@
             resizable: false,
             draggable: false,
             actions: new Array('Close'),
-            html: template.replace('$$$', msg).replace('###', getMessageIcon(type)),
+            html: msgHtml,
             onClose: function (s) {
-                var x = $('.editor-focus2', this);
+                var x = $('.editor-focus2', this); //it works with helper.js to return the focus to the previous item
                 if (x.data('closeHandler') != undefined) x.data('closeHandler')();
+                if (s.currentTarget == msgBoxWindow[0]/*to ensure it is for current window call*/ && options.callBack && !options.callBackHandled) options.callBack(false);
                 x.attr('class', '');
                 $(s).remove();
             }
@@ -92,14 +118,21 @@
 
         $('iframe', msgBoxWindow).remove();
         //$('.t-content', msgBoxWindow).css('background-color', '#99FF99');
-        $('button.t-button', msgBoxWindow).click(function () {
-            $(msgBoxWindow).data('tWindow').close();
-        });
+
+        if (!ignoreTemplate) {
+            $('button.t-button', msgBoxWindow).click(function () {
+                var action = $(this).hasClass('g-yes');//we should get it at first
+                options.callBackHandled = true;
+                $(msgBoxWindow).data('tWindow').close();
+                if (options.callBack) options.callBack(action);
+            });
+        }
+
         $(msgBoxWindow).keyup(function (e) { if (e.keyCode == 27) $(this).data('tWindow').close(); });
 
         var w = msgBoxWindow.data('tWindow');
         w.center().open();
-        $('button.t-button', msgBoxWindow).focus();
+        $('button.t-button.editor-focus2', msgBoxWindow).focus();
 
     }
 
