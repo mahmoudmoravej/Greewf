@@ -6,7 +6,7 @@
         notifySuccess: false,
         notifySuccessMessage: "تغییرات با موفقیت ذخیره شد",
         ajax: false,
-        window: { autoCenteredGrowingSize: false , autoGrowingSize: false }
+        window: { autoCenteredGrowingSize: false, autoGrowingSize: false }
     }
 
     layoutCore.progressHtml = function (widgetLayout) {
@@ -527,6 +527,11 @@
     layoutCore.OpenErrorWindow = function (content) {
         layoutHelper.windowLayout.OpenErrorWindow(content);
     }
+
+    layoutCore.ShowQuestionMessage = function (msg, title, options) {
+        layoutHelper.windowLayout.ShowQuestionMessage(msg, title, options);
+    }
+
 
     $.extend({ layoutCore: layoutCore });
 })(jQuery);
