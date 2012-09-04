@@ -59,6 +59,7 @@
     </None>
     <None Include="CodeTemplates\Scaffolders\Entity\Utilities.ps1" />
     <None Include="CodeTemplates\Scaffolders\MvcScaffolding.Controller\ControllerWithRepository.cs.t4" />
+    <None Include="CodeTemplates\Scaffolders\MvcScaffolding.Controller\DoCustomMappings.cs.t4" />
     <None Include="CodeTemplates\Scaffolders\MvcScaffolding.Controller\LogPoints.cs.t4" />
     <None Include="CodeTemplates\Scaffolders\MvcScaffolding.Controller\CustomizedController.cs.t4" />
     <None Include="CodeTemplates\Scaffolders\MvcScaffolding.Controller\GridViewModel.cs.t4" />

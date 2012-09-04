@@ -19,9 +19,9 @@
 <# string CLOSEBRACE = ">"; #>
 <# var entityDataType = (EnvDTE.CodeType) Model.ModelType; #>
 <# if(viewDataType != null) { #>
-@model IEnumerable<<#= viewDataType.FullName #>>
+@model <#= viewDataType.FullName #>
 <# } #>
-<script type="text/javascript" language="javascript"><#=Model.ModelTypePluralized#>
+<script type="text/javascript" language="javascript">
     function Grid<#=Model.ModelTypePluralized#>BriefView_selected(e) {
         var layout=layoutHelper.windowLayout;
         @if (Request.QueryString.AllKeys.Contains("istooltip"))
@@ -37,7 +37,7 @@
     }
   
 </script>
-@(Html.Telerik().Grid(Model)
+@(Html.Telerik().Grid(Model.Data)
         .Name("Grid<#=Model.ModelTypePluralized#>BriefView")
 		.DataKeys(keys =>
 		{
@@ -52,10 +52,10 @@
         .DataBinding(dataBinding =>
         {
             dataBinding.Server()
-                .Select("Index", "<#=Model.ModelTypePluralized#>",Html.AppendSearchCriteria((bool?)ViewBag.IsInSearchForm, new { ajax = true }));
+                .Select(Model.AjaxSelectAction, "<#=Model.ModelTypePluralized#>",Html.AppendSearchCriteria(Model.IsInSearchMode, new { ajax = true }));
 
             dataBinding.Ajax()
-                .Select("AjaxIndex", "<#=Model.ModelTypePluralized#>", Html.AppendSearchCriteria((bool?)ViewBag.IsInSearchForm)).Enabled(true);
+                .Select(Model.AjaxSelectAction, "<#=Model.ModelTypePluralized#>", Html.AppendSearchCriteria(Model.IsInSearchMode)).Enabled(true);
         })
         .Scrollable(scrolling => { scrolling.Enabled(true); scrolling.Height("150"); })
         .Sortable(sorting => sorting.Enabled(true).OrderBy(ordering =>

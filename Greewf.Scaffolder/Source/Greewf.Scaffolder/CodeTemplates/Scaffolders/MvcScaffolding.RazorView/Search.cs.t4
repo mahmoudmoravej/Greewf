@@ -59,11 +59,11 @@ if (!String.IsNullOrEmpty(Model.Layout)) {
 	{
         if (Request.QueryString.AllKeys.Contains("briefview"))
         {
-            @Html.Partial("_ListBreifView", result);
+            @Html.Partial("_ListBreifView",  new <#= viewDataType.FullName #>(){ Data =  ViewBag.SearchResult , Editable = false , IsInSearchMode = true , DefaultAction="Index"});
         }
         else
         { 
-		    @Html.Partial("_List", result)<# /*Model.ModelTypePluralized*/ #>
+		    @Html.Partial("_List",  new <#= viewDataType.FullName #>(){ Data =  ViewBag.SearchResult , Editable = false , IsInSearchMode = true , DefaultAction="Index"})<# /*Model.ModelTypePluralized*/ #>
         }
 	}
    else if (result != null)

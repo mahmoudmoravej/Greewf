@@ -16,7 +16,7 @@
 <# var viewDataType = (EnvDTE.CodeType) Model.ViewDataType; #>
 <# var modelDataType = (EnvDTE.CodeType) Model.ModelType; #>
 <# if(viewDataType != null) { #>
-@model IEnumerable< <#= viewDataType.FullName #>>
+@model <#= viewDataType.FullName #>
 <# } #>
 @{
     ViewBag.PageTitle = "فهرست اطلاعات <#= GetDisplayName(modelDataType) #> ";

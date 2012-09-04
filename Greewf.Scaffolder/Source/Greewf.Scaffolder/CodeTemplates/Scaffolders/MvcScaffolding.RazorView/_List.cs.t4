@@ -19,7 +19,7 @@
 <# string CLOSEBRACE = ">"; #>
 <# var entityDataType = (EnvDTE.CodeType) Model.ModelType; #>
 <# if(viewDataType != null) { #>
-@model IEnumerable<<#= viewDataType.FullName #>>
+@model <#= viewDataType.FullName #>
 <# } #>
 <script type="text/javascript" language="javascript">
     function Grid<#=Model.ModelTypePluralized#>_selected(e) {
@@ -37,7 +37,7 @@
     }
   
 </script>
-@(Html.Telerik().Grid(Model)
+@(Html.Telerik().Grid(Model.Data)
         .Name("Grid<#= Model.ModelTypePluralized #>")
 		.DataKeys(keys =>
 		{
@@ -60,21 +60,21 @@ foreach (ModelProperty property in properties) {
 		  	columns.Template(@<text> <a class="t-button t-grid-edit t-button-icon at-rowEdit" href='@Url.Action("edit", "<#= Model.ModelTypePluralized #>", new { item.<#= Model.PrimaryKeyName #> })' title='ویرایش اطلاعات <#= GetDisplayName(modelDataType) #> "@item.<#= GetModelTitleProperty(modelDataType) #>"' newwindow='True' ajax='1' windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'>
 		    	<span class="t-icon t-edit"></span></a></text>)
 				.ClientTemplate("<a class='t-button t-grid-edit t-button-icon at-rowEdit' href='" + Url.Action("edit", "<#= Model.ModelTypePluralized #>") + "/<#= OPENBRACE #>#=<#= Model.PrimaryKeyName#>#<#=CLOSEBRACE #>' title='ویرایش اطلاعات <#= GetDisplayName(modelDataType) #> <#= OPENBRACE #>#=<#= GetModelTitleProperty(modelDataType)#>#<#=CLOSEBRACE #>' newwindow='true' ajax='1' windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'><span class='t-icon t-edit'></span></a>")
-	            .Visible(Commons.CurrentUser.HasPermission<<#=modelDataType.Name#>Permission>(<#=modelDataType.Name#>Permission.Edit) && ViewBag.IsInSearchForm != true)
+	            .Visible(Commons.CurrentUser.HasPermission<<#=modelDataType.Name#>Permission>(<#=modelDataType.Name#>Permission.Edit) && Model.Editable)
 				.Width(20);
 		  	columns.Template(@<text> <a class="t-button t-grid-delete t-button-icon at-rowDelete" href='@Url.Action("delete", "<#= Model.ModelTypePluralized #>", new { item.<#= Model.PrimaryKeyName #> })' title='حذف اطلاعات <#= GetDisplayName(modelDataType) #> "@item.<#= GetModelTitleProperty(modelDataType) #>"' newwindow='True' ajax='1' windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'>
 		    	<span class="t-icon t-delete"></span></a></text>)
 				.ClientTemplate("<a class='t-button t-grid-delete t-button-icon at-rowDelete' href='" + Url.Action("delete", "<#= Model.ModelTypePluralized #>") + "/<#= OPENBRACE #>#=<#= Model.PrimaryKeyName#>#<#=CLOSEBRACE #>' title='حذف اطلاعات <#= GetDisplayName(modelDataType) #> <#= OPENBRACE #>#=<#= GetModelTitleProperty(modelDataType)#>#<#=CLOSEBRACE #>' newwindow='true' ajax='1'  windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'><span class='t-icon t-delete'></span></a>")
-	            .Visible(Commons.CurrentUser.HasPermission<<#=modelDataType.Name#>Permission>(<#=modelDataType.Name#>Permission.Delete) && ViewBag.IsInSearchForm != true)
+	            .Visible(Commons.CurrentUser.HasPermission<<#=modelDataType.Name#>Permission>(<#=modelDataType.Name#>Permission.Delete) && Model.Editable)
 				.Width(20);
 		})
         .DataBinding(dataBinding =>
         {
             dataBinding.Server()
-                .Select("Index", "<#= Model.ModelTypePluralized #>",Html.AppendSearchCriteria((bool?)ViewBag.IsInSearchForm, new { ajax = true }));
+                .Select(Model.AjaxSelectAction, "<#= Model.ModelTypePluralized #>",Html.AppendSearchCriteria(Model.IsInSearchMode, new { ajax = true }));
 
             dataBinding.Ajax()
-                .Select("AjaxIndex", "<#= Model.ModelTypePluralized #>", Html.AppendSearchCriteria((bool?)ViewBag.IsInSearchForm)).Enabled(true);
+                .Select(Model.AjaxSelectAction, "<#= Model.ModelTypePluralized #>", Html.AppendSearchCriteria(Model.IsInSearchMode)).Enabled(true);
         })
         .ToolBar(commands =>
         {

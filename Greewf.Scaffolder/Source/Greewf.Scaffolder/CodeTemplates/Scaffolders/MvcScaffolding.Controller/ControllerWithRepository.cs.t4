@@ -64,7 +64,7 @@ namespace <#= Model.ControllerNamespace #>
             return q;
         }
 		
-        private IQueryable< <#= modelName #>GridViewModel> Get<#= modelNamePlural #>(<#= modelName #>SearchCriteria criteria = null)
+        private IQueryable< <#= modelName #>GridRowViewModel> Get<#= modelNamePlural #>(<#= modelName #>SearchCriteria criteria = null)
         {
 
 <#
@@ -84,7 +84,7 @@ namespace <#= Model.ControllerNamespace #>
             return
                 from r in q
                 orderby r.<#= primaryKeyProperty.Name #>
-                select new <#= modelName #>GridViewModel
+                select new <#= modelName #>GridRowViewModel
                 {
 					<#= allPropertyAssignments #>
                 };
@@ -95,21 +95,33 @@ namespace <#= Model.ControllerNamespace #>
 
 	#region Index
 
+        private ViewResult GetIndexView(<#= modelName #>SearchCriteria criteria = null, string defaultAction = null, string viewName = null)
+        {
+
+            defaultAction = defaultAction ?? RouteData.Values["action"].ToString();
+
+            var finalCriteria = new <#= modelName #>SearchCriteria();
+            UpdateModel(finalCriteria, CustomHelper.SearchCriteriaPrefix);
+
+            if (criteria != null)//it override passed http form data
+                AutoMapper.Mapper.Map<<#= modelName #>SearchCriteria, <#= modelName #>SearchCriteria>(criteria, finalCriteria);
+
+            if (!HttpContext.Request.IsAjaxRequest())
+                return View(viewName, new <#= modelName #>GridViewModel() { Data = Get<#= modelNamePlural #>(finalCriteria), DefaultAction = defaultAction });
+            else
+            {
+                return View(viewName, new GridModel(Get<#= modelNamePlural #>(finalCriteria)));
+            }
+
+        }
+
+    	[GridAction]
         [Permissions(<#= modelName #>Permission.View)]
 		public ViewResult Index()
         {
-            return View(Get<#= modelNamePlural #>());
+            return GetIndexView();
         }
-		
-    	[GridAction]
-        [Permissions(<#= modelName #>Permission.View)]
-        public ViewResult AjaxIndex()
-        {
-			var criteria = new <#= modelName #>SearchCriteria();
-			UpdateModel(criteria, CustomHelper.SearchCriteriaPrefix);            
-            return View(new GridModel(Get<#= modelNamePlural #>(criteria)));		
-        }	
-		
+				
 	#endregion
 
 	#region Details
@@ -320,18 +332,6 @@ namespace <#= Model.ControllerNamespace #>
 
 	#endregion	
 
-	#region ModelMapper
-
-        public IMapper< <#= modelName #>, <#= modelName #>ViewModel> <#= modelName #>ModelMapper
-        {
-            get
-            {
-                return EntityModelMapper;
-            }
-        }
-
-	#endregion
-
 	#region Permission Handling
 
         protected override ModelPermissionLimiters GetModelLimiterFunctions(dynamic model)
@@ -363,6 +363,27 @@ namespace <#= Model.ControllerNamespace #>
         }
 
 	#endregion
+
+	#region ModelMapper
+
+        public IMapper< <#= modelName #>, <#= modelName #>ViewModel> <#= modelName #>ModelMapper
+        {
+            get
+            {
+                return EntityModelMapper;
+            }
+        }
+
+	#endregion
+
+    #region Create Custom Mappings
+
+        public static void DoCustomMappings()
+        {
+            AutoMapper.Mapper.CreateMap<<#= modelName #>SearchCriteria, <#= modelName #>SearchCriteria>();
+        }
+    
+    #endregion
 
     }	
 

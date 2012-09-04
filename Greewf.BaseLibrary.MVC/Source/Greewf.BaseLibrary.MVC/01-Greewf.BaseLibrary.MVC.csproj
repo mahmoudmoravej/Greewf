@@ -112,6 +112,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="GreewfHttpApplication.cs" />
+    <Compile Include="GridViewModelBase.cs" />
     <Compile Include="HttpModules\PersianCharacterCorrecterModule.cs" />
     <Compile Include="Logging\DefaultLogger.cs" />
     <Compile Include="Logging\LogContext\Log.cs">
