@@ -109,6 +109,33 @@ else
 	Write-Host "$CustomizedControllerClassName not found!!..." -ForegroundColor:Red
 }
 
+#1-3:adding Controller.DoCustomMapping() function call to Global.asax.cs file
+$controllerName = "$($modelTypePluralized)Controller"
+$e=Get-CodeItem -fileName: "Global.asax.cs" -projectName:$WebProject -typeName:"MvcApplication" -typeCode:1 #vsCMElement.vsCMElementClass = 1
+if($e)
+{
+	$customMappingCall = Find-CodeItem -obj:$e -typeCode:2 -typeName: "DoCustomMAppings" #vsCMElementFunction = 2 (function)
+	$blockEndPoint = $customMappingCall.GetEndPoint(16).CreateEditPoint()
+	$o = ApplyTemplate -TemplateFileName "DoCustomMappings" -Project:$WebProject  -IsOutputText -RepositoryProject:$RepositoryProject -SubRepositoryNameSpace:'Repositories' -RepositoryInterfaceProject:$RepositoryInterfaceProject -SubRepositoryInterfaceNameSpace:'RepositoryInterfaces' -WebProject:$WebProject -SubViewModelNameSpace:$SubViewModelNameSpace -SubViewModelMetaDataNameSpace:'Models.MetaData' -ControllerSubNamespace:$ControllerSubNamespace -DefaultImportingNamespaces:$DefaultImportingNamespaces	
+
+	if(-not($blockEndPoint.GetText($customMappingCall.GetStartPoint(16)).Contains($controllerName))) #16 = EnvDTE.vsCMPart.vsCMPartBody
+	{
+		$blockEndPoint.Insert($o)
+		Write-Host "'$($controllerName).DoCustomMapping();' call added to MvcApplication.DoCustomMapping() function in Global.asax.cs file..." 
+	}
+	else
+	{
+		Write-Host "MvcApplication already has some call to '$($controllerName).DoCustomMappings();'! Passed...(-Force not works on this currently)" -ForegroundColor:Magenta
+		Write-Host "you can add it manually :" -ForegroundColor:Magenta
+		Write-Host "$o" -ForegroundColor:Magenta		
+	}	
+}
+else
+{
+	Write-Host "MvcApplication not found in file Global.asax.cs of project:$WebProject!!..." -ForegroundColor:Red
+}
+
+
 #2nd: ViewModels
 $GridFolder = "$($Area)$ModelFolder\"+$foundModelType.Name
 $MetaDataFolder = "$($Area)$ModelFolder\"+$foundModelType.Name

@@ -86,5 +86,28 @@ namespace Greewf.BaseLibrary.MVC
             }
 
         }
+
+        protected virtual void Application_Start()
+        {
+            CheckAndDoCustomMappings();
+        }
+
+
+        private bool _customMappingDone = false;
+        protected bool CheckAndDoCustomMappings()
+        {
+            if (!_customMappingDone)
+            {
+                _customMappingDone = true;
+                DoCustomMAppings();
+                return true;
+            }
+            return false;
+        }
+
+        protected abstract void DoCustomMAppings();
+
+
+
     }
 }

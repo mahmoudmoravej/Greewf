@@ -9,6 +9,7 @@ using System.ComponentModel.DataAnnotations;
 <# if(!string.IsNullOrEmpty(Model.ModelTypeNamespace)) { #>
 using <#= Model.ModelTypeNamespace #>;
 <# } #>
+using Greewf.BaseLibrary.MVC;
 
 namespace <#= Model.ViewModelNameSpace #>
 {   
@@ -20,8 +21,13 @@ namespace <#= Model.ViewModelNameSpace #>
     var primaryKeyProperty = modelType.VisibleMembers().OfType<CodeProperty>().Single(x => x.Name == Model.PrimaryKey);
 	var allProperties =  modelType.VisibleMembers().OfType<CodeProperty>();
 #>
+
+    public class <#= modelName #>GridViewModel : GridViewModelBase<<#= modelName #>GridRowViewModel>
+    {   
+    }
+
  
-	public class <#= modelName #>GridViewModel 
+	public class <#= modelName #>GridRowViewModel 
     {
 	
 <# foreach(var prop in allProperties) { #>
