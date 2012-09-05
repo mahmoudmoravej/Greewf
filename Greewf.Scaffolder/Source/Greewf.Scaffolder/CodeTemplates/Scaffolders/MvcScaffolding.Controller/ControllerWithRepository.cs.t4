@@ -95,10 +95,11 @@ namespace <#= Model.ControllerNamespace #>
 
 	#region Index
 
-        private ViewResult GetIndexView(<#= modelName #>SearchCriteria criteria = null, string defaultAction = null, string viewName = null)
+        private ViewResult GetIndexView(<#= modelName #>SearchCriteria criteria = null, <#= modelName #>GridViewModel model = null, string viewName = null)
         {
 
-            defaultAction = defaultAction ?? RouteData.Values["action"].ToString();
+            model = model ?? new <#= modelName #>GridViewModel();
+            model.DefaultAction = model.DefaultAction ?? RouteData.Values["action"].ToString();
 
             var finalCriteria = new <#= modelName #>SearchCriteria();
             UpdateModel(finalCriteria, CustomHelper.SearchCriteriaPrefix);
@@ -106,11 +107,14 @@ namespace <#= Model.ControllerNamespace #>
             if (criteria != null)//it override passed http form data
                 AutoMapper.Mapper.Map<<#= modelName #>SearchCriteria, <#= modelName #>SearchCriteria>(criteria, finalCriteria);
 
-            if (!HttpContext.Request.IsAjaxRequest())
-                return View(viewName, new <#= modelName #>GridViewModel() { Data = Get<#= modelNamePlural #>(finalCriteria), DefaultAction = defaultAction });
-            else
+            if (HttpContext.Request.IsAjaxRequest())
             {
                 return View(viewName, new GridModel(Get<#= modelNamePlural #>(finalCriteria)));
+            }
+            else
+            {
+                model.Data = Get<#= modelNamePlural #>(finalCriteria);
+                return View(viewName, model);
             }
 
         }
