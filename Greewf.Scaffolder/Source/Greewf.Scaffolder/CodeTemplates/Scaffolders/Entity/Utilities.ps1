@@ -53,6 +53,13 @@ function ApplyTemplate(
 			$foundViewTypeName =$foundViewType.Name
 		}
 
+		$foundViewDetailsType = $null
+		$foundViewDetailsTypeName = $null
+		if ($ViewDetailsType -ne $null){ # we use it when we need another type in view (like GridRowViewModel)
+			$foundViewDetailsType = Get-ProjectType $ViewDetailsType -Project $Project -BlockUi
+			$foundViewDetailsTypeName =$foundViewDetailsType.Name
+		}		
+
 		if (!$PrimaryKey){
 			$primaryKey = Get-PrimaryKey $foundModelType.FullName -Project $Project -ErrorIfNotFound
 		}
@@ -111,6 +118,8 @@ function ApplyTemplate(
 				ViewName =$TemplateFileName;
 				ViewDataTypeName = $foundViewTypeName;
 				ViewDataType=[MarshalByRefObject]$foundViewType;
+				ViewDetailsDataTypeName = $foundViewDetailsTypeName;
+				ViewDetailsDataType=[MarshalByRefObject]$foundViewDetailsType;
 				ModelType = [MarshalByRefObject]$foundModelType; 
 				PrimaryKey = [string]$primaryKey; 
 				PrimaryKeyName = [string]$primaryKey;

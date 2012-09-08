@@ -153,14 +153,17 @@ ApplyTemplate -TemplateFileName "SearchCriteria" -Project:$WebProject -OutputPat
 Write-Host "Scaffolding Views..." -ForegroundColor blue
 $ViewModel = $foundModelType.Name + "ViewModel"
 $GridViewModel = $foundModelType.Name + "GridViewModel"
+
 $SearchViewModel = $foundModelType.Name + "SearchCriteria"
 $ViewPath = "$($Area)Views\"+$modelTypePluralized
 
 #grid 
 $ViewType = $GridViewModel
+$ViewDetailsType = $foundModelType.Name + "GridRowViewModel" 
 ApplyTemplate -TemplateFileName "_List" -Project:$WebProject -OutputPath:$ViewPath -OutputFilePostName:'_List' -OutputFilePreName:'' -RepositoryProject:$RepositoryProject -SubRepositoryNameSpace:'Repositories' -RepositoryInterfaceProject:$RepositoryInterfaceProject -SubRepositoryInterfaceNameSpace:'RepositoryInterfaces' -WebProject:$WebProject -SubViewModelNameSpace:$SubViewModelNameSpace -SubViewModelMetaDataNameSpace:'Models.MetaData' -ControllerSubNamespace:$ControllerSubNamespace  -DefaultImportingNamespaces:$DefaultImportingNamespaces -IgnoreModelNameInFile #-UsePluralNameInFileName 
 ApplyTemplate -TemplateFileName "_ListBreifView" -Project:$WebProject -OutputPath:$ViewPath -OutputFilePostName:'_ListBreifView' -OutputFilePreName:'' -RepositoryProject:$RepositoryProject -SubRepositoryNameSpace:'Repositories' -RepositoryInterfaceProject:$RepositoryInterfaceProject -SubRepositoryInterfaceNameSpace:'RepositoryInterfaces' -WebProject:$WebProject -SubViewModelNameSpace:$SubViewModelNameSpace -SubViewModelMetaDataNameSpace:'Models.MetaData' -ControllerSubNamespace:$ControllerSubNamespace  -DefaultImportingNamespaces:$DefaultImportingNamespaces -IgnoreModelNameInFile #-UsePluralNameInFileName 
 ApplyTemplate -TemplateFileName "Index" -Project:$WebProject -OutputPath:$ViewPath -OutputFilePostName:'Index' -OutputFilePreName:'' -RepositoryProject:$RepositoryProject -SubRepositoryNameSpace:'Repositories' -RepositoryInterfaceProject:$RepositoryInterfaceProject -SubRepositoryInterfaceNameSpace:'RepositoryInterfaces' -WebProject:$WebProject -SubViewModelNameSpace:$SubViewModelNameSpace -SubViewModelMetaDataNameSpace:'Models.MetaData' -ControllerSubNamespace:$ControllerSubNamespace  -DefaultImportingNamespaces:$DefaultImportingNamespaces -IgnoreModelNameInFile
+$ViewDetailsType = $null
 
 #non-grid related
 $ViewType = $ViewModel
