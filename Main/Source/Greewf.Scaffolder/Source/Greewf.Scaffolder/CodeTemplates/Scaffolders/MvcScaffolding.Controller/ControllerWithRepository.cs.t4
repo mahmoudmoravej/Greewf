@@ -107,7 +107,7 @@ namespace <#= Model.ControllerNamespace #>
             if (criteria != null)//it override passed http form data
                 AutoMapper.Mapper.Map<<#= modelName #>SearchCriteria, <#= modelName #>SearchCriteria>(criteria, finalCriteria);
 
-            if (HttpContext.Request.IsAjaxRequest())
+            if (Request.HttpMethod == "POST" && HttpContext.Request.IsAjaxRequest())
             {
                 return View(viewName, new GridModel(Get<#= modelNamePlural #>(finalCriteria)));
             }

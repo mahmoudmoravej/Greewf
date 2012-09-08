@@ -14,6 +14,7 @@
 <#@ import namespace="System.Reflection" #>
 <#@ import namespace="EnvDTE" #>
 <# var viewDataType = (EnvDTE.CodeType) Model.ViewDataType; #>
+<# var viewDetailsDataType = (EnvDTE.CodeType) Model.ViewDetailsDataType; #>
 <# var modelDataType = (EnvDTE.CodeType) Model.ModelType; #>
 <# string OPENBRACE= "<"; #>
 <# string CLOSEBRACE = ">"; #>
@@ -48,7 +49,7 @@
 		{
 			columns.Bound(o => o.<#= Model.PrimaryKeyName #>).Hidden(true);
 <#
-List<ModelProperty> properties = GetModelProperties(Model.ViewDataType, true);
+List<ModelProperty> properties = GetModelProperties(Model.viewDetailsDataType, true);
 foreach (ModelProperty property in properties) {
     if (!property.IsPrimaryKey && !property.IsForeignKey) {
 #>
