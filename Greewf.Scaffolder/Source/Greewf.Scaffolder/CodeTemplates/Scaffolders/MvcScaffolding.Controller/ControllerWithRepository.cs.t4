@@ -95,7 +95,7 @@ namespace <#= Model.ControllerNamespace #>
 
 	#region Index
 
-        private ViewResult GetIndexView(<#= modelName #>SearchCriteria criteria = null, <#= modelName #>GridViewModel model = null, string viewName = null)
+        private ViewResult GetIndexView(Action<<#= modelName #>SearchCriteria> enforceCriteria = null, <#= modelName #>GridViewModel model = null, string viewName = null)
         {
 
             model = model ?? new <#= modelName #>GridViewModel();
@@ -104,8 +104,8 @@ namespace <#= Model.ControllerNamespace #>
             var finalCriteria = new <#= modelName #>SearchCriteria();
             UpdateModel(finalCriteria, CustomHelper.SearchCriteriaPrefix);
 
-            if (criteria != null)//it override passed http form data
-                AutoMapper.Mapper.Map<<#= modelName #>SearchCriteria, <#= modelName #>SearchCriteria>(criteria, finalCriteria);
+            if (enforceCriteria != null)//it override passed http form data
+                enforceCriteria(finalCriteria);
 
             if (Request.HttpMethod == "POST" && HttpContext.Request.IsAjaxRequest())
             {
@@ -123,7 +123,12 @@ namespace <#= Model.ControllerNamespace #>
         [Permissions(<#= modelName #>Permission.View)]
 		public ViewResult Index()
         {
-            return GetIndexView();
+            var enforcedCriteria = new Action<<#= modelName #>SearchCriteria>(criteria =>
+            {
+                //TODO: Put your constant filtering criteria here.
+            });
+
+            return GetIndexView(enforcedCriteria);
         }
 				
 	#endregion
@@ -315,23 +320,42 @@ namespace <#= Model.ControllerNamespace #>
 
 	#region Search
 
-        [Permissions(<#= modelName #>Permission.View)]
-        public ActionResult Search()
+        private ActionResult GetSearchView(bool doSearch, Action<<#= modelName #>SearchCriteria> enforceCriteria)
         {
-            var criteria = new <#= modelName #>SearchCriteria();
-            PrepareViewBagLists(ActionType.Search, criteria);
-            return View(criteria);
+            criteria = criteria ?? new <#= modelName #>SearchCriteria();
+            if (Request.HttpMethod == "POST" && Request.IsAjaxRequest())
+            {
+                var gridViewModel = new <#= modelName #>GridViewModel() { Editable = false, IsInSearchMode = true, DefaultAction = "Search" };
+                if (doSearch)//first postback search(by clicking form button)
+                {
+                    var userCriteria = new <#= modelName #>SearchCriteria();
+                    UpdateModel(userCriteria);
+                    enforceCriteria(userCriteria);
+                    gridViewModel.Data = Get<#= modelNamePlural #>(userCriteria);
+                    ViewBag.SearchGridModelResult = gridViewModel;
+                    return View();
+                }
+                else//grid post back
+                    return GetIndexView(enforceCriteria, gridViewModel);
+            }
+            else//first page request (GET)
+            {
+                PrepareViewBagLists(ActionType.Search, criteria);
+                return View();
+            }
         }
 
-        [HttpPost]
-        [Permissions(<#= modelName #>Permission.View)]
-        [ValidateAntiForgeryToken(Salt = "<#= modelName #>Search")]
-        public ActionResult Search(<#= modelName #>SearchCriteria criteria)
-        {
-            PrepareViewBagLists(ActionType.Search, criteria);
-            ViewBag.SearchResult = Get<#= modelNamePlural #>(criteria);
 
-            return View(criteria);
+        [Permissions(<#= modelName #>Permission.View)]
+        [GridAction]
+        public ActionResult Search(bool doSearch = false)
+        {
+            var enforceCriteria = new Action<<#= modelName #>SearchCriteria>(criteria =>
+            {
+                //TODO: Put your constant filtering criteria here.
+            });
+
+            return GetSearchView(doSearch, enforceCriteria);
         }
 
 	#endregion	

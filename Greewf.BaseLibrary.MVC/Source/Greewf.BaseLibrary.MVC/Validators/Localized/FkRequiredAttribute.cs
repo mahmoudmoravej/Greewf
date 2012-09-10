@@ -16,7 +16,6 @@ namespace Greewf.BaseLibrary.MVC.Validators
             this.ErrorMessageResourceType = ValidatorAttributesLocalizer.ResourceClassType;
             this.ErrorMessageResourceName = "FkRequiredAttribute";
         }
-
     }
 
     public class FkAttributeAdapter : DataAnnotationsModelValidator<LocalizedFkRequiredAttribute>

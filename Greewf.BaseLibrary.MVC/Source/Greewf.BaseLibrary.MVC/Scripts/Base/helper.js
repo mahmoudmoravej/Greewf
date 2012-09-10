@@ -149,6 +149,12 @@ layoutHelper = new function () {
             window.location = link;
     }
 
+    this.GetDisplay = function (s) {
+        if (s)
+            return '';
+        return 'none';
+    }
+
     Object.defineProperty(this, "core", {
         get: function () {
             return (parent.$.layoutCore != null) ? parent.$.layoutCore : $.layoutCore;

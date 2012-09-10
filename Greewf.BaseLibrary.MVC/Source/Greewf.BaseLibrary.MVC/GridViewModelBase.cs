@@ -10,11 +10,14 @@ namespace Greewf.BaseLibrary.MVC
         public GridViewModelBase()
         {
             Editable = true;
+            AllowNew = true;
         }
 
         public IEnumerable<T> Data { get; set; }
 
         public bool Editable { get; set; }
+
+        public bool AllowNew { get; set; }
 
         public bool IsInSearchMode { get; set; }
 

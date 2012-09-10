@@ -20,7 +20,6 @@
 <# } #>
 @{
     ViewBag.PageTitle = "جستجوی <#= GetDisplayName(modelDataType) #>";
-	ViewBag.IsInSearchForm = true;//Needed by _list partial view
     string fldstId = "fldst" + (new Random()).Next().ToString();
 <#
 if (!String.IsNullOrEmpty(Model.Layout)) {
@@ -42,28 +41,27 @@ if (!String.IsNullOrEmpty(Model.Layout)) {
 @if (! Request.QueryString.AllKeys.Contains ("isCurrentPageCallBack"))
 {
     using (Ajax.BeginForm("search", new { puremode = 1 , isCurrentPageCallBack = 1 }, new string[] { "simplemode" }, new Greewf.BaseLibrary.MVC.Ajax.CustomizedAjaxOption("searchResult"+ fldstId, "bigprogress-icon t-content")))
-    {
-    @Html.AntiForgeryToken("<#=modelDataType.Name#>Search")
+    {    
     <fieldset id='@(fldstId)'>
         <legend>جستجوی <#= GetDisplayName(modelDataType) #>...</legend>
 		@Html.Partial("_SearchCriteria", Model)
         <p>
-			<button class="t-button" type="submit"><span class="icon16 xmag-png"></span> جستجو <#= GetDisplayName(modelDataType) #>...</button><br />
+			<button class="t-button" type="submit" name="doSearch" value="true"><span class="icon16 xmag-png"></span> جستجو <#= GetDisplayName(modelDataType) #>...</button><br />
         </p>
     </fieldset>
     }
 }
 <div id="searchResult@(fldstId)">
-    @{var result = ViewBag.SearchResult as IEnumerable<object>;}
+    @{var result = ViewBag.SearchGridModelResult == null ? null : ViewBag.SearchGridModelResult.Data as IEnumerable<object>;}    
     @if (result != null && result.Count() > 0)
 	{
         if (Request.QueryString.AllKeys.Contains("briefview"))
         {
-            @Html.Partial("_ListBreifView",  new <#= viewDataType.FullName #>(){ Data =  ViewBag.SearchResult , Editable = false , IsInSearchMode = true , DefaultAction="Index"});
+            @Html.Partial("_ListBreifView",ViewBag.SearchGridModelResult as object)
         }
         else
         { 
-		    @Html.Partial("_List",  new <#= viewDataType.FullName #>(){ Data =  ViewBag.SearchResult , Editable = false , IsInSearchMode = true , DefaultAction="Index"})<# /*Model.ModelTypePluralized*/ #>
+		    @Html.Partial("_List",  ViewBag.SearchGridModelResult as object)<# /*Model.ModelTypePluralized*/ #>
         }
 	}
    else if (result != null)
