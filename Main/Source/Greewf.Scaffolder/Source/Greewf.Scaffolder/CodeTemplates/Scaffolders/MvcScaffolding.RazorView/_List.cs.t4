@@ -38,7 +38,7 @@
     }
   
 </script>
-@(Html.Telerik().Grid(Model.Data)
+@{var grid = Html.Telerik().Grid(Model.Data)
         .Name("Grid<#= Model.ModelTypePluralized #>")
 		.DataKeys(keys =>
 		{
@@ -76,14 +76,19 @@ foreach (ModelProperty property in properties) {
 
             dataBinding.Ajax()
                 .Select(Model.AjaxSelectAction, "<#= Model.ModelTypePluralized #>", Html.AppendSearchCriteria(Model.IsInSearchMode)).Enabled(true);
-        })
-        .ToolBar(commands =>
-        {
-            commands.Template(@<text><a class="t-button t-grid-add t-button-icon at-rowEdit" style="display:@(Commons.CurrentUser.HasPermission<<#=modelDataType.Name#>Permission>(<#=modelDataType.Name#>Permission.Create) ? "" : "none")"
-                href='@Url.Action("create", "<#= Model.ModelTypePluralized #>")' title='<#=GetDisplayName(modelDataType)#> جدید' newwindow='true' ajax='1' windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'><span
-                    class="t-icon t-add"></span>اضافه کردن <#=GetDisplayName(modelDataType)#> جدید</a></text>);
-        })
-        .Scrollable(scrolling => { scrolling.Enabled(false); scrolling.Height("400%"); })
+        });
+
+       if (Model.AllowNew)
+       {
+            grid.ToolBar(commands =>
+            {
+                commands.Template(@<text><a class="t-button t-grid-add t-button-icon at-rowEdit" style="display:@(Commons.CurrentUser.HasPermission<<#=modelDataType.Name#>Permission>(<#=modelDataType.Name#>Permission.Create) ? "" : "none")"
+                    href='@Url.Action("create", "<#= Model.ModelTypePluralized #>")' title='<#=GetDisplayName(modelDataType)#> جدید' newwindow='true' ajax='1' windowcallback='<#=Model.ModelTypePluralized#>GridCallBack'><span
+                        class="t-icon t-add"></span>اضافه کردن <#=GetDisplayName(modelDataType)#> جدید</a></text>);
+            });
+        }
+
+        grid.Scrollable(scrolling => { scrolling.Enabled(false); scrolling.Height("400%"); })
         .Sortable(sorting => sorting.Enabled(true).OrderBy(ordering =>
         {
             ordering.Add(c => c.<#= Model.PrimaryKeyName #>);
@@ -93,10 +98,12 @@ foreach (ModelProperty property in properties) {
         .Groupable(grouping => grouping.Enabled(true))
         .Selectable()
         .ClientEvents(o => o.OnRowSelect("Grid<#=Model.ModelTypePluralized#>_selected"))
-        .Footer(true)
+        .Footer(true);
+
+        grid.Render();
 
 
-)
+}
 <br />
 
 

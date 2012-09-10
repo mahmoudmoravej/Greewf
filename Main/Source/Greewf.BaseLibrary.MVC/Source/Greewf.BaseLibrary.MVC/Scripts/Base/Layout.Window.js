@@ -143,7 +143,7 @@
         if (ico.length == 0)
             ico = $('img:first', sender);
         if (ico.length > 0) {
-            return $("<span>").append($(ico[0]).clone().css('vertical-align', 'middle')).html();
+            return $("<span>").append($(ico[0]).clone().css('vertical-align', 'middle').css('max-height', '16px')).html();
         }
         return '';
     }
