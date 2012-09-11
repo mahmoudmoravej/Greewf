@@ -45,7 +45,7 @@ if (!String.IsNullOrEmpty(Model.Layout)) {
     <fieldset id='@(fldstId)'>
         <legend>جستجوی <#= GetDisplayName(modelDataType) #>...</legend>
 		@Html.Partial("_SearchCriteria", Model)
-        <p>
+        <p class='g-window-nobuttonbar'>
 			<button class="t-button" type="submit" name="doSearch" value="true"><span class="icon16 xmag-png"></span> جستجو <#= GetDisplayName(modelDataType) #>...</button><br />
         </p>
     </fieldset>

@@ -145,6 +145,9 @@
     <Content Include="Documents\AreaRules.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\Base\Layout.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\Base\Layout.Window.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -197,6 +200,15 @@
     <Content Include="Scripts\qTip\old\jquery.qtip.min.css" />
     <Content Include="Scripts\qTip\old\jquery.qtip.min.js" />
     <Content Include="Scripts\telerik.menu.min-Corrected jquery live problem.js" />
+    <Content Include="Scripts\TelerikModified\NOTES!!!!!.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\TelerikModified\telerik.window.min-- ORIGINAL --.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\TelerikModified\telerik.window.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Documents\Conventions.txt">

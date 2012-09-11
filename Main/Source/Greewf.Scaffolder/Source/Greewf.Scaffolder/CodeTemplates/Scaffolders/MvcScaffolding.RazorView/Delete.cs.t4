@@ -28,25 +28,22 @@
 <div id="divContent">
     @Html.Partial("_Details", Model)
 </div>
-<div style="background-color: #FFCC00">
-    <h3>
-        <span style="vertical-align: middle" class="icon16 warning48-png"></span>آیا نسبت به حذف این <#= GetDisplayName(modelDataType) #> مطمئن هستید؟</h3>
-    @using (Html.BeginForm())
-    {
-        @Html.AntiForgeryToken("<#=modelDataType.Name#>Delete")
-        <p>
-            <button id="cancelDelete" class="t-button" type="button" isPageCloser='1'>
-                <span class="icon16 stop-png"></span>انصراف
-            </button>
-            <span style="float: left">&nbsp;</span>
-            <button id="submitDelete" class="t-button" type="submit">
-                <span class="icon16 apply-png"></span>بلی، حذف شود
-            </button>
-            <br />
-            <br />
-        </p>
-    }
-</div>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken("<#=modelDataType.Name#>Delete")
+    <div class="g-buttons-content g-warning-content">
+        <h3>
+            <span style="vertical-align: middle" class="icon16 warning48-png"></span>آیا نسبت به حذف این <#= GetDisplayName(modelDataType) #> مطمئن هستید؟
+        </h3>
+        <button id="cancelDelete" class="t-button" type="button" isPageCloser='1'>
+            <span class="icon16 stop-png"></span>انصراف
+        </button>
+        <span style="float: left">&nbsp;</span>
+        <button id="submitDelete" class="t-button" type="submit">
+            <span class="icon16 apply-png"></span>بلی، حذف شود
+        </button>
+    </div>
+}
 <#+ 
 
 string GetDisplayName(EnvDTE.CodeType type){

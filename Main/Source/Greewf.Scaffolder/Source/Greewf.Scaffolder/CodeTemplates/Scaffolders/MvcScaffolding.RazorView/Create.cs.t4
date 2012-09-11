@@ -35,15 +35,15 @@ if (!String.IsNullOrEmpty(Model.Layout)) {
 
 <# } #>
 @using (Html.BeginForm()) {
-    @Html.ValidationSummaryInWindow(false, "خطاهای پر کردن فرم")
+    @Html.ValidationSummary(false, "خطاهای پر کردن فرم")
     @Html.AntiForgeryToken("<#=modelDataType.Name#>Create")
-    <fieldset>
-        <legend><#= GetDisplayName(modelDataType) #> جدید</legend>
+    <div class="g-form-content">        
 		@Html.Partial("_CreateOrEdit", Model)
-        <p>
-			<button class="t-button" type="submit"><span class="icon16 filesave-png"></span>ذخیره اطلاعات <#= GetDisplayName(modelDataType) #></button><br />		
-        </p>
-    </fieldset>
+        <div class="g-buttons-content">
+            <button class="t-button" type="button" ispagecloser="1"><span class="icon16 stop-png"></span>انصراف</button>
+			<button class="t-button" type="submit"><span class="icon16 filesave-png"></span>ذخیره اطلاعات <#= GetDisplayName(modelDataType) #></button>		
+        </div>
+    </div>
 }
 
 
