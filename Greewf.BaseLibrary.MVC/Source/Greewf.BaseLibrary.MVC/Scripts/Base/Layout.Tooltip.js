@@ -93,6 +93,10 @@
 
     }
 
+    tooltipLayout.contentLoaded = function (window) {
+        //createButtonsBar(window.core);
+    }
+
     tooltipLayout.setContent = function (tooltip, content) {
         //tooltip.hide();
         tooltip.api.set('content.text', $(content));
@@ -146,6 +150,12 @@
         // return winTitle.outerHeight();
         return 0;
     }
+
+    tooltipLayout.getFooterHeight = function (win) {
+        //return $('.g-window-buttonbar', windowElement).outerHeight();
+        return 0;
+    }
+
 
     $.extend({ tooltipLayout: tooltipLayout });
 })(jQuery);

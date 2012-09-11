@@ -41,6 +41,12 @@
         return showMessage(msg, title, 5, null, options);
     }
 
+    windowLayout.ShowProgressMessage = function (msg, title) {
+        if (!title) title = 'در حال پردازش';
+        if (!msg) msg = 'لطفا چند لحظه صبر نمایید...';
+        return showMessage(msg, title, 6);
+    }
+
     windowLayout.progressHtml = function () {
         return '<div isProgress="1" class="bigprogress-icon t-content" style="width:99%;height:97%;position:absolute;" ></div>';
     }
@@ -57,6 +63,8 @@
                 return 'error48-png';
             case 5: //question
                 return 'Question48-png';
+            case 6: //progress
+                return 'bigprogress-icon';
             default:
                 return 'info48-png';
 
@@ -64,8 +72,8 @@
     }
 
     var messageTemplateBase = "<table style='width:300px;'><tr><td><img class='###1' src='data:image/gif;base64,R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' /></td><td style='vertical-align:middle;width:100%;white-space: nowrap;'>###2</td></tr></table>";
-    var commonMessageTemplate = messageTemplateBase + "<button class='t-button editor-focus2' style='float:left'><span class='icon16 stop-png'></span>&nbsp;بستن</button>";
-    var questionTemplate = messageTemplateBase + "<button class='t-button g-no ###3' style='float:left;margin-right:5px;'><span class='icon16 stop-png'></span>&nbsp;###5</button><button class='t-button ###4 g-yes' style='float:left;'><span class='icon16 apply-png'></span>&nbsp;###6</button>";
+    var commonMessageTemplate = messageTemplateBase + "<div class='g-buttons-content'><button class='t-button editor-focus2' style='float:left'><span class='icon16 stop-png'></span>&nbsp;بستن</button></div>";
+    var questionTemplate = messageTemplateBase + "<div class='g-buttons-content'><button class='t-button g-no ###3' style='float:left;margin-right:5px;'><span class='icon16 stop-png'></span>&nbsp;###5</button><button class='t-button ###4 g-yes' style='float:left;'><span class='icon16 apply-png'></span>&nbsp;###6</button></div>";
 
     showMessage = function (msg, title, type, ignoreTemplate, options) {
 
@@ -86,21 +94,16 @@
         else //other types
             msgHtml = commonMessageTemplate.replace('###2', msg).replace('###1', getMessageIcon(type));
 
-        var oldWin = null;
-        $(messageWins).each(function (i, o) { if (o.type == type) oldWin = o; });
-
-        if (oldWin != null) {
-            oldWin.win.data('tWindow').close();
-            oldWin.win.data('tWindow').destroy();
-            oldWin.win = null;
-        }
+        var oldWin = closeOldWin(type);
+        if (type != 6)//if not proggress, hide all old progress
+            closeOldWin(6);
 
         msgBoxWindow = $.telerik.window.create({
             title: title,
             visible: false,
             resizable: false,
             draggable: false,
-            actions: new Array('Close'),
+            actions: type == 6 ? new Array() : new Array('Close'),
             html: msgHtml,
             onClose: function (s) {
                 var x = $('.editor-focus2', this); //it works with helper.js to return the focus to the previous item
@@ -121,7 +124,7 @@
 
         if (!ignoreTemplate) {
             $('button.t-button', msgBoxWindow).click(function () {
-                var action = $(this).hasClass('g-yes');//we should get it at first
+                var action = $(this).hasClass('g-yes'); //we should get it at first
                 options.callBackHandled = true;
                 $(msgBoxWindow).data('tWindow').close();
                 if (options.callBack) options.callBack(action);
@@ -131,15 +134,74 @@
         $(msgBoxWindow).keyup(function (e) { if (e.keyCode == 27) $(this).data('tWindow').close(); });
 
         var w = msgBoxWindow.data('tWindow');
+
+        if (type == 6)//progress
+            $('button', msgBoxWindow).remove();
+        else
+            createButtonsBar(msgBoxWindow);
+
         w.center().open();
         $('button.t-button.editor-focus2', msgBoxWindow).focus();
 
+    }
+
+    function closeOldWin(type) {
+        var oldWin = null;
+        $(messageWins).each(function (i, o) { if (o.type == type) oldWin = o; });
+
+        if (oldWin != null && oldWin.win != null) {
+            oldWin.win.data('tWindow').close();
+            oldWin.win.data('tWindow').destroy();
+            oldWin.win = null;
+        }
+
+        return oldWin;
+
+    }
+
+    function createButtonsBar(windowElement, assumeLastParagraphAsButtonBar/*and only if it has buttons*/) {/*NOTE : NOT Works for IFRAME mode!*/
+        windowElement = $(windowElement);
+        if (windowElement.length == 0) return;
+        contentElement = $('div.t-content', windowElement);
+
+        removeButtonBar(windowElement);
+        var mainContainer = $('.g-buttons-content', contentElement);
+
+        if (mainContainer.length == 0) {
+            if (!assumeLastParagraphAsButtonBar) return;
+            mainContainer = $('p:last', contentElement);
+            if (mainContainer.length == 0 || mainContainer.find('button,a,input').length == 0) return;
+            mainContainer.addClass('g-buttons-content');
+        }
+        if (mainContainer.hasClass('g-window-nobuttonbar')) return; //cancel it if the related tag requested
+        mainContainer.css('display', 'none');
+
+        //just find all [button,a and input] tags
+        $('button,a,input', mainContainer).each(function (i, o) { $(o).attr('_tempId', i) });
+        var clonedContainer = mainContainer.clone().addClass('t-header g-clearfix g-window-buttonbar').appendTo(windowElement).css('display', 'block');
+
+        //shadow clicking
+        $('[_tempId]', clonedContainer).each(function (i, o) {
+            $(o).data('sourceTag', $('[_tempId="' + $(o).attr('_tempId') + '"]', mainContainer)); //find the match in main container
+            $(o).click(function () { $(this).data('sourceTag').click(); });
+        });
+
+    }
+
+    function removeButtonBar(windowElement) {
+        $('.g-window-buttonbar', windowElement).remove();
+    }
+
+    function clearButtonBar(windowElement) {
+        $('.g-window-buttonbar', windowElement).css('visibility', 'hidden'); //to preserver its height and prevent flashingn resizing (in refreshing content)
     }
 
     function fetchIcon(sender) {
         var ico = $('span[class*="icon16"]:first', sender);
         if (ico.length == 0)
             ico = $('span[class*="t-sprite"]:first', sender);
+        if (ico.length == 0)
+            ico = $('span[class*="t-icon"]:first', sender);
         if (ico.length == 0)
             ico = $('img:first', sender);
         if (ico.length > 0) {
@@ -233,7 +295,14 @@
         window.core.data('tWindow').center().open();
     }
 
+    windowLayout.contentLoaded = function (window) {
+        var auto = $(window.sender).attr('winAutoButtonsBar');
+        if (!auto) auto = $.layoutCore.options.window.autoButtonBar;
+        createButtonsBar(window.core, auto);
+    }
+
     windowLayout.setContent = function (window, content) {
+        clearButtonBar(window.core);
         window.core.data('tWindow').content(content);
     }
 
@@ -302,6 +371,13 @@
 
     windowLayout.getTitleHeight = function (winTitle) {
         return winTitle.outerHeight();
+    }
+
+    windowLayout.getFooterHeight = function (win) {
+        var x = $('.g-window-buttonbar', win.core);
+        if (x.length > 0)
+            return x.outerHeight();
+        return 0;
     }
 
     var errorWindow = null;

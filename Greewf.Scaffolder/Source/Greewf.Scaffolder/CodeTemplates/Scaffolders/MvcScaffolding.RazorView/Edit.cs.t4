@@ -35,19 +35,18 @@ if (!String.IsNullOrEmpty(Model.Layout)) {
 
 <# } #>
 @using (Html.BeginForm()) {
-    @Html.ValidationSummaryInWindow(false, "خطاهای پر کردن فرم")
+    @Html.ValidationSummary(false, "خطاهای پر کردن فرم")
     @Html.AntiForgeryToken("<#=modelDataType.Name#>Edit")
-    <fieldset>
-        <legend>ویرایش @String.Format("{0} {1}","<#= GetDisplayName(modelDataType) #>",Model.<#= GetModelTitleProperty(modelDataType) #>)</legend>
-
+    <div class="g-form-content">        
 <# foreach (ModelProperty property in GetModelProperties(viewDataType, false).Where(x => x.IsPrimaryKey)) { #>
         @Html.HiddenFor(model => model.<#= property.Name #>)
 <# } #>
 		@Html.Partial("_CreateOrEdit", Model)
-        <p>
-            <button class="t-button" type="submit"><span class="icon16 filesave-png"></span>ذخیره اطلاعات <#= GetDisplayName(modelDataType) #></button><br />		
-        </p>
-    </fieldset>
+        <div class="g-buttons-content">
+            <button class="t-button" type="button" ispagecloser="1"><span class="icon16 stop-png"></span>انصراف</button>
+            <button class="t-button" type="submit"><span class="icon16 filesave-png"></span>ذخیره اطلاعات <#= GetDisplayName(modelDataType) #></button>	
+        </div>
+    </div>
 }
 
 <#+

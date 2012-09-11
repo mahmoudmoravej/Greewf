@@ -28,7 +28,7 @@
 <div id="divContent">
     @Html.Partial("_Details", Model)
 </div>
-<div style="background-color: #FFCC00">
+<div class="g-buttons-content delete-summary-errors">
     <h3>
         <span style="vertical-align: middle" class="icon16 error48-png"></span>به دلایل
         زیر امکان حذف وجود ندارد :</h3>

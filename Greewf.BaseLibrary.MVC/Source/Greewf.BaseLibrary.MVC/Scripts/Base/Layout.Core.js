@@ -6,7 +6,8 @@
         notifySuccess: false,
         notifySuccessMessage: "تغییرات با موفقیت ذخیره شد",
         ajax: false,
-        window: { autoCenteredGrowingSize: false, autoGrowingSize: false }
+        responsiveAjaxProgress: true,
+        window: { autoCenteredGrowingSize: false, autoGrowingSize: false, autoButtonBar: true }
     }
 
     layoutCore.progressHtml = function (widgetLayout) {
@@ -50,9 +51,9 @@
 
     layoutCore.handleCloseCallBack = function (sender, data, ownerWindow, isSuccessfulFlagUp) {
         var callBack = $(sender, ownerWindow).attr('windowcallback');
-        if (typeof (callBack) != 'undefined')
+        if (callBack)
             ownerWindow[callBack].apply(this, new Array(sender, data, isSuccessfulFlagUp));
-        else if (typeof (ownerWindow.Layout_DoneSuccessfullyCallBack) != 'undefined')
+        else if (ownerWindow.Layout_DoneSuccessfullyCallBack)
             ownerWindow.Layout_DoneSuccessfullyCallBack(sender, data, isSuccessfulFlagUp);
 
     }
@@ -239,6 +240,7 @@
             success: function (html) {
                 insertAjaxContent(widgetLayout, widget, widgetTitle, title, link, html);
                 if (postSuccessAction) postSuccessAction();
+                widgetLayout.contentLoaded(widget);
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 widgetLayout.setContent(widget, xhr.responseText);
@@ -281,7 +283,7 @@
             var changingDone = false;
             if (winHeight == undefined) {
                 var maxHeight = $(window).height() - 100;
-                var newHeight = contentHieght + widgetLayout.getTitleHeight(widgetTitle);
+                var newHeight = contentHieght + widgetLayout.getTitleHeight(widgetTitle) + widgetLayout.getFooterHeight(widget);
                 if (newHeight > maxHeight) newHeight = maxHeight;
                 changingDone = changingDone || widgetLayout.setHeight(widget, newHeight, justGrow);
             }
@@ -432,7 +434,7 @@
         });
 
         $('a[responsiveAjax]', ownerWindow.document).live('click', function () {
-            handleResponsiveAjaxLink(this);
+            handleResponsiveAjaxLink(this, ownerWindow);
             return false;
         });
 
@@ -469,13 +471,29 @@
             layoutHelper.core.OpenWidget(layoutHelper.tooltipLayout, sender, sender.href, sender.title, window);
     }
 
-    function handleResponsiveAjaxLink(link) {
+    function handleResponsiveAjaxLink(link, ownerWindow) {
+        var succeeded;
         $.ajax({
             type: 'POST',
             url: link.href,
             cache: false,
+            beforeSend: function () {
+                var progress;
+                if (!$(link).attr('responsiveAjaxProgress'))
+                    progress = layoutCore.options.responsiveAjaxProgress;
+                else
+                    progress = $(link).attr('responsiveAjaxProgress').toLowerCase() != 'false';
+
+                if (!progress) return;
+                window.setTimeout(function () {
+                    if (succeeded) return;
+                    layoutHelper.windowLayout.ShowProgressMessage();
+                }, 400);
+            },
             success: function (json) {
+                succeeded = 1;
                 handleResponsiveJsonResult(json);
+                layoutCore.handleCloseCallBack(link, null, ownerWindow, true);
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 layoutHelper.windowLayout.ShowErrorMessage('<div style="overflow:auto;direction:ltr;max-width:400px;max-height:300px">' + xhr.responseText + '</div>', 'بروز خطا');

@@ -1,0 +1,27 @@
+﻿.g-clearfix:after
+{
+    content: " ";
+    display: block;
+    height: 0;
+    clear: both;
+}
+
+.g-window-buttonbar
+{
+    padding: 5px;
+    margin:0px;
+    display:block;
+}
+.g-buttons-content button
+{
+    margin-left: 3px;
+    margin-right: 3px;
+}
+.g-form-content
+{
+    padding: 10px;/*for padding inside the forms*/
+}
+.g-warning-content
+{
+    background-color:#FFCC00;
+}
