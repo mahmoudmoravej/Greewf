@@ -1,0 +1,442 @@
+﻿<#@ template language="C#" HostSpecific="True"  inherits="DynamicTransform" #>
+<#@ Output Extension="cs" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="EnvDTE" #>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using Telerik.Web.Mvc;
+using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+<# if(!string.IsNullOrEmpty(Model.ModelTypeNamespace)) { #>
+using <#= Model.ModelTypeNamespace #>;
+<# } #>
+<# if(!string.IsNullOrEmpty(Model.ModelTypeNamespace)) { #>
+using <#= Model.DefaultNamespace #>;
+<# } #>
+<# foreach(var ns in Model.DefaultImportingNamespaces) { #>
+using <#= ns #>;
+<# } #>
+
+//TODO : 
+// 1- complete the GetModelLimiterFunctions method if required
+// 2- modify ApplySearchCriteria method to satisfy your needs. 
+// 3- complete GetSensitiveDataFields method to prevent some client-side attack senarios.
+
+namespace <#= Model.ControllerNamespace #>
+{   
+<#  
+	var modelType = (CodeType)Model.ModelType; 
+	var modelName = modelType.Name; 
+	var modelNamePlural = Model.ModelTypePluralized; 
+	var modelVariable = modelName.ToLower(); 
+	var relatedEntities = ((IEnumerable)Model.RelatedEntities).OfType<RelatedEntityInfo>();
+	var primaryKeyProperty = modelType.VisibleMembers().OfType<CodeProperty>().Single(x => x.Name == Model.PrimaryKey);
+	var routingName = Regex.Replace(Model.ControllerName, "Controller$", "", RegexOptions.IgnoreCase);
+	var allProperties =  modelType.VisibleMembers().OfType<CodeProperty>();
+	var propertiesToInclude = relatedEntities.Select(relation => relation.LazyLoadingProperty).Where(x => x != null);
+
+#>
+    public class <#= Model.ControllerName #> : CustomizedController< <#= modelName #>,<#= modelName #>ViewModel>
+    {
+
+
+
+	#region listing/filtering
+
+
+        private IQueryable< <#= modelName #>> ApplySearchCriteria(IQueryable< <#= modelName #>> q, <#= modelName #>SearchCriteria criteria)
+        {
+            if (criteria != null)
+            {
+				//TODO : write filtering code or correct and uncomment the below codes
+                <#    foreach(var prop in allProperties.Where (x => !propertiesToInclude.Contains(x)) ) { #>
+
+                if (criteria.<#= prop.Name  #> != null)
+                    q = q.Where(o => o.<#= prop.Name  #> == criteria.<#= prop.Name  #>);
+                <#    } #> 
+			}
+            return q;
+        }
+		
+        private IQueryable< <#= modelName #>GridRowViewModel> Get<#= modelNamePlural #>(<#= modelName #>SearchCriteria criteria = null)
+        {
+
+<#
+	var includeExpression = String.Join(", ", propertiesToInclude.Select(x => String.Format("{0} => {0}.{1}", modelVariable, x.Name)));
+	if (!string.IsNullOrEmpty(includeExpression)) {
+		includeExpression = "Including(" + includeExpression + ")";
+	}
+	var allPropertyAssignments = String.Join(",\r\n ", allProperties.Select(x => String.Format("{0} = r.{0}", x.Name)));
+	
+#>			var q =
+                from r in (<#= Repositories[modelType.FullName].VariableName #>.All<#= includeExpression #>)
+                select r;
+
+            //apply search criteria
+            q = ApplySearchCriteria(q, criteria);
+
+            return
+                from r in q
+                orderby r.<#= primaryKeyProperty.Name #>
+                select new <#= modelName #>GridRowViewModel
+                {
+					<#= allPropertyAssignments #>
+                };
+
+        }
+		
+	#endregion 
+
+	#region Index
+
+        private ViewResult GetIndexView(Action<<#= modelName #>SearchCriteria> enforceCriteria = null, <#= modelName #>GridViewModel model = null, string viewName = null)
+        {
+
+            model = model ?? new <#= modelName #>GridViewModel();
+            model.DefaultAction = model.DefaultAction ?? RouteData.Values["action"].ToString();
+
+            var finalCriteria = new <#= modelName #>SearchCriteria();
+            UpdateModel(finalCriteria, CustomHelper.SearchCriteriaPrefix);
+
+            if (enforceCriteria != null)//it override passed http form data
+                enforceCriteria(finalCriteria);
+
+            if (Request.HttpMethod == "POST" && HttpContext.Request.IsAjaxRequest())
+            {
+                return View(viewName, new GridModel(Get<#= modelNamePlural #>(finalCriteria)));
+            }
+            else
+            {
+                model.Data = Get<#= modelNamePlural #>(finalCriteria);
+                return View(viewName, model);
+            }
+
+        }
+
+    	[GridAction]
+        [Permissions(<#= modelName #>Permission.View)]
+		public ViewResult Index()
+        {
+            var enforcedCriteria = new Action<<#= modelName #>SearchCriteria>(criteria =>
+            {
+                //TODO: Put your constant filtering criteria here.
+            });
+
+            return GetIndexView(enforcedCriteria);
+        }
+				
+	#endregion
+
+	#region Details
+
+        [AutoMap(typeof(<#= modelName #>), typeof(<#= modelName #>ViewModel))]
+        [Permissions(<#= modelName #>Permission.View)]
+        public ViewResult Details(<#= primaryKeyProperty.Type.AsString #> id)
+        {
+            return View(<#= Repositories[modelType.FullName].VariableName #>.Find(id));
+        }		
+	#endregion
+
+	#region Utilities
+
+        private void PrepareViewBagLists(ActionType actionType, object data)
+        {
+            if (actionType == ActionType.Create || actionType == ActionType.Edit || actionType == ActionType.Search)
+            {
+<# foreach(var relatedEntity in relatedEntities.Where(x => x.RelationType == RelationType.Parent)) { #>
+			    ViewBag.Possible<#= relatedEntity.RelationNamePlural #> = <#= Repositories[relatedEntity.RelatedEntityType.FullName].VariableName #>.All;
+<# } #>
+            }
+
+            if (actionType == ActionType.Create || actionType == ActionType.Edit)
+            {
+                //TODO:move only create/edit specific viewbag items to here
+                var model = data as <#= modelName #>ViewModel;
+            }
+            else if (actionType == ActionType.Search)
+            {
+                //TODO:move only search specific viewbag items to here
+                var model = data as <#= modelName #>SearchCriteria;
+            }
+		}
+
+        protected override SensetiveFields<<#= modelName #>ViewModel> GetSensitiveDataFields(<#= modelName #> oldEntity, ActionType actionType, bool? isHttpPost = null)
+        {
+            //TODO : Complete this method like the following sample:
+
+            //if (actionType == ActionType.Edit && isHttpPost == true)
+            //{
+            //    if (oldEntity.xxx.HasValue)
+            //        return new SensetiveFields<EntityViewModel>()
+            //            .Add(o => o.xxx)
+            //            .Add(o => o.yyy)
+            //            .Add(o => o.zzz);
+            //    else
+            //        return new SensetiveFields<EntityViewModel>()
+            //            .Add(o => o.ttt);
+            //}
+
+            return null;
+
+        }		
+
+        //NOTE : It is important to validate the ViewModel because of additional data it may have against Entity.
+        private bool ValidateModel(<#= modelName #>ViewModel model, ActionType actionType)
+        {
+            if (!ModelState.IsValid) return false;
+
+            //TODO : PUT YOUE CODE HERE
+
+            return ModelState.IsValid;
+        }
+
+
+	#endregion
+
+	#region Create
+
+        [Permissions(<#= modelName #>Permission.Create)]
+        public ActionResult Create()
+        {
+			var new<#= modelName #> = new <#= modelName #>ViewModel();
+			PrepareViewBagLists(ActionType.Create, new<#= modelName #>);
+            return View(new<#= modelName #>);
+        } 
+
+        [HttpPost]
+        [AutoMap(typeof(<#= modelName #>), typeof(<#= modelName #>ViewModel))]
+        [Permissions(<#= modelName #>Permission.Create)]
+        [Log(LogPoint.<#= modelName #>Create, LogModelState.Valid, LogResultType.RedirectToSuccess)]
+        [ValidateAntiForgeryToken(Salt = "<#= modelName #>Create")]
+        public ActionResult Create(<#= modelName #>ViewModel model)
+        {			
+            if (ValidateModel(model, ActionType.Create))
+            {
+  			    var <#= modelVariable #> = <#= modelName #>ModelMapper.Map(model);
+                <#= Repositories[modelType.FullName].VariableName #>.InsertOrUpdate(<#= modelVariable #>);
+                <#= Repositories[modelType.FullName].VariableName #>.Save();
+				
+				return Redirect(Url.Action("edit", new { id = <#= modelVariable #>.<#= primaryKeyProperty.Name #> }), true, <#= modelName #>ModelMapper.Map(<#= modelVariable #>));
+            } 
+			else 
+			{
+				PrepareViewBagLists(ActionType.Create, model);
+	            return View(model);
+			}
+        }
+        
+	#endregion
+
+	#region Edit
+
+        [AutoMap(typeof(<#= modelName #>), typeof(<#= modelName #>ViewModel))]
+        [Permissions(<#= modelName #>Permission.Edit)]
+        public ActionResult Edit(<#= primaryKeyProperty.Type.AsString #> id)
+        {
+            var entity = <#= Repositories[modelType.FullName].VariableName #>.Find(id);
+			PrepareViewBagLists(ActionType.Edit, entity);
+			return View(entity);
+        }
+
+        [HttpPost]
+        [Permissions(<#= modelName #>Permission.Edit)]
+        [Log(LogPoint.<#= modelName #>Edit, LogModelState.Valid, LogResultType.RedirectToSuccess)]
+        [ValidateAntiForgeryToken(Salt = "<#= modelName #>Edit")]
+        [ActionName("Edit")]
+        public ActionResult EditPost(<#= primaryKeyProperty.Type.AsString #> id)
+        {
+            var old<#= modelName #> = <#= Repositories[modelType.FullName].VariableName #>.Find(id);
+            var model = EntityModelMapper.Map(old<#= modelName #>);
+            ModelState.Clear();
+            TryUpdateModel(model, old<#= modelName #>, ActionType.Edit, true);//We need this to have a model with "complete" data in validation phase. 
+
+            if (ValidateModel(model, ActionType.Edit))
+			{	
+                UpdateModel(old<#= modelName #>, old<#= modelName #>, ActionType.Edit, true);
+                <#= Repositories[modelType.FullName].VariableName #>.InsertOrUpdate(old<#= modelName #>);
+                <#= Repositories[modelType.FullName].VariableName #>.Save();
+				return Redirect(Url.Action("edit"), true, <#= modelName #>ModelMapper.Map(old<#= modelName #>));
+
+            } else {
+				PrepareViewBagLists(ActionType.Edit, model);
+	            return View(model);
+			}
+        }
+
+	#endregion
+
+	#region Delete
+
+        [AutoMap(typeof(<#= modelName #>), typeof(<#= modelName #>ViewModel))]
+        [Permissions(<#= modelName #>Permission.Delete)]
+        public ActionResult Delete(<#= primaryKeyProperty.Type.AsString #> id)
+        {
+            var deletingItem = <#= Repositories[modelType.FullName].VariableName #>.Find(id);
+
+            if (DeletingCoditionsMet(deletingItem))
+                return View(deletingItem);
+            else
+                return View("DeleteError", deletingItem);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [Permissions(<#= modelName #>Permission.Delete)]
+        [Log(LogPoint.<#= modelName #>Delete, LogModelState.Always, LogResultType.Always)]
+        [ValidateAntiForgeryToken(Salt = "<#= modelName #>Delete")]
+        public ActionResult DeleteConfirmed(<#= primaryKeyProperty.Type.AsString #> id)
+        {
+            var deletingItem = <#= Repositories[modelType.FullName].VariableName #>.Find(id);
+            var <#= modelVariable #>Model = <#= modelName #>ModelMapper.Map(deletingItem);
+
+            if (DeletingCoditionsMet(deletingItem))
+            {
+                <#= Repositories[modelType.FullName].VariableName #>.Delete(id);
+                <#= Repositories[modelType.FullName].VariableName #>.Save(); 
+
+                return RedirectToSuccessAction(<#= modelVariable #>Model);        
+            }
+            else
+                return View("DeleteError", <#= modelVariable #>Model);
+        }
+
+        private bool DeletingCoditionsMet(<#= modelName #> deletingItem)
+        {
+            // follow the following pattern :
+            //int relatedCount = deletingItem.RelatedItems.Count;
+            //if (relatedCount > 0)
+            //    ModelState.AddModelError("", string.Format("وجود {0} آیتم مرتبط", relatedCount));
+
+            return ModelState.IsValid;
+        }
+
+		
+	#endregion
+
+	#region Search
+
+        private ActionResult GetSearchView(bool doSearch, Action<<#= modelName #>SearchCriteria> enforceCriteria)
+        {
+            criteria = criteria ?? new <#= modelName #>SearchCriteria();
+            if (Request.HttpMethod == "POST" && Request.IsAjaxRequest())
+            {
+                var gridViewModel = new <#= modelName #>GridViewModel() { Editable = false, IsInSearchMode = true, DefaultAction = "Search" };
+                if (doSearch)//first postback search(by clicking form button)
+                {
+                    var userCriteria = new <#= modelName #>SearchCriteria();
+                    UpdateModel(userCriteria);
+                    enforceCriteria(userCriteria);
+                    gridViewModel.Data = Get<#= modelNamePlural #>(userCriteria);
+                    ViewBag.SearchGridModelResult = gridViewModel;
+                    return View();
+                }
+                else//grid post back
+                    return GetIndexView(enforceCriteria, gridViewModel);
+            }
+            else//first page request (GET)
+            {
+                PrepareViewBagLists(ActionType.Search, criteria);
+                return View();
+            }
+        }
+
+
+        [Permissions(<#= modelName #>Permission.View)]
+        [GridAction]
+        public ActionResult Search(bool doSearch = false)
+        {
+            var enforceCriteria = new Action<<#= modelName #>SearchCriteria>(criteria =>
+            {
+                //TODO: Put your constant filtering criteria here.
+            });
+
+            return GetSearchView(doSearch, enforceCriteria);
+        }
+
+	#endregion	
+
+	#region Permission Handling
+
+        protected override ModelPermissionLimiters GetModelLimiterFunctions(dynamic model)
+        {
+            //TODO : uncomment and correct these if you have permission based on the entity creator or any other rules
+			//if (model is <#= modelName #>ViewModel)
+            //{
+            //    var result = new List<PermissionLimiterBase>();
+            //    result.Add(new PermissionLimiter()
+			//		  .ForOwnsPermissionsOf(PermissionEntity.<#=modelNamePlural#>)
+			//		  .MakeLimitsBy(() => (model as <#= modelName #>ViewModel).UserId == Commons.CurrentUser.UserId)
+            //        .Message(() => "فقط مجاز به تغییر موارد ایجادی خود هستید")
+            //        .OrPart());
+            //    return new ModelPermissionLimiters
+            //    {
+            //        LimiterFunctions = result.ToArray()
+            //    };
+            //}
+            return null;
+        }
+	
+	#endregion
+
+	#region Log Details Handling
+
+        protected override Dictionary<string, string> GetLogDetails(int logPointId, dynamic model)
+        {
+            return null;
+        }
+
+	#endregion
+
+	#region ModelMapper
+
+        public IMapper< <#= modelName #>, <#= modelName #>ViewModel> <#= modelName #>ModelMapper
+        {
+            get
+            {
+                return EntityModelMapper;
+            }
+        }
+
+	#endregion
+
+    #region Create Custom Mappings
+
+        public static void DoCustomMappings()
+        {
+            AutoMapper.Mapper.CreateMap<<#= modelName #>SearchCriteria, <#= modelName #>SearchCriteria>();
+        }
+    
+    #endregion
+
+    }	
+
+}
+
+<#+
+class RepositoryInfo {
+    public string RepositoryTypeName { get; set; }
+    public string VariableName { get; set; }
+}
+
+IDictionary<string, RepositoryInfo> _repositories;
+IDictionary<string, RepositoryInfo> Repositories {
+	get {
+		if (_repositories == null) {
+			var relatedEntities = ((IEnumerable)Model.RelatedEntities).OfType<RelatedEntityInfo>();
+			var relatedTypes = relatedEntities.Where(x => x.RelationType == RelationType.Parent).Select(x => x.RelatedEntityType).Distinct();
+			_repositories = relatedTypes.ToDictionary(
+				relatedType => relatedType.FullName,
+				relatedType => new RepositoryInfo { RepositoryTypeName = relatedType.Name + "Repository", VariableName = relatedType.Name + "Repository" }
+			); 
+			_repositories[((CodeType)Model.ModelType).FullName] = new RepositoryInfo { RepositoryTypeName = Model.Repository, VariableName = ((CodeType)Model.ModelType).Name + "Repository" };
+		}
+		return _repositories;
+	}
+}
+
+#>

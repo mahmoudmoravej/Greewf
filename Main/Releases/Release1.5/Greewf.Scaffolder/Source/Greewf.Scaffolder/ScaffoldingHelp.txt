@@ -1,0 +1,53 @@
+﻿NOTE!!!:
+	در کنسول پکیج منجر ، دقت کنید که پکیج سورس بر روی همه ست شده باشد
+
+samples :
+1- scaffold projectentity 'AienTehran.Safat.Biz.Entities.xxxx' -Area 'XXXXX' 
+
+2- scaffold projectentity 'AienTehran.Safat.Biz.Entities.xxxx' -Area 'XXXXX' -PrimaryKey 'ZZZZ' # اگر کلید اصلی را خود تعریف می کنید
+ 
+3- scaffold projectentity 'yyyyyy.Safat.Biz.Entities.xxxx' -ProjectCompanyName 'yyyyy' -ProjectMainName 'tttt'
+
+
+
+
+ ----------------------------------------P O W E R   S H E L L   H E L P--------------------------------------------
+  get-command *-service
+
+  $z=1,2,3											(defininf array)
+  get-member -inputobject $z						(get array properties)
+  $z=$z+4											(extending array)
+
+  (get-project).properties| get-member				(get current project's properties structure)
+
+  get-help get-member								(help of command let)
+
+  "" vs ''											(double qouetes make replacement but singe qoute not) like : "it is $x book"
+  defining special functions :
+								$source = @"
+									public class MyHelper
+									{
+										public static string ToLowerFirstChar(string input)
+										{
+											return char.ToLower(input[0]) + input.Substring(1);
+										}
+									}
+								"@
+
+								Add-Type -TypeDefinition $source
+
+								$variableTag = [MyHelper]::ToLowerFirstChar($ModelType)
+
+[Reflection.Assembly]::Load("EnvDTE")												(load EnvDTE assembly from GAC)
+$DTE.ExecuteCommand("TextTransformation.TransformAllTemplates")			
+
+$g.members | foreach { if ($_.Name -eq 'IssueNumber'){ return $_.Name }}
+												در اعضای آن می گردد و اگر نام آن برابر مقدار داده شده بود آنرا باز می گرداند
+			
+  ------------------------------------------------------------------------------------------------------------------
+  refrencecs:
+	http://ss64.com/ps/
+	http://powergui.org/index.jspa
+	http://powerguivsx.codeplex.com/
+	http://technet.microsoft.com/en-us/library/bb978526.aspx
+	http://mvcscaffolding.codeplex.com/wikipage?title=T4Scaffolding%27s%20cmdlets%20for%20use%20in%20custom%20scaffolders&referringTitle=Documentation (special commands for mvc-scaffolding)

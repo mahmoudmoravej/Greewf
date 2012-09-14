@@ -1,0 +1,334 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{566A5C58-FBA2-467D-B647-4A0CA767062C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Greewf.BaseLibrary.MVC</RootNamespace>
+    <AssemblyName>Greewf.BaseLibrary.MVC</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AutoMapper, Version=1.1.0.188, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\..\..\SharedBinaries\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=4.3.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\EntityFramework.4.3.0\lib\net40\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.ReportViewer.WebForms, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Web.WebPages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Telerik.Web.Mvc, Version=2012.1.214.340, Culture=neutral, PublicKeyToken=121fae78165ba3d4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\SharedBinaries\Telerik.Web.Mvc.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Ajax\ResponsiveJson.cs" />
+    <Compile Include="Ajax\CustomizedAjaxOption.cs" />
+    <Compile Include="ChangeTracker\AuditingWidget.cs" />
+    <Compile Include="ChangeTracker\ChangeTracker.cs" />
+    <Compile Include="ChangeTracker\ChangeTrackerContext\AuditLog.cs">
+      <DependentUpon>ChangeTrackerContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ChangeTracker\ChangeTrackerContext\AuditLogDetail.cs">
+      <DependentUpon>ChangeTrackerContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext.Context1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ChangeTrackerContext.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext.Extend.cs" />
+    <Compile Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ChangeTrackerContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ChangeTrackerContext.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="ChangeTracker\ChangeTrackerDetailsProvider.cs" />
+    <Compile Include="ChangeTracker\ChangeTrackerEntityDetailsProvider.cs" />
+    <Compile Include="ChangeTracker\DefaultChangeTracker.cs" />
+    <Compile Include="ChangeTracker\ISavingTracker.cs" />
+    <Compile Include="ChangeTracker\TrackChangesAttribute.cs" />
+    <Compile Include="CustomHelpers\CheckBoxListFor.cs" />
+    <Compile Include="CustomHelpers\ImagePickerFor.cs" />
+    <Compile Include="CustomHelpers\PersianDatePickerFor.cs" />
+    <Compile Include="CustomHelpers\ValidationFor.cs" />
+    <Compile Include="CustomHelpers\PartialFor.cs" />
+    <Compile Include="CustomHelpers\ValidationSummary.cs" />
+    <Compile Include="CustomHelpers\WindowValueSelectorFor.cs" />
+    <Compile Include="CustomHelpers\Utility.cs" />
+    <Compile Include="CustomHelpers\CompundComboListFor.cs" />
+    <Compile Include="CustomizedControllerBase.cs" />
+    <Content Include="Documents\SSO.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Compile Include="GreewfHttpApplication.cs" />
+    <Compile Include="GridViewModelBase.cs" />
+    <Compile Include="HttpModules\PersianCharacterCorrecterModule.cs" />
+    <Compile Include="Logging\DefaultLogger.cs" />
+    <Compile Include="Logging\LogContext\Log.cs">
+      <DependentUpon>LogContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Logging\LogContext\LogContext.Extend.cs" />
+    <Compile Include="Logging\LogAttribute.cs" />
+    <Compile Include="Logging\LogContext\LogContext.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LogContext.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Logging\LogContext\LogContext.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LogContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Logging\LogContext\LogContext.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LogContext.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Logging\LogContext\LogDetail.cs">
+      <DependentUpon>LogContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\LogProfileReader.cs" />
+    <Compile Include="OfflineTools\HashStamp.cs" />
+    <Compile Include="RedirectToRouteSuccessResult.cs" />
+    <Content Include="Documents\AreaRules.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\Layout.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\Layout.Window.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\Layout.Core.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\Layout.Tooltip.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Compile Include="Security\PermissionLimiterBase.cs" />
+    <Compile Include="Validators\Localized\FkRequiredAttribute.cs" />
+    <Compile Include="Validators\Localized\RangeAttribute.cs" />
+    <Compile Include="Validators\Localized\DigitsOnlyAttribute.cs" />
+    <Compile Include="Validators\Localized\LengthAttribute.cs" />
+    <Compile Include="Validators\Localized\PhoneAttribute.cs" />
+    <Compile Include="Validators\Localized\RequiredAttribute.cs" />
+    <Compile Include="Mappers\AutoMapAttribute.cs" />
+    <Compile Include="Mappers\IModelMapperController.cs" />
+    <Compile Include="Mappers\IMapper.cs" />
+    <Compile Include="Mappers\ViewModelMapper.cs" />
+    <Compile Include="CurrentUserBase.cs" />
+    <Compile Include="ProfileCommonBase.cs" />
+    <Compile Include="ProfileExtentions.cs" />
+    <Compile Include="Security\PermissionAttribute.cs" />
+    <Compile Include="Security\PermissionCoordinatorBase.cs" />
+    <Compile Include="Security\SecurityException.cs" />
+    <Compile Include="Security\UserPermissionHelper.cs" />
+    <Compile Include="Validators\Localized\ValidatorAttributesLocalizer.cs" />
+    <Compile Include="Validators\PersianDateAttribute.cs" />
+    <Compile Include="Validators\PersianDateValidationRule.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReportsLoaderBase.cs" />
+    <Content Include="Scripts\Chosen\!!NOTES!!.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\jQuery Text Change Event - ZURB Playground - ZURB.com.htm" />
+    <Content Include="Scripts\jquery.notice.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\qTip\jquery.qtip.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\qTip\jquery.qtip.min.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\qTip\jquery.qtip.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\qTip\old\jquery.qtip.css" />
+    <Content Include="Scripts\qTip\old\jquery.qtip.min.css" />
+    <Content Include="Scripts\qTip\old\jquery.qtip.min.js" />
+    <Content Include="Scripts\telerik.menu.min-Corrected jquery live problem.js" />
+    <Content Include="Scripts\TelerikModified\NOTES!!!!!.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\TelerikModified\telerik.window.min-- ORIGINAL --.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\TelerikModified\telerik.window.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Documents\Conventions.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\helper.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\jquery-ui-tab4telerik.1.8.11.js" />
+    <Content Include="Scripts\Base\jquery-ui-tab4telerik.1.8.11.min-old.js" />
+    <Content Include="Scripts\Base\jquery-ui-tab4telerik.1.8.11.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\JqueryTabstripCustomStyle.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\TabstripLayoutManager.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\WindowLayoutManager-old.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Chosen\chosen-sprite.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Chosen\chosen.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Chosen\chosen.jquery.js" />
+    <Content Include="Scripts\Chosen\chosen.jquery.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\jquery.textchange.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\MicrosoftAjax.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.pack.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.persian-fa.js" />
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.persian.js" />
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.persian.pack.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker-fa.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker.js" />
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker.pack-original.js" />
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker.pack.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.plus.pack.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\PersianCalendar\jquery.localisation.js" />
+    <Content Include="Scripts\PersianCalendar\jquery.localisation.pack.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\PersianCalendar\jquery.localisation2.pack.js" />
+    <Content Include="Scripts\PersianCalendar\persianDateConvertor.js" />
+    <Content Include="Scripts\PersianCalendar\persianDateConvertor.pack.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.Config" />
+    <None Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ChangeTrackerContext.Context1.cs</LastGenOutput>
+    </None>
+    <EntityDeploy Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>ChangeTrackerContext1.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ChangeTrackerContext1.cs</LastGenOutput>
+    </None>
+    <None Include="Logging\LogContext\LogContext.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LogContext.Context.cs</LastGenOutput>
+    </None>
+    <EntityDeploy Include="Logging\LogContext\LogContext.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>LogContext.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="Logging\LogContext\LogContext.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LogContext.cs</LastGenOutput>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Greewf.BaseLibrary\Source\Greewf.BaseLibrary\00-Greewf.BaseLibrary.csproj">
+      <Project>{3E04F4A9-AA08-4492-BD72-2EBC76CC85A1}</Project>
+      <Name>00-Greewf.BaseLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /Y /E /D "$(TargetDir)\Scripts" "$(SolutionDir)\GreewfRelease\Scripts\"
+xcopy /Y /E /D "$(TargetDir)\Documents" "$(SolutionDir)\GreewfRelease\Documents\"
+xcopy /Y /D "$(TargetDir)*.dll" "$(SolutionDir)\GreewfRelease\Dlls\"
+
+rem if exist "\\Server\Software\SharedResources\GreewfRelease\" xcopy /Y /E /D "$(SolutionDir)\..\GreewfRelease\*" "\\Server\Software\SharedResources\GreewfRelease\"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

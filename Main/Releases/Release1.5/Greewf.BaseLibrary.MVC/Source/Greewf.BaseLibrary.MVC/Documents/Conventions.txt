@@ -1,0 +1,68 @@
+﻿TODO:
+
+1- tabular...
+2- windows ...
+3- layouts...
+4- styling rules... & page formats...
+5- editor-focus, emphasize,
+
+link style :
+<a class="t-button t-grid-edit t-button-icon at-rowEdit" href='...' title='...' (inline='xxx' | newwindow='xxx'|justwindow='xxx'|justMain='xxx' | responsiveAjax='xxx'|tooltipWindow='xxx') windowcallback='ContactGridCallBack' winWidth='50' winHeight='50' winMax='true' winNoModal='1' windowActionsNeedConfirm='true' winNoMaximaizable='x' winDisableBackHide='x' ajax='1' isPageCloser='1' showEvents='click...' hideEvents='click unfocus...' autoGrowingSize='1' winAutoButtonsBar='1'> ....</a>
+	classes : link,show-icon,link hover-classic,t-link
+
+	winDisableBackHide = در صورتی که می خواهید پنجره پشتی در زمان باز شدن پنجره جدید مخفی نشود
+	winNoModal= آیا نمایش به صورت مودال نباشد
+	winNoMaximaizable = ماکیزمایز پذیر نباشد!
+	windowcallback = function (url,data,isSuccessfulFlagUp){}
+	winAutoButtonsBar = مشخص میکند که آیا دکمه های در محل مخصوص و پایین پنجره قرار بگیرند یا خیر
+	responsiveAjax = اگر اکشنی که انجام می دهد نتیجه اش یک متنی است که تنها می بایست در پنجره مربوطه نمایش داده شود. مثلا وقتی کالا به سبد خرید اضافه می شود و نتیجه این است که "کالا اضافه شد" از این موارد استفاده می شود.
+					* در هر حالتی که نتیجه  از نوع json باشد سیستم آنرا به صورت ResponsiveJsonResult هندل می کند
+	responsiveAjaxProgress = در صورتیکه بخواهید یک پروگرس بار تا قبل از رسیدن نتیجه نمایش داده شود . توجه : مقدار false تنها مقداری است که به معنی عدم نمایش می باشد
+	tooltipWindow=  آیا در یک تول تیپ باز کند؟
+	autoGrowingSize = اندازه پنجره/تول تیپ را با تغییر اندازه محتوای آن بطور خودکار تغییر دهد ** توجه : در صورتی که ارتفاع و یا عرض تنظیم شده باشد در آن بعد غیرفعال می شود فعلا
+	autoCenteredGrowingSize = همان بالایی با این تفاوت که پنجره را در مرکز صفحه نیز قرار می دهد
+
+	isPageCloser = آیا این دکمه باعث بسته شدن صفحه می گردد؟ -- فعلا فقط در حالت آجاکسی کار میکند -- در صورتی که به ولیدیشن صفحه نیاز دارید نوع دکمه را سابمیتی انتخاب کنید
+	pageCloserDataFetcher = نام فانکشنی که داده مربوطه را به صدازننده ارسال می کند --فعلا فقط در حالت آجاکسی کار میکند
+	** : تو ویژگی بالا با هم و بر روی صفحه داخلی یک پنجره یا تولتیپ قرار می گیرند. اگر می خواهید یک دکمه در نقش "انصراف" باشد کافیست که با تابع دوم این موضوع را به صفحه اصلی پاس داده و آنجا متوجه شوید که چه چیزی در صفحه  داخلی پنجره رخ داده است
+
+	showevents = رویدادهایی که باعث نمایش آن می شوند : فعلا فقط برای تولتیپ -- کاملا بر اساس "کیو تیپ" می باشد (http://api.jquery.com/category/events/)
+	hideevents = رویدادهایی که باعث بسته شدن آن می شوند : فعلا فقط برای تولتیپ -- کاملا بر اساس "کیو تیپ" می باشد (http://api.jquery.com/category/events/) 
+
+functions : xxxx= {window یا tooltip}
+	layoutHelper.xxxxLayout.MaximizeToContent = function (adjustCenter)  یک ویجت پنجره یا تولتیپ را با محتوای آن هم اندازه می کند. پارامتر مشخص می کند که بعد از تغییر اندازه آنرا در مرکز پنجره کند یا خیر.
+
+
+class='g-window-nobuttonbar' در صورتی که می خواهید یکسری دکمه ها در پایین پنجره قرار نگیرند این کلاس را به کانتینر دکمه ها بدهید
+
+QueryString keys :
+enforceLayout=1
+istab=1
+iswindow=1
+simplemode=1
+puremode=1
+SavedSuccessfully=1
+briefView=1 // فقط برای صفحه سرچ که باعث می شود از گرید خلاصه در نمایش استفاده کند. همچنین با ایجاد یک شناسه منحصر ترکیب با حالت های آجاکسی را نیز پشتیبانی می کند
+
+sprite images:
+use : 
+	1. @Sprite.Image("~/App_Sprites/myImage.jpg")  OR
+	2. if you are limitted to src and css class (for example: telerik panel bar) 
+		A. add the image path as a class : class="subDirectoryOne/subDirectoryTwo/myImage-png" (note!: replace dots with dashes)
+		B. set the source to Global.InlineImagePlaceHolder constant 
+		example :
+			.ImageUrl(Commons.InlineImagePlaceHolder)
+			.ImageHtmlAttributes(new { @class = "gohome-png" })
+	3. or add class manually : <span class="icon16 filename-xxx"></span>  ::don't forget to use icon16 class name
+
+
+Messages in client side(javascript) : 
+Question(sample) : 
+	
+	NOTE: the 3d parameter and all of its value are optional.
+	layoutHelper.core.ShowQuestionMessage('...آیا',
+										 'عنوان...', 
+										 { callBack: function (a) { alert(a); }, 
+										   focusToYes: false, 
+										   yesText: '....', 
+										   noText: '....' });

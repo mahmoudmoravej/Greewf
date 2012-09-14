@@ -1,0 +1,80 @@
+﻿<#@ Template Language="C#" HostSpecific="True" Inherits="DynamicTransform" #>
+<#@ Output extension="cshtml" #>
+<#@ assembly name="System.ComponentModel.DataAnnotations" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="System.Data.Entity" #>
+<#@ assembly name="System.Data.Linq" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.ComponentModel.DataAnnotations" #>
+<#@ import namespace="System.Data.Linq.Mapping" #>
+<#@ import namespace="System.Data.Objects.DataClasses" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Reflection" #>
+<# var viewDataType = (EnvDTE.CodeType) Model.ViewDataType; #>
+<# var modelDataType = (EnvDTE.CodeType) Model.ModelType; #>
+
+<# if(viewDataType != null) { #>
+@model <#= viewDataType.FullName #>
+
+<# } #>
+@{
+	ViewBag.PageTitle  = string.Format("حذف اطلاعات {0} {1}", "<#= GetDisplayName(modelDataType) #>", Model.<#= GetModelTitleProperty(modelDataType) #>);
+<# if (!String.IsNullOrEmpty(Model.Layout)) { #>
+    Layout = "<#= Model.Layout #>";
+<# } #>
+}
+<div id="divContent">
+    @Html.Partial("_Details", Model)
+</div>
+<div class="g-buttons-content delete-summary-errors">
+    <h3>
+        <span style="vertical-align: middle" class="icon16 error48-png"></span>به دلایل
+        زیر امکان حذف وجود ندارد :</h3>
+    <ul >
+        @foreach (var item in Html.ViewData.ModelState[""].Errors)
+        {
+            <li>@item.ErrorMessage</li>
+        }
+    </ul>
+    <p>
+        <button id="closeDelete" class="t-button" type="button" ispagecloser='1'>
+            <span class="icon16 stop-png"></span>بستن
+        </button>
+        <br />
+        <br />
+    </p>
+</div>
+<#+ 
+
+string GetDisplayName(EnvDTE.CodeType type){
+	if (string.IsNullOrWhiteSpace(type.DocComment))
+		return type.Name;
+	return GetCleanDocument(type.DocComment);
+}
+string GetCleanDocument(string doc)
+{	
+	return 
+		doc
+		.Replace("<doc>","")
+		.Replace("</doc>","")
+		.Replace("<summary>","")
+		.Replace("</summary>","")
+		.Replace("\r","")
+		.Replace("\n","")
+		.Replace(@"///","")
+		.Trim();
+}
+
+static string[] titlePropertyNames = new[] { "Name", "Title", "LastName","Lastname", "Surname", "Subject", "Count" };
+string GetModelTitleProperty(EnvDTE.CodeType modelType) {
+	if (modelType != null) {
+		var chosenSubproperty = modelType.FindProperty(titlePropertyNames);
+		if (chosenSubproperty != null) {
+			return chosenSubproperty.Name;
+		}
+	}
+	return Model.PrimaryKeyName;
+}
+#>
