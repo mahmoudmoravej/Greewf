@@ -219,16 +219,17 @@ namespace <#= Model.ControllerNamespace #>
             if (ValidateModel(model, ActionType.Create))
             {
   			    var <#= modelVariable #> = <#= modelName #>ModelMapper.Map(model);
-                <#= Repositories[modelType.FullName].VariableName #>.InsertOrUpdate(<#= modelVariable #>);
-                <#= Repositories[modelType.FullName].VariableName #>.Save();
-				
-				return Redirect(Url.Action("edit", new { id = <#= modelVariable #>.<#= primaryKeyProperty.Name #> }), true, <#= modelName #>ModelMapper.Map(<#= modelVariable #>));
+                if (<#= Repositories[modelType.FullName].VariableName #>.InsertOrUpdate(<#= modelVariable #>)) // if no, ModelState has some values.(Biz rules failed)
+                {
+                    <#= Repositories[modelType.FullName].VariableName #>.Save();				
+                    return RedirectToSuccessAction(<#= modelName #>ModelMapper.Map(<#= modelVariable #>));
+				    // return Redirect(Url.Action("edit", new { id = <#= modelVariable #>.<#= primaryKeyProperty.Name #> }), true, <#= modelName #>ModelMapper.Map(<#= modelVariable #>)); //Use this if you want to return to edit mode.
+                }
             } 
-			else 
-			{
-				PrepareViewBagLists(ActionType.Create, model);
-	            return View(model);
-			}
+            //else : ModelState has some values 
+
+			PrepareViewBagLists(ActionType.Create, model);
+	        return View(model);
         }
         
 	#endregion
@@ -259,14 +260,18 @@ namespace <#= Model.ControllerNamespace #>
             if (ValidateModel(model, ActionType.Edit))
 			{	
                 UpdateModel(old<#= modelName #>, old<#= modelName #>, ActionType.Edit, true);
-                <#= Repositories[modelType.FullName].VariableName #>.InsertOrUpdate(old<#= modelName #>);
-                <#= Repositories[modelType.FullName].VariableName #>.Save();
-				return Redirect(Url.Action("edit"), true, <#= modelName #>ModelMapper.Map(old<#= modelName #>));
-
-            } else {
-				PrepareViewBagLists(ActionType.Edit, model);
-	            return View(model);
-			}
+                if (<#= Repositories[modelType.FullName].VariableName #>.InsertOrUpdate(old<#= modelName #>)) // if no, ModelState has some values.(Biz rules failed)
+                {
+                    <#= Repositories[modelType.FullName].VariableName #>.Save();
+                    return RedirectToSuccessAction(<#= modelName #>ModelMapper.Map(<#= modelVariable #>));
+				    // return Redirect(Url.Action("edit"), true, <#= modelName #>ModelMapper.Map(old<#= modelName #>)); //Use this if you want to return to edit mode.
+                }
+            }
+            //else : ModelState has some values 
+ 
+			PrepareViewBagLists(ActionType.Edit, model);
+	        return View(model);
+			
         }
 
 	#endregion
@@ -296,22 +301,21 @@ namespace <#= Model.ControllerNamespace #>
 
             if (DeletingCoditionsMet(deletingItem))
             {
-                <#= Repositories[modelType.FullName].VariableName #>.Delete(id);
-                <#= Repositories[modelType.FullName].VariableName #>.Save(); 
-
-                return RedirectToSuccessAction(<#= modelVariable #>Model);        
+                if (<#= Repositories[modelType.FullName].VariableName #>.Delete(id)) // if no, ModelState has some values.(Biz rules failed)
+                {
+                    <#= Repositories[modelType.FullName].VariableName #>.Save(); 
+                    return RedirectToSuccessAction(<#= modelVariable #>Model);        
+                }
             }
-            else
-                return View("DeleteError", <#= modelVariable #>Model);
+            //else : ModelState has some values 
+            
+            return View("DeleteError", <#= modelVariable #>Model);
+
         }
 
         private bool DeletingCoditionsMet(<#= modelName #> deletingItem)
         {
-            // follow the following pattern :
-            //int relatedCount = deletingItem.RelatedItems.Count;
-            //if (relatedCount > 0)
-            //    ModelState.AddModelError("", string.Format("وجود {0} آیتم مرتبط", relatedCount));
-
+            // (NOTE!: Most of these validations should be placed in related Repository ValidateDeleting method )
             return ModelState.IsValid;
         }
 

@@ -257,7 +257,8 @@ namespace Greewf.BaseLibrary.MVC
         where Y : ContextManagerBase, new()
         where VM : class , new()
     {
-        protected Y _contextManager = null;
+        protected Y _contextManager = null;        
+
         public CustomizedControllerBase()
         {
             _contextManager = new Y();
@@ -422,4 +423,6 @@ namespace Greewf.BaseLibrary.MVC
         }
 
     }
+
+  
 }

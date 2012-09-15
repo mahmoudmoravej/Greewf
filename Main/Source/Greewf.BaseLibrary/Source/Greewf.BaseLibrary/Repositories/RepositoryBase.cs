@@ -17,14 +17,17 @@ namespace Greewf.BaseLibrary.Repositories
     {
         protected T context = null;
         protected ContextManager<T> ContextManager { get; private set; }
+        protected IValidationDictionary ValidationDictionary { get; private set; }
 
-        protected RepositoryBase(ContextManager<T> contextManager)
+        protected RepositoryBase(ContextManager<T> contextManager, IValidationDictionary validationDictionary)
         {
             ContextManager = contextManager;
             if (contextManager == null)
                 context = new T();// throw new Exception("ContextManager cannot be empty for Repository creation");
             else
                 context = contextManager.Context;
+            ValidationDictionary = validationDictionary ?? new DefaultValidationDictionary();
+
         }
 
         protected IQueryable<X> AllIncluding<X>(DbSet<X> dbset, params Expression<Func<X, object>>[] includeProperties) where X : class ,new()
@@ -40,6 +43,14 @@ namespace Greewf.BaseLibrary.Repositories
         public void Detach<E>(E entity) where E : class
         {
             context.Entry<E>(entity).State = System.Data.EntityState.Detached;
+        }
+
+        public string[] Errors
+        {
+            get
+            {
+                return ValidationDictionary.Errors;
+            }
         }
 
     }

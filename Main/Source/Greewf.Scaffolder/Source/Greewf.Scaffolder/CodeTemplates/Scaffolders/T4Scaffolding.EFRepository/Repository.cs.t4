@@ -11,6 +11,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
 using Greewf.BaseLibrary.Repositories;
+using Greewf.BaseLibrary;
+
 using <#= Model.RepositoryInterfaceNamespace #>;
 
 <# foreach(var ns in new[] { Model.ModelTypeNamespace, Model.DbContextNamespace }.Where(x => !string.IsNullOrEmpty(x) && (x != Model.RepositoryNamespace)).Distinct()) { #>
@@ -31,12 +33,12 @@ namespace <#= Model.RepositoryNamespace #>
     {
 
         public <#= modelName #>Repository()
-            : base(null)
+            : base(null, null)
         {
         }
 
-        public <#= modelName #>Repository(ContextManager contextManager)
-            : base(contextManager)
+        public <#= modelName #>Repository(ContextManager contextManager, IValidationDictionary validationDictionary)
+            : base(contextManager, validationDictionary)
         {
         }
 
@@ -64,8 +66,11 @@ namespace <#= Model.RepositoryNamespace #>
 <# } #>
         }
 
-        public void InsertOrUpdate(<#= modelName #> <#= modelName.ToLower() #>)
+        public bool InsertOrUpdate(<#= modelName #> <#= modelName.ToLower() #>)
         {
+            if (!Validate(<#= modelName.ToLower() #>))
+                return false;
+
             if (<#= modelName.ToLower() #>.<#= Model.PrimaryKey #> == default(<#= primaryKeyProperty.Type.AsString #>)) {
                 // New entity
 <# if(primaryKeyProperty.Type.AsString == "System.Guid") { #>
@@ -85,17 +90,45 @@ namespace <#= Model.RepositoryNamespace #>
                 context.Entry(<#= modelName.ToLower() #>).State = EntityState.Modified;
 <# } #>
             }
+            return true;
+
         }
 
-        public void Delete(<#= primaryKeyProperty.Type.AsString #> id)
+        public bool Delete(<#= primaryKeyProperty.Type.AsString #> id)
         {
 <# if(isObjectContext) { #>
             var <#= modelName.ToLower() #> = context.<#= modelNamePlural #>.Single(x => x.<#= Model.PrimaryKey #> == id);
-            context.<#= modelNamePlural #>.DeleteObject(<#= modelName.ToLower() #>);
 <# } else { #>
             var <#= modelName.ToLower() #> = context.<#= modelNamePlural #>.Find(id);
-            context.<#= modelNamePlural #>.Remove(<#= modelName.ToLower() #>);
 <# } #>
+            if (ValidateDeleting(<#= modelName.ToLower() #>))
+            {
+<# if(isObjectContext) { #>
+                context.<#= modelNamePlural #>.DeleteObject(<#= modelName.ToLower() #>);
+<# } else { #>
+                context.<#= modelNamePlural #>.Remove(<#= modelName.ToLower() #>);
+<# } #>
+                return true;
+            }
+            return false;
+
+        }
+
+        public bool ValidateDeleting(<#= modelName #> <#= modelName.ToLower() #>)
+        {
+            //TODO : write your entity deleting conditions codes that should to be met here.
+            // follow the following pattern 
+            //int relatedCount = deletingItem.RelatedItems.Count;
+            //if (relatedCount > 0)
+            //    ValidationDictionary.AddError("", string.Format("وجود {0} آیتم مرتبط", relatedCount));
+
+            return ValidationDictionary.IsValid;
+        }
+
+        public bool Validate(<#= modelName #> <#= modelName.ToLower() #>)
+        {
+            //TODO : write your entity validation codes (for insert or update) here.
+            return ValidationDictionary.IsValid;
         }
 
         public void Save()

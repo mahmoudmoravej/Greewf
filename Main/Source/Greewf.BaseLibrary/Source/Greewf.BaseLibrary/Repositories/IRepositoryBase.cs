@@ -17,9 +17,11 @@ namespace Greewf.BaseLibrary.Repositories
         IQueryable<T> AllIncluding(params Expression<Func<T, object>>[] includeProperties);
         T Find(Y id);
         T Find(Y id, params Expression<Func<T, object>>[] includeProperties);
-        void InsertOrUpdate(T entity);
-        void Delete(Y id);
+        bool InsertOrUpdate(T entity);
+        bool Delete(Y id);
         void Save();
         void Detach(T entity);
+        bool Validate(T entity);
+        bool ValidateDeleting(T entity);
     }
 }
