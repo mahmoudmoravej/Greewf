@@ -12,14 +12,17 @@ namespace Greewf.BaseLibrary.Repositories
     /// The main EntityFrmaework DbContext
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class RepositoryBase<T>
+    /// <typeparam name="Y">UnitOfRepository</typeparam>
+    public class RepositoryBase<T,Y>
         where T : DbContext, new()
+        where Y : class , new()
     {
         protected T context = null;
         protected ContextManager<T> ContextManager { get; private set; }
         protected IValidationDictionary ValidationDictionary { get; private set; }
+        protected Y UoR { get; private set; }
 
-        protected RepositoryBase(ContextManager<T> contextManager, IValidationDictionary validationDictionary)
+        protected RepositoryBase(ContextManager<T> contextManager, IValidationDictionary validationDictionary, Y unitOfRepository)
         {
             ContextManager = contextManager;
             if (contextManager == null)
@@ -27,6 +30,7 @@ namespace Greewf.BaseLibrary.Repositories
             else
                 context = contextManager.Context;
             ValidationDictionary = validationDictionary ?? new DefaultValidationDictionary();
+            UoR = unitOfRepository;
 
         }
 

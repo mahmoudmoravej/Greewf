@@ -208,6 +208,18 @@ namespace Greewf.BaseLibrary.MVC
             return new ResponsiveJsonResult(modelState);
         }
 
+        /// <summary>
+        /// توجه : اگر نمیخواهید چیزی لاگ شود modelToLog را null بفرستید
+        /// </summary>
+        /// <param name="modelState"></param>
+        /// <param name="modelToLog">مدلی که می خواهید لاگ شود. اگر نمی خواهید چیزی لاگ شود آنرا null بفرستید</param>
+        /// <returns></returns>
+        protected ResponsiveJsonResult ResponsiveJson(ResponsiveJsonType responseType, ModelStateDictionary modelState, object modelToLog)
+        {
+            ViewData.Model = modelToLog;
+            return new ResponsiveJsonResult(responseType, modelState);
+        }
+
         protected SuccessViewResult SuccessView(string viewName, object model)
         {
             ViewData.Model = model;
@@ -257,12 +269,12 @@ namespace Greewf.BaseLibrary.MVC
         where Y : ContextManagerBase, new()
         where VM : class , new()
     {
-        protected Y _contextManager = null;        
+        protected Y ContextManager = null;
 
         public CustomizedControllerBase()
         {
-            _contextManager = new Y();
-            ContextManagerBase = _contextManager;
+            ContextManager = new Y();
+            ContextManagerBase = ContextManager;
             _uoR = CreateUnitOfRepositoriesInstance();
         }
 
@@ -424,5 +436,5 @@ namespace Greewf.BaseLibrary.MVC
 
     }
 
-  
+
 }

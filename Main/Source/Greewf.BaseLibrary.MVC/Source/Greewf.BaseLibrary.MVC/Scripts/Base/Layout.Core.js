@@ -239,8 +239,7 @@
             cache: false,
             success: function (html) {
                 insertAjaxContent(widgetLayout, widget, widgetTitle, title, link, html);
-                if (postSuccessAction) postSuccessAction();
-                widgetLayout.contentLoaded(widget);
+                if (postSuccessAction) postSuccessAction();                
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 widgetLayout.setContent(widget, xhr.responseText);
@@ -272,6 +271,7 @@
         enableValidation(widgetLayout, widget);
         ajaxifyInnerForms(widgetLayout, widget, widgetTitle);
         handleCloseButtons(widgetLayout, widget);
+        widgetLayout.contentLoaded(widget);
 
     }
 

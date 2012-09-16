@@ -30,25 +30,38 @@ namespace Greewf.BaseLibrary.MVC.Ajax
             JsonRequestBehavior = JsonRequestBehavior.AllowGet;
 
         }
-
         internal ResponsiveJsonResult(ModelStateDictionary modelState)
+            : this(ResponsiveJsonType.Faield, modelState)
+        {
+        }
+
+        internal ResponsiveJsonResult(ResponsiveJsonType type, ModelStateDictionary modelState)
         {
             string result = "<ul>";
             JsonRequestBehavior = JsonRequestBehavior.AllowGet;
-            ResponseType = ResponsiveJsonType.Faield;
+            ResponseType = type;
+            int count = 0;
 
             foreach (var item in modelState)
             {
                 foreach (var err in item.Value.Errors)
                 {
                     if (!string.IsNullOrEmpty(err.ErrorMessage))
+                    {
                         result += "<li>" + err.ErrorMessage + "</li>";
+                        count++;
+                    }
                     if (err.Exception != null)
+                    {
                         result += "<li>" + err.Exception.ToString() + "</li>";
+                        count++;
+                    }
                 }
             }
 
             result += "</ul>";
+            if (count > 0)
+                result = result.Replace("<li>", "").Replace("</li>", "").Replace("<ul>", "").Replace("</ul>", "");
 
             Message = result;
 
