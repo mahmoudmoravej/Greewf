@@ -36,7 +36,7 @@ if (!String.IsNullOrEmpty(Model.Layout)) {
 <# } #>
 @using (Html.BeginForm()) {
     @Html.ValidationSummary(false, "خطاهای پر کردن فرم")
-    @Html.AntiForgeryToken("<#=modelDataType.Name#>Create")
+    @Html.AntiForgeryToken()
     <div class="g-form-content">        
 		@Html.Partial("_CreateOrEdit", Model)
         <div class="g-buttons-content">

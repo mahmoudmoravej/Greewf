@@ -36,7 +36,7 @@ if (!String.IsNullOrEmpty(Model.Layout)) {
 <# } #>
 @using (Html.BeginForm()) {
     @Html.ValidationSummary(false, "خطاهای پر کردن فرم")
-    @Html.AntiForgeryToken("<#=modelDataType.Name#>Edit")
+    @Html.AntiForgeryToken()
     <div class="g-form-content">        
 <# foreach (ModelProperty property in GetModelProperties(viewDataType, false).Where(x => x.IsPrimaryKey)) { #>
         @Html.HiddenFor(model => model.<#= property.Name #>)
