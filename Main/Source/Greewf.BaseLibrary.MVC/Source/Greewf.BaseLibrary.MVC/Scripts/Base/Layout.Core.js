@@ -5,8 +5,10 @@
     layoutCore.options = {
         notifySuccess: false,
         notifySuccessMessage: "تغییرات با موفقیت ذخیره شد",
+        notifySuccessTimeout: 2000,
         ajax: false,
         responsiveAjaxProgress: true,
+        showPageFormErrorsInExternalWindow: true,
         window: { autoCenteredGrowingSize: false, autoGrowingSize: false, autoButtonBar: true }
     }
 
@@ -201,12 +203,12 @@
                 jQuery.noticeAdd({
                     text: layoutCore.options.notifySuccessMessage,
                     stay: false,
-                    stayTime: 2000
+                    stayTime: layoutCore.options.notifySuccessTimeout
                 });
             }
             handled = true;
         }
-        else if (link.indexOf("/accessdenied") > 0) {
+        else if (link.indexOf("/accessdenied") > 0 || link.indexOf("/error") > 0) {
             widgetLayout.CloseTopMost(widget);
             handled = true;
         }
@@ -238,8 +240,8 @@
             url: link,
             cache: false,
             success: function (html) {
-                insertAjaxContent(widgetLayout, widget, widgetTitle, title, link, html);
-                if (postSuccessAction) postSuccessAction();                
+                var result = insertAjaxContent(widgetLayout, widget, widgetTitle, title, link, html); //returns false when handled through special pages
+                if (postSuccessAction && result) postSuccessAction();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 widgetLayout.setContent(widget, xhr.responseText);
@@ -256,7 +258,7 @@
             $('#addedAjaxWindowContentContainer', widget.htmlTag).attr('link', link);
         }
 
-        if (handleSpecialPages(widgetLayout, widget, link, null, html, false)) return;
+        if (handleSpecialPages(widgetLayout, widget, link, null, html, false)) return false;
 
         //handle page title
         var pageContentTitle = $('#currentPageTitle', widget.htmlTag);
@@ -272,6 +274,7 @@
         ajaxifyInnerForms(widgetLayout, widget, widgetTitle);
         handleCloseButtons(widgetLayout, widget);
         widgetLayout.contentLoaded(widget);
+        return true;
 
     }
 
@@ -369,19 +372,30 @@
                 if (handlePageCloserSubmitButtons(this, widgetLayout, widget)) return false; //no submit , just for validation needs
                 changeWidgetTitle(widgetLayout, widgetTitle, 'در حال دریافت...');
                 var link = correctLink(this.action, true, true, true, widgetLayout.getTypeCode());
+                var newContentPointer = null;//just when having external window show for errors
+
                 $.ajax({
                     type: this.method.toLowerCase() == 'get' ? 'GET' : 'POST',
                     url: link,
                     cache: false,
                     data: appendSubmitButtonValue($(this).serialize(), this),
                     beforeSend: function () {
-                        widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout));
+                        if (layoutCore.options.showPageFormErrorsInExternalWindow)
+                            newContentPointer = widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout), true);
+                        else
+                            widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout));
                     },
                     success: function (html, status, xhr) {
                         insertAjaxContent(widgetLayout, widget, widgetTitle, null, link, html);
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
-                        insertAjaxContent(widgetLayout, widget, widgetTitle, null, link, xhr.responseText);
+                        if (layoutCore.options.showPageFormErrorsInExternalWindow) {
+                            layoutHelper.windowLayout.ShowErrorMessage('<div style="overflow:auto;direction:ltr;max-width:400px;max-height:300px">' + xhr.responseText + '</div>', 'بروز خطا');
+                            widgetLayout.retrieveOldContent(widget, newContentPointer); 
+                        }
+                        else
+                            insertAjaxContent(widgetLayout, widget, widgetTitle, null, link, xhr.responseText);
+
                     }
                 });
                 return false;

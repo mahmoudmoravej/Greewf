@@ -297,6 +297,26 @@ telerikHelper = new function () {
         }
     }
 
+    this.moveTopToolbarIntoGrid = function (gridId) {
+        var grid = $('#' + gridId);
+        telerikHelper.addContentToRowsBottomGrid(gridId, $('.t-toolbar.t-grid-toolbar.t-grid-top', grid).removeClass('t-grid-toolbar').removeClass('t-grid-top').css('padding', '5px'));
+    }
+
+    this.copyTopToolbarIntoGrid = function (gridId) {
+        var grid = $('#' + gridId);
+        telerikHelper.addContentToRowsBottomGrid(gridId, $('.t-toolbar.t-grid-toolbar.t-grid-top', grid).clone().removeClass('t-grid-toolbar').removeClass('t-grid-top').css('padding', '5px'));
+    }
+
+    this.addContentToRowsBottomGrid = function (gridId, content) {
+        var grid = $('#' + gridId);
+        var x = $('.t-grid-content', grid);
+        if (x.length > 0) //grid with scrolling enabled
+            x.append(content);
+        else//grid with no scrolling
+            $(content).insertAfter($('>table:last', grid));
+
+    }
+
 };
 
 mvcHelper = new function () {

@@ -120,6 +120,7 @@
             oldWin.win = msgBoxWindow;
 
         $('iframe', msgBoxWindow).remove();
+        msgBoxWindow.css('z-index', '50000'); //not a best solution. 
         //$('.t-content', msgBoxWindow).css('background-color', '#99FF99');
 
         if (!ignoreTemplate) {
@@ -301,9 +302,25 @@
         createButtonsBar(window.core, auto);
     }
 
-    windowLayout.setContent = function (window, content) {
-        clearButtonBar(window.core);
-        window.core.data('tWindow').content(content);
+    windowLayout.setContent = function (window, content, hideOldContent) {
+        if (!hideOldContent) {
+            clearButtonBar(window.core);
+            window.core.data('tWindow').content(content);
+        }
+        else {//hide old content (to enable retriving it in error conditions)
+            var winElement = window.core.data('tWindow').element;
+            $('.t-window-content>*', winElement).css('display', 'none');
+            $('.g-window-buttonbar', winElement).css('visibility', 'hidden');
+            var newContentPointer = $(content).prependTo($('.t-window-content', winElement));
+            return newContentPointer;
+        }
+    }
+
+    windowLayout.retrieveOldContent = function (window, newContentPointer) {
+        var winElement = window.core.data('tWindow').element;
+        if (newContentPointer) newContentPointer.remove();
+        $('.t-window-content>*', winElement).css('display', '');
+        $('.g-window-buttonbar', winElement).css('visibility', 'visible');
     }
 
     windowLayout.CloseAndDone = function (data, widget, isSuccessfulFlagUp) {

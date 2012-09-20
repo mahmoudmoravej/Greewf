@@ -60,7 +60,8 @@
                 style: {
                     classes: 'ui-tooltip-wiki ui-tooltip-light ui-tooltip-shadow',
                     height: winHeight,
-                    width: winWidth
+                    width: winWidth,
+                    tip: { offset: 15 }
                 },
                 position: {
                     my: 'top right',
@@ -97,13 +98,24 @@
         //createButtonsBar(window.core);
     }
 
-    tooltipLayout.setContent = function (tooltip, content) {
-        //tooltip.hide();
-        tooltip.api.set('content.text', $(content));
-        //if (tooltip.api.elements.content != null)
-        //    tooltip.api.elements.content.html(content);
-        //if (tooltip.source.css('visibility') != 'visible') 
+    tooltipLayout.setContent = function (tooltip, content, hideOldContent) {
+        if (!hideOldContent)
+            tooltip.api.set('content.text', $(content));
+        else {//hide old content (to enable retriving it in error conditions)
+            var tooltipElement = tooltip.htmlTag;
+            $('>*', tooltipElement).css('display', 'none');
+            //$('.g-window-buttonbar', tooltipElement).css('visibility', 'hidden'); not button toolbar suprt
+            var newContentPointer = $(content).prependTo(tooltipElement);
+            return newContentPointer;
+        }
         tooltip.api.show();
+    }
+
+    tooltipLayout.retrieveOldContent = function (tooltip, newContentPointer) {
+        var tooltipElement = tooltip.htmlTag;
+        if (newContentPointer) newContentPointer.remove();
+        $('>*', tooltipElement).css('display', '');
+        //$('.g-window-buttonbar', winElement).css('visibility', 'visible'); not button toolbar suprt
     }
 
     tooltipLayout.CloseAndDone = function (data, tooltip, isSuccessfulFlagUp) {

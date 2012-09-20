@@ -316,7 +316,7 @@ Write-Host "LogPoints Successfully Added to $LogPointsXmlFile file"
 
 #7th: Transform All Templates
 Write-Host "Transforming All Project Templates..." -ForegroundColor blue
-[Reflection.Assembly]::Load("EnvDTE")
+# [Reflection.Assembly]::Load("EnvDTE") ## This line makes error in VS 2012 , also we don't need it too!
 $DTE.ExecuteCommand("TextTransformation.TransformAllTemplates")	
 
 Write-Host "Ohhh My God! Finished finally :) ..." -ForegroundColor blue

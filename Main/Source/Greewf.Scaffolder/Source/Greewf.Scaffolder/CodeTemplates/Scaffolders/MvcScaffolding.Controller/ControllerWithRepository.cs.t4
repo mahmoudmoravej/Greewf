@@ -326,10 +326,9 @@ namespace <#= Model.ControllerNamespace #>
 
         private ActionResult GetSearchView(bool doSearch, Action<<#= modelName #>SearchCriteria> enforceCriteria)
         {
-            criteria = criteria ?? new <#= modelName #>SearchCriteria();
+            var gridViewModel = new <#= modelName #>GridViewModel() { Editable = false, IsInSearchMode = true, DefaultAction = "Search" };
             if (Request.HttpMethod == "POST" && Request.IsAjaxRequest())
             {
-                var gridViewModel = new <#= modelName #>GridViewModel() { Editable = false, IsInSearchMode = true, DefaultAction = "Search" };
                 if (doSearch)//first postback search(by clicking form button)
                 {
                     var userCriteria = new <#= modelName #>SearchCriteria();
@@ -344,6 +343,10 @@ namespace <#= Model.ControllerNamespace #>
             }
             else//first page request (GET)
             {
+                var criteria = new ProductSearchCriteria();
+                enforceCriteria(criteria);
+                gridViewModel.Data = Get<#= modelNamePlural #>(criteria);
+                ViewBag.SearchGridModelResult = gridViewModel;
                 PrepareViewBagLists(ActionType.Search, criteria);
                 return View();
             }
