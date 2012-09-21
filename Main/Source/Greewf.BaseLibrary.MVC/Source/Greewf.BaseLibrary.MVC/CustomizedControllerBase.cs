@@ -266,16 +266,15 @@ namespace Greewf.BaseLibrary.MVC
     /// <typeparam name="Z">UnitOfRepository Interface class</typeparam>    
     public abstract class CustomizedControllerBase<T, VM, Y, Z> : CustomizedControllerBase
         where T : class ,new()
-        where Y : ContextManagerBase, new()
+        where Y : ContextManagerBase
         where VM : class , new()
     {
         protected Y ContextManager = null;
 
         public CustomizedControllerBase()
         {
-            ContextManager = new Y();
+            CreateInstances(out ContextManager, out  _uoR);
             ContextManagerBase = ContextManager;
-            _uoR = CreateUnitOfRepositoriesInstance();
         }
 
         private Z _uoR;
@@ -287,7 +286,7 @@ namespace Greewf.BaseLibrary.MVC
             }
         }
 
-        protected abstract Z CreateUnitOfRepositoriesInstance();
+        protected abstract void CreateInstances(out Y contextManagerInstance, out  Z unitOfRepositoriesInstance);
 
         protected virtual SensetiveFields<VM> GetSensitiveDataFields(T oldEntity, ActionType actionType, bool? isHttpPost = null)
         {
