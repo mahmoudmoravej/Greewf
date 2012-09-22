@@ -14,19 +14,19 @@ namespace Greewf.BaseLibrary.Repositories
     public abstract class ContextManager<T> : ContextManagerBase
         where T : DbContext, new()
     {
-        private IValidationDictionary _validationDictionary;
+        public IValidationDictionary ValidationDictionary { get; private set; }
 
         public T Context { get; private set; }
         public ContextManager(IValidationDictionary validationDictionary)
         {
             Context = new T();
             ContextBase = Context;
-            _validationDictionary = validationDictionary;
+            ValidationDictionary = validationDictionary ?? new DefaultValidationDictionary();
         }
 
         public virtual int SaveChanges()
         {
-            if (_validationDictionary != null && !_validationDictionary.IsValid)
+            if (ValidationDictionary != null && !ValidationDictionary.IsValid)
                 throw new Exception("Greewf: the ValidationDictionary is not valid!");
             return Context.SaveChanges();
         }

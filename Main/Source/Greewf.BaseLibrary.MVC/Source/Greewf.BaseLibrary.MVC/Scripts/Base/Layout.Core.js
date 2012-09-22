@@ -197,7 +197,10 @@
             linkHash = location.hash.toString();
         }
 
-        if (link.indexOf("/SavedSuccessfully") > 0 || linkHash.indexOf('successfullysaved') > 0) {
+        link = link.toLocaleLowerCase();
+        linkHash = linkHash.toLocaleLowerCase()
+
+        if (link.indexOf("/savedsuccessfully") > 0 || linkHash.indexOf('successfullysaved') > 0) {
             widgetLayout.CloseAndDone(location.hash != undefined ? location : null, widget, true); //when ajax request
             if (layoutCore.options.notifySuccess && jQuery.noticeAdd) {
                 jQuery.noticeAdd({
@@ -244,7 +247,10 @@
                 if (postSuccessAction && result) postSuccessAction();
             },
             error: function (xhr, ajaxOptions, thrownError) {
-                widgetLayout.setContent(widget, xhr.responseText);
+                if (xhr.getResponseHeader("GreewfCustomErrorPage"))//custom error page
+                    insertAjaxContent(widgetLayout, widget, widgetTitle, title, link, xhr.responseText); //returns false when handled through special pages
+                else
+                    widgetLayout.setContent(widget, xhr.responseText);
             }
         });
     }
@@ -372,7 +378,7 @@
                 if (handlePageCloserSubmitButtons(this, widgetLayout, widget)) return false; //no submit , just for validation needs
                 changeWidgetTitle(widgetLayout, widgetTitle, 'در حال دریافت...');
                 var link = correctLink(this.action, true, true, true, widgetLayout.getTypeCode());
-                var newContentPointer = null;//just when having external window show for errors
+                var newContentPointer = null; //just when having external window show for errors
 
                 $.ajax({
                     type: this.method.toLowerCase() == 'get' ? 'GET' : 'POST',
@@ -389,18 +395,30 @@
                         insertAjaxContent(widgetLayout, widget, widgetTitle, null, link, html);
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
-                        if (layoutCore.options.showPageFormErrorsInExternalWindow) {
-                            layoutHelper.windowLayout.ShowErrorMessage('<div style="overflow:auto;direction:ltr;max-width:400px;max-height:300px">' + xhr.responseText + '</div>', 'بروز خطا');
-                            widgetLayout.retrieveOldContent(widget, newContentPointer); 
-                        }
-                        else
-                            insertAjaxContent(widgetLayout, widget, widgetTitle, null, link, xhr.responseText);
-
+                        handleSubmittedFormAjaxErrorContent(widgetLayout, widget, widgetTitle, link, xhr, newContentPointer);
                     }
                 });
                 return false;
             });
         });
+
+    }
+
+    function handleSubmittedFormAjaxErrorContent(widgetLayout, widget, widgetTitle, link, xhr, newContentPointer) {
+        if (layoutCore.options.showPageFormErrorsInExternalWindow) {
+            if (xhr.getResponseHeader("GreewfCustomErrorPage"))//custom error page
+            { //TODO : change it if your custom error content needs a different way to show.
+                var x = $('.custom-error-page', widget.htmlTag);
+                if (x.length == 0)
+                    x = $("<div style='display:none' class='custom-error-page'></div>").appendTo(widget.htmlTag);
+                x.html(xhr.responseText);
+            }
+            else//regular error
+                layoutHelper.windowLayout.ShowErrorMessage('<div style="overflow:auto;direction:ltr;max-width:500px;max-height:700px">' + xhr.responseText + '</div>', 'بروز خطا');
+            widgetLayout.retrieveOldContent(widget, newContentPointer);
+        }
+        else//internal view is ok
+            insertAjaxContent(widgetLayout, widget, widgetTitle, null, link, xhr.responseText);
 
     }
 

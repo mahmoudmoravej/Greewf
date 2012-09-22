@@ -13,6 +13,7 @@ using Greewf.BaseLibrary.MVC.Logging;
 
 namespace Greewf.BaseLibrary.MVC
 {
+
     /// <summary>
     /// 
     /// </summary>
@@ -21,6 +22,8 @@ namespace Greewf.BaseLibrary.MVC
         where T : struct
     {
         private const string COOKIESESSIONKEY = ".ASPXAUTHLASTCOOKIE_";
+        private readonly bool _doCustomError = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["CustomError"] ?? "false");
+        private readonly CustomErrorDetailsMode _customErrorDetailsMode = (CustomErrorDetailsMode)Enum.Parse(typeof(CustomErrorDetailsMode), System.Configuration.ConfigurationManager.AppSettings["CustomErrorDetailsMode"] ?? "None");
 
         protected abstract T RegularExceptionLogPointId { get; }
 
@@ -55,36 +58,115 @@ namespace Greewf.BaseLibrary.MVC
 
         protected virtual void Application_Error()
         {
+            //NOTE 1! : CustomErrors should set to be Off to get this function call 
+            //NOTE 2! : If any error occured during this function execution, the first exception returns to the browser.
 
             var error = Server.GetLastError();
+
             if (error is SecurityException)
+                HandleSecurityExceptions(error);
+            else//regular error
             {
-                Logger.Current.Log(SecurityExceptionLogPointId, (error as SecurityException).ErrorMessages);
-                string querystring = "";
+                long logId = 0;
+                try
+                {
+                    logId = Logger.Current.Log(RegularExceptionLogPointId, error);
+                }
+                catch { }
 
-                if (Request.QueryString.AllKeys.Contains("simplemode"))
-                    querystring += "&simplemode=1";
-                if (Request.QueryString.AllKeys.Contains("puremode"))
-                    querystring += "&puremode=1";
-                if (Request.QueryString.AllKeys.Contains("iswindow"))
-                    querystring += "&iswindow=1";
-                if (Request.QueryString.AllKeys.Contains("includeUrlInContent"))
-                    querystring += "&includeUrlInContent=1";
-                if (error is SystemAccessException)
-                    querystring += "&systemAccessError=1";
-
-
-                querystring = querystring.Trim('&');
-
-                Server.ClearError();
-                Session["ErrorMessages"] = (error as SecurityException).ErrorMessages;
-                Response.Redirect("~/home/accessdenied" + (querystring.Length > 0 ? "?" + querystring : ""));
-            }
-            else
-            {
-                Logger.Current.Log(RegularExceptionLogPointId, error);
+                HandleCustomErrors(error, logId);
             }
 
+        }
+
+        private void HandleSecurityExceptions(Exception error)
+        {
+            Logger.Current.Log(SecurityExceptionLogPointId, (error as SecurityException).ErrorMessages);
+            string querystring = PrepareQuerystring(error);
+
+            querystring = querystring.Trim('&');
+
+            Server.ClearError();
+            Session["ErrorMessages"] = (error as SecurityException).ErrorMessages;
+            Response.Redirect("~/home/accessdenied" + (querystring.Length > 0 ? "?" + querystring : ""));
+        }
+
+        private void HandleCustomErrors(Exception error, long logId)
+        {
+            if (_doCustomError)
+                if (!Request.Url.AbsolutePath.EndsWith("/Home/Error"))//the error is not raised in the error handler page
+                {
+                    string querystring = PrepareQuerystring(error);
+
+                    Server.ClearError();
+                    CompleteErrorMessageSession(error, logId);
+
+                    Response.Redirect("~/Home/Error" + (querystring.Length > 0 ? "?" + querystring : ""));
+
+                }
+                else//the error raised in error handler page (so we should ignore redirection)
+                {
+
+                    Response.Write("<h2>خطای ناشناخته در صفحه نمایش خطا</h2>\n");
+                    Response.Write("<p>" + error.Message + "</p>\n");
+                    if (logId > 0)
+                        Response.Write("<p>شماره رخداد ثبت شده : " + logId + "</p>\n");
+                    else if (logId == -1)
+                        Response.Write("<p>شماره رخداد ثبت شده : غیر فعال </p>\n");
+                    else if (logId == 0)//exception occured throw logging
+                        Response.Write("<p>شماره رخداد ثبت شده : خطا در ثبت رخداد </p>\n");
+
+                    Server.ClearError();
+                    Response.StatusCode = 500;//to make ajax call enable getting it through onError event
+                    Response.Headers.Add("GreewfCustomErrorPage", "true"); //to help ajax onError event to distinguish between regular content or custom error page content.
+
+                }
+        }
+
+        private void CompleteErrorMessageSession(Exception error, long logId)
+        {
+            var errorMessages = new string[] { logId.ToString(), "" };
+            switch (_customErrorDetailsMode)
+            {
+                case CustomErrorDetailsMode.None:
+                    errorMessages[1] = null;
+                    break;
+                case CustomErrorDetailsMode.Complete:
+                    errorMessages[1] = error.ToString();
+                    break;
+                case CustomErrorDetailsMode.Header:
+                    errorMessages[1] = error.Message;
+                    break;
+                case CustomErrorDetailsMode.LocalComplete:
+                    if (Request.IsLocal)
+                        errorMessages[1] = error.Message;
+                    else
+                        errorMessages[1] = null;
+                    break;
+                default:
+                    break;
+            }
+
+            Session["ErrorMessages"] = errorMessages;
+        }
+
+        private string PrepareQuerystring(Exception error)
+        {
+            string querystring = "";
+
+            if (Request.QueryString.AllKeys.Contains("simplemode"))
+                querystring += "&simplemode=1";
+            if (Request.QueryString.AllKeys.Contains("puremode"))
+                querystring += "&puremode=1";
+            if (Request.QueryString.AllKeys.Contains("iswindow"))
+                querystring += "&iswindow=1";
+            if (Request.QueryString.AllKeys.Contains("includeUrlInContent"))
+                querystring += "&includeUrlInContent=1";
+            if (error is SystemAccessException)
+                querystring += "&systemAccessError=1";
+
+            querystring = querystring.Trim('&');
+            return querystring;
         }
 
         protected virtual void Application_Start()
@@ -107,7 +189,14 @@ namespace Greewf.BaseLibrary.MVC
 
         protected abstract void DoCustomMAppings();
 
-
+        private enum CustomErrorDetailsMode
+        {
+            None,
+            Header,
+            Complete,
+            LocalComplete,//None on remote
+        }
 
     }
+
 }

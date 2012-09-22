@@ -13,23 +13,29 @@ namespace Greewf.BaseLibrary.Repositories
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="Y">UnitOfRepository</typeparam>
-    public class RepositoryBase<T,Y>
+    public class RepositoryBase<T, Y>
         where T : DbContext, new()
         where Y : class , new()
     {
         protected T context = null;
         protected ContextManager<T> ContextManager { get; private set; }
-        protected IValidationDictionary ValidationDictionary { get; private set; }
         protected Y UoR { get; private set; }
+        protected IValidationDictionary ValidationDictionary { get; private set; }//we cannot return it directly from ContextManager becuase sometime it may be null
 
-        protected RepositoryBase(ContextManager<T> contextManager, IValidationDictionary validationDictionary, Y unitOfRepository)
+        protected RepositoryBase(ContextManager<T> contextManager, Y unitOfRepository)
         {
             ContextManager = contextManager;
             if (contextManager == null)
+            {
                 context = new T();// throw new Exception("ContextManager cannot be empty for Repository creation");
+                ValidationDictionary = new DefaultValidationDictionary();//when contextmanager is null.
+            }
             else
+            {
                 context = contextManager.Context;
-            ValidationDictionary = validationDictionary ?? new DefaultValidationDictionary();
+                ValidationDictionary = ContextManager.ValidationDictionary;
+            }
+
             UoR = unitOfRepository;
 
         }

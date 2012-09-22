@@ -255,6 +255,34 @@ namespace Greewf.BaseLibrary.MVC
             protected set;
         }
 
+        /// <summary>
+        /// فقط در صفحه Home فراخوانی شود
+        /// </summary>
+        /// <returns></returns>
+        protected ActionResult GetAccessDeniedPage()
+        {
+            ViewBag.ErrorMessages = Session["ErrorMessages"] ?? new string[] { };
+            Session["ErrorMessages"] = null;
+            return View();
+        }
+
+        protected ActionResult GetCustomErrorPage()
+        {
+            ViewBag.ErrorMessages = Session["ErrorMessages"] ?? new string[] { };
+            Session["ErrorMessages"] = null;
+
+            Response.StatusCode = 500;//to make ajax call enable getting it through onError event
+            Response.Headers.Add("GreewfCustomErrorPage", "true"); //to help ajax onError event to distinguish between regular content or custom error page content.
+
+            return View();
+
+        }
+
+        public ActionResult GetSavedSuccessfullyPage()
+        {
+            return View();
+        }
+
     }
 
     /// <summary>

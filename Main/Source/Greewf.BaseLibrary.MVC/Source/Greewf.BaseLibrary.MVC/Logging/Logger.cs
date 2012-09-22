@@ -61,27 +61,27 @@ namespace Greewf.BaseLibrary.MVC.Logging
             }
         }
 
-        public void Log<T>(T logId, object model, string[] exludeModelProperties) where T : struct
+        public long Log<T>(T logId, object model, string[] exludeModelProperties) where T : struct
         {
             var typ = typeof(T);
-            Log((int)Convert.ChangeType(logId, typ), typ, model, exludeModelProperties);
+            return Log((int)Convert.ChangeType(logId, typ), typ, model, exludeModelProperties);
         }
 
-        public void Log<T>(T logId, object model = null, ModelMetadata modelMetadata = null, string[] exludeModelProperties = null) where T : struct
+        public long Log<T>(T logId, object model = null, ModelMetadata modelMetadata = null, string[] exludeModelProperties = null) where T : struct
         {
             var typ = typeof(T);
-            Log((int)Convert.ChangeType(logId, typ), typ, model, modelMetadata, exludeModelProperties);
+            return Log((int)Convert.ChangeType(logId, typ), typ, model, modelMetadata, exludeModelProperties);
         }
 
-        public void Log(int logId, Type logEnumType, object model, string[] exludeModelProperties = null)
+        public long Log(int logId, Type logEnumType, object model, string[] exludeModelProperties = null)
         {
             var metaData = ModelMetadataProviders.Current.GetMetadataForType(() => { return model; }, model.GetType());
-            Log(logId, logEnumType, model, metaData, exludeModelProperties);
+            return Log(logId, logEnumType, model, metaData, exludeModelProperties);
         }
 
-        public void Log(int logId, Type logEnumType, object model = null, ModelMetadata modelMetadata = null, string[] exludeModelProperties = null)
+        public long Log(int logId, Type logEnumType, object model = null, ModelMetadata modelMetadata = null, string[] exludeModelProperties = null)
         {
-            if (LogProfileReader.Current.IsLogDisabled(logId, logEnumType)) return;
+            if (LogProfileReader.Current.IsLogDisabled(logId, logEnumType)) return -1;
             var log = new Log();
             var request = HttpContext.Current.Request;
 
@@ -93,10 +93,28 @@ namespace Greewf.BaseLibrary.MVC.Logging
             log.Text = (model is Exception ? TakeMax(model.ToString(), 4000) : null);//TODO : for future use!
             log.Ip = request.UserHostAddress;
             log.MachineName = TakeMax(request.UserHostName, 50);
-            log.Username = TakeMax(Username, 50);
-            log.UserFullname = TakeMax(UserFullName, 50);
             log.RequestUrl = TakeMax(request.Url.GetLeftPart(UriPartial.Path), 150);
             log.Querystring = TakeMax(request.QueryString.ToString(), 200);
+
+            try//becuase of some reasons(like too early exception in HttpApplication) we may get exception on calling Username & UserFullName properties
+            {
+                log.Username = TakeMax(Username, 50);
+            }
+            catch 
+            {
+                if (HttpContext.Current.User != null && HttpContext.Current.User.Identity != null && HttpContext.Current.User.Identity.IsAuthenticated)
+                log.Username = HttpContext.Current.User.Identity.Name;
+            }
+
+            try
+            {
+                log.UserFullname = TakeMax(UserFullName, 50);
+            }
+            catch 
+            {
+                log.UserFullname = "[!!Not Available Because of Exception!!]";
+            }
+
 
             if (model != null)
             {
@@ -109,6 +127,7 @@ namespace Greewf.BaseLibrary.MVC.Logging
             }
 
             Log(log);
+            return log.Id;
 
         }
 
