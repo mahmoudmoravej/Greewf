@@ -376,9 +376,8 @@
                 if (!$(this).valid()) return false;
                 if (defaultSubmitButton != null && $(this).data('submitter') == null) $(this).data('submitter', defaultSubmitButton); //asume default button
                 if (handlePageCloserSubmitButtons(this, widgetLayout, widget)) return false; //no submit , just for validation needs
-                changeWidgetTitle(widgetLayout, widgetTitle, 'در حال دریافت...');
                 var link = correctLink(this.action, true, true, true, widgetLayout.getTypeCode());
-                var newContentPointer = null; //just when having external window show for errors
+                var newContentPointer = null; //just when having external window show for errors to preserve current content in error conditions.
 
                 $.ajax({
                     type: this.method.toLowerCase() == 'get' ? 'GET' : 'POST',
@@ -390,6 +389,7 @@
                             newContentPointer = widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout), true);
                         else
                             widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout));
+                        changeWidgetTitle(widgetLayout, widgetTitle, 'در حال دریافت...'); //we do it here because we may need to access the current title in "setContent" function
                     },
                     success: function (html, status, xhr) {
                         insertAjaxContent(widgetLayout, widget, widgetTitle, null, link, html);
@@ -412,9 +412,14 @@
                 if (x.length == 0)
                     x = $("<div style='display:none' class='custom-error-page'></div>").appendTo(widget.htmlTag);
                 x.html(xhr.responseText);
+
+                //we remove these to avoid conflicting with current page (specially we need the previous one in refreshing click)
+                $('#currentPageUrl', x).remove(); 
+                $('#currentPageTitle', x).remove();
+                
             }
             else//regular error
-                layoutHelper.windowLayout.ShowErrorMessage('<div style="overflow:auto;direction:ltr;max-width:500px;max-height:700px">' + xhr.responseText + '</div>', 'بروز خطا');
+                layoutHelper.windowLayout.ShowErrorMessage('<div style="overflow:auto;direction:ltr;max-width:500px;max-height:600px">' + xhr.responseText + '</div>', 'بروز خطا');
             widgetLayout.retrieveOldContent(widget, newContentPointer);
         }
         else//internal view is ok

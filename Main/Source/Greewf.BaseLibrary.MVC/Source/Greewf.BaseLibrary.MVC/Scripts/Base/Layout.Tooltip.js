@@ -105,7 +105,7 @@
             var tooltipElement = tooltip.htmlTag;
             $('>*', tooltipElement).css('display', 'none');
             //$('.g-window-buttonbar', tooltipElement).css('visibility', 'hidden'); not button toolbar suprt
-            var newContentPointer = $(content).prependTo(tooltipElement);
+            var newContentPointer = { oldTitle: tooltip.api.get('content.title.text'), newElement: $(content).prependTo(tooltipElement) };
             return newContentPointer;
         }
         tooltip.api.show();
@@ -113,8 +113,9 @@
 
     tooltipLayout.retrieveOldContent = function (tooltip, newContentPointer) {
         var tooltipElement = tooltip.htmlTag;
-        if (newContentPointer) newContentPointer.remove();
+        if (newContentPointer) newContentPointer.newElement.remove();
         $('>*', tooltipElement).css('display', '');
+        tooltip.api.set({ 'content.title.text': newContentPointer.oldTitle });
         //$('.g-window-buttonbar', winElement).css('visibility', 'visible'); not button toolbar suprt
     }
 

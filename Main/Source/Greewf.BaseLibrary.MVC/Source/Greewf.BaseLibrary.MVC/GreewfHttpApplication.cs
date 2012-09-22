@@ -131,15 +131,15 @@ namespace Greewf.BaseLibrary.MVC
                 case CustomErrorDetailsMode.None:
                     errorMessages[1] = null;
                     break;
-                case CustomErrorDetailsMode.Complete:
-                    errorMessages[1] = error.ToString();
-                    break;
                 case CustomErrorDetailsMode.Header:
                     errorMessages[1] = error.Message;
                     break;
+                case CustomErrorDetailsMode.Complete:
+                    errorMessages[1] = error.ToString();
+                    break;
                 case CustomErrorDetailsMode.LocalComplete:
                     if (Request.IsLocal)
-                        errorMessages[1] = error.Message;
+                        errorMessages[1] = error.ToString();
                     else
                         errorMessages[1] = null;
                     break;

@@ -311,16 +311,17 @@
             var winElement = window.core.data('tWindow').element;
             $('.t-window-content>*', winElement).css('display', 'none');
             $('.g-window-buttonbar', winElement).css('visibility', 'hidden');
-            var newContentPointer = $(content).prependTo($('.t-window-content', winElement));
+            var newContentPointer = { oldTitle: $('.t-window-title', winElement).html(), newElement: $(content).prependTo($('.t-window-content', winElement)) };
             return newContentPointer;
         }
     }
 
     windowLayout.retrieveOldContent = function (window, newContentPointer) {
         var winElement = window.core.data('tWindow').element;
-        if (newContentPointer) newContentPointer.remove();
+        if (newContentPointer) newContentPointer.newElement.remove();
         $('.t-window-content>*', winElement).css('display', '');
         $('.g-window-buttonbar', winElement).css('visibility', 'visible');
+        $('.t-window-title', winElement).html(newContentPointer.oldTitle);
     }
 
     windowLayout.CloseAndDone = function (data, widget, isSuccessfulFlagUp) {
