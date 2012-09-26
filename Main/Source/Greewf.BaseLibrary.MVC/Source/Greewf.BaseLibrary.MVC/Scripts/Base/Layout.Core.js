@@ -9,7 +9,7 @@
         ajax: false,
         responsiveAjaxProgress: true,
         showPageFormErrorsInExternalWindow: true,
-        window: { autoCenteredGrowingSize: false, autoGrowingSize: false, autoButtonBar: true }
+        window: { autoCenteredGrowingSize: false, autoGrowingSize: false, autoButtonBar: true, autoBackHide: false }
     }
 
     layoutCore.progressHtml = function (widgetLayout) {
@@ -35,14 +35,19 @@
     }
 
     layoutCore.refreshContent = function (widgetLayout, widget, widgetTitle) {
-        changeWidgetTitle(widgetLayout, widgetTitle, 'در حال دریافت...');
         var ajaxContent = $("#addedAjaxWindowContentContainer", widget.htmlTag);
         if (ajaxContent.length > 0)//ajax refresh
+        {
+            changeWidgetTitle(widgetLayout, widgetTitle, 'در حال دریافت...');
             loadThroughAjax(widgetLayout, widget, widgetTitle, null, $(ajaxContent).attr('link'));
+        }
         else//iframe refresh
         {
             var ifrm = $("iframe", widget.htmlTag)[0];
-            //$(ifrm).css('visibility', 'hidden');
+            var sameOrigin = this.contentWindow.document != null; //same origin policy makes document == null for external URLs
+            if (!sameOrigin) return;
+            changeWidgetTitle(widgetLayout, widgetTitle, 'در حال دریافت...');
+
             $('div', $(ifrm).parent()).show();
             ifrm.contentWindow.onbeforeunload = null; //to avoid getting any confirmation if provided
             ifrm.contentWindow.location.reload(true);
@@ -87,17 +92,24 @@
 
         }
         else {//iframe request : simple mode
-            widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout) + '<iframe frameborder="0" style="width:100%;height:99%;visibility:visible;" src="' + link + '"></iframe>');
+            widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout) + '<iframe frameborder="0" style="width:100%;height:99%;display:none;" src="' + link + '"></iframe>');
 
 
             $("iframe", widget.htmlTag).load(function () {//note : just one iframe is alowed
-                if (handleSpecialPages(widgetLayout, widget, this.contentWindow.location, null, this.contentWindow.document.body.innerText, true)) return;
+                var sameOrigin = this.contentWindow.document != null; //same origin policy makes document == null for external URLs
+                if (sameOrigin)
+                    if (handleSpecialPages(widgetLayout, widget, this.contentWindow.location, null, this.contentWindow.document.body.innerText, true)) return;
+
                 $(this).data('contentLoaded', true);
                 $('div[isProgress]', $(this).parent()).hide();
                 //$(this).css('visibility', 'visible'); //1:jquery hide/show methods makes some problem with inner content,2:making invisible makes problem in first field focusing
+                $(this).show();
                 changeWidgetTitle(widgetLayout, widgetTitle, title == '' ? (this.contentWindow.document != undefined ? this.contentWindow.document.title : '') : title);
-                correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, getIframeResizingCondition(this), $(this.contentWindow.document.body).outerHeight(), $(this.contentWindow.document.body).outerWidth());
-                setAutoGrowingSize(sender, widgetLayout, widget, widgetTitle);
+
+                if (sameOrigin) {
+                    correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, getIframeResizingCondition(this), $(this.contentWindow.document.body).outerHeight(), $(this.contentWindow.document.body).outerWidth());
+                    setAutoGrowingSize(sender, widgetLayout, widget, widgetTitle);
+                }
 
 
             });
@@ -151,13 +163,16 @@
             var frame = $("iframe", widget.htmlTag)[0]; //note : just one iframe is alowed
             if ($(frame).data('contentLoaded') == true) return; //dont correct size if the content is not loaded
 
-            correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, getIframeResizingCondition(frame), $(frame.contentWindow.document.body).outerHeight(), $(frame.contentWindow.document.body).outerWidth());
-            setAutoGrowingSize(sender, widgetLayout, widget, widgetTitle);
+            if (frame.contentWindow.document != null) { //same origin policy makes location = null for external URLs
+                correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, getIframeResizingCondition(frame), $(frame.contentWindow.document.body).outerHeight(), $(frame.contentWindow.document.body).outerWidth());
+                setAutoGrowingSize(sender, widgetLayout, widget, widgetTitle);
+            }
         }
 
     }
 
     function getIframeResizingCondition(frame) {
+        if (frame.contentWindow.document == null) return false; //same origin policy makes location = null for external URLs
         return $(frame).attr('isrefresh') != 'true' && frame.contentWindow.location.toString().indexOf("/SavedSuccessfully") == -1 && frame.contentWindow.location.hash.toString().indexOf('successfullysaved') == -1;
     }
 
@@ -414,9 +429,9 @@
                 x.html(xhr.responseText);
 
                 //we remove these to avoid conflicting with current page (specially we need the previous one in refreshing click)
-                $('#currentPageUrl', x).remove(); 
+                $('#currentPageUrl', x).remove();
                 $('#currentPageTitle', x).remove();
-                
+
             }
             else//regular error
                 layoutHelper.windowLayout.ShowErrorMessage('<div style="overflow:auto;direction:ltr;max-width:500px;max-height:600px">' + xhr.responseText + '</div>', 'بروز خطا');

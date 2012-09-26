@@ -108,7 +108,7 @@ namespace Greewf.BaseLibrary.MVC
                 {
 
                     Response.Write("<h2>خطای ناشناخته در صفحه نمایش خطا</h2>\n");
-                    Response.Write("<p>" + error.Message + "</p>\n");
+                    Response.Write("<p>" + GetErrorMessage(error) + "</p>\n");
                     if (logId > 0)
                         Response.Write("<p>شماره رخداد ثبت شده : " + logId + "</p>\n");
                     else if (logId == -1)
@@ -126,28 +126,29 @@ namespace Greewf.BaseLibrary.MVC
         private void CompleteErrorMessageSession(Exception error, long logId)
         {
             var errorMessages = new string[] { logId.ToString(), "" };
+            errorMessages[1]= GetErrorMessage(error);
+
+            Session["ErrorMessages"] = errorMessages;
+        }
+
+        private string GetErrorMessage(Exception error)
+        {
             switch (_customErrorDetailsMode)
             {
                 case CustomErrorDetailsMode.None:
-                    errorMessages[1] = null;
-                    break;
+                    return null;
                 case CustomErrorDetailsMode.Header:
-                    errorMessages[1] = error.Message;
-                    break;
+                    return error.Message;
                 case CustomErrorDetailsMode.Complete:
-                    errorMessages[1] = error.ToString();
-                    break;
+                    return error.ToString();
                 case CustomErrorDetailsMode.LocalComplete:
                     if (Request.IsLocal)
-                        errorMessages[1] = error.ToString();
+                        return error.ToString();
                     else
-                        errorMessages[1] = null;
-                    break;
+                        return null;
                 default:
-                    break;
+                    return error.ToString();
             }
-
-            Session["ErrorMessages"] = errorMessages;
         }
 
         private string PrepareQuerystring(Exception error)

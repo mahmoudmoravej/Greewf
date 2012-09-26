@@ -7,10 +7,11 @@
 5- editor-focus, emphasize,
 
 link style :
-<a class="t-button t-grid-edit t-button-icon at-rowEdit" href='...' title='...' (inline='xxx' | newwindow='xxx'|justwindow='xxx'|justMain='xxx' | responsiveAjax='xxx'|tooltipWindow='xxx') windowcallback='ContactGridCallBack' winWidth='50' winHeight='50' winMax='true' winNoModal='1' windowActionsNeedConfirm='true' winNoMaximaizable='x' winDisableBackHide='x' ajax='1' isPageCloser='1' showEvents='click...' hideEvents='click unfocus...' autoGrowingSize='1' winAutoButtonsBar='1'> ....</a>
+<a class="t-button t-grid-edit t-button-icon at-rowEdit" href='...' title='...' (inline='xxx' | newwindow='xxx'|justwindow='xxx'|justMain='xxx' | responsiveAjax='xxx'|tooltipWindow='xxx') windowcallback='ContactGridCallBack' winWidth='50' winHeight='50' winMax='true' winNoModal='1' windowActionsNeedConfirm='true' winNoMaximaizable='x' winDisableBackHide='x' winEnableBackHide='x' ajax='1' isPageCloser='1' showEvents='click...' hideEvents='click unfocus...' autoGrowingSize='1' winAutoButtonsBar='1'> ....</a>
 	classes : link,show-icon,link hover-classic,t-link
 
 	winDisableBackHide = در صورتی که می خواهید پنجره پشتی در زمان باز شدن پنجره جدید مخفی نشود
+	winEnableBackHide = در صورتی که می خواهید پنجره پشتی در زمان باز شدن پنجره جدید حتما مخفی شود 
 	winNoModal= آیا نمایش به صورت مودال نباشد
 	winNoMaximaizable = ماکیزمایز پذیر نباشد!
 	windowcallback = function (url,data,isSuccessfulFlagUp){}
@@ -34,6 +35,7 @@ functions : xxxx= {window یا tooltip}
 
 
 class='g-window-nobuttonbar' در صورتی که می خواهید یکسری دکمه ها در پایین پنجره قرار نگیرند این کلاس را به کانتینر دکمه ها بدهید
+class='g-buttons-content'در صورتی که می خواهید بخشی به پایین پنجره منتقل شود
 
 QueryString keys :
 enforceLayout=1

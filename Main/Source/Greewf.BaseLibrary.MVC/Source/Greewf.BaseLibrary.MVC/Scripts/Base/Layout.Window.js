@@ -217,11 +217,22 @@
         winTitleElement.html(ico + ' ' + title);
     }
 
+    function doBackHide(sender) {
+        var doBackHide = $.layoutCore.options.window.autoBackHide;
+
+        var x = $(sender).attr('winDisableBackHide');
+        if (x) doBackHide = false;
+
+        x = $(sender).attr('winEnableBackHide');
+        if (x) doBackHide = true;
+
+        return doBackHide;
+    }
+
     windowLayout.makeReadyToShow = function (sender, link, title, ownerWindow) {
         var isModal = $(sender).attr('winNoModal') == undefined;
         if (activeWinsQueue.length > 0) {
-            var doBackHide = $(sender).attr('winDisableBackHide') == undefined;
-            if (doBackHide) {
+            if (doBackHide(sender)) {
                 var oldWindow = activeWinsQueue[activeWinsQueue.length - 1].win.data('tWindow');
                 inAutoHide = true;
                 oldWindow.modal = false; //because of telerik bug!
@@ -268,7 +279,7 @@
 
                     if (confirm) {
                         activeWinsQueue.pop();
-                        if (activeWinsQueue.length > 0 && $(curWin.sender).attr('winDisableBackHide') == undefined) {
+                        if (activeWinsQueue.length > 0 && doBackHide(curWin.sender)) {
                             var w = activeWinsQueue[activeWinsQueue.length - 1];
                             var lw = w.win.data('tWindow');
                             lw.modal = w.isModal;

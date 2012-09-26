@@ -313,7 +313,17 @@ telerikHelper = new function () {
         if (x.length > 0) //grid with scrolling enabled
             x.append(content);
         else//grid with no scrolling
-            $(content).insertAfter($('>table:last', grid));
+        {
+            tfoot = $('table>tfoot', grid);
+            if (tfoot.length == 0)
+                $(content).insertAfter($('>table:last', grid));
+            else {//has footer
+                var colCount = $('table>colgroup>col', grid).length;
+                var tr = $('<tr><td colspan="' + colCount + '"></td></tr>');
+                tr.find('td').append(content);
+                tr.prependTo($('table>tfoot', grid));
+            }
+        }
 
     }
 

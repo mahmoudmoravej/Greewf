@@ -11,6 +11,7 @@ namespace Greewf.BaseLibrary
         void AddError(string key, string errorMessage);
         bool IsValid { get; }
         string[] Errors { get; }
+        void Clear();
     }
 
     public class DefaultValidationDictionary : IValidationDictionary
@@ -38,6 +39,12 @@ namespace Greewf.BaseLibrary
                 return _lst.Select(o=>o.Value).ToArray<string>();
 
             }
+        }
+
+
+        public void Clear()
+        {
+            _lst.Clear();
         }
     }
 
