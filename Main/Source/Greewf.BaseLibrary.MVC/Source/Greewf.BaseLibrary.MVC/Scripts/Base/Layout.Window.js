@@ -175,17 +175,11 @@
             mainContainer.addClass('g-buttons-content');
         }
         if (mainContainer.hasClass('g-window-nobuttonbar')) return; //cancel it if the related tag requested
-        mainContainer.css('display', 'none');
-
-        //just find all [button,a and input] tags
-        $('button,a,input', mainContainer).each(function (i, o) { $(o).attr('_tempId', i) });
-        var clonedContainer = mainContainer.clone().addClass('t-grid-pager g-clearfix g-window-buttonbar').appendTo(windowElement).css('display', 'block');
-
-        //shadow clicking
-        $('[_tempId]', clonedContainer).each(function (i, o) {
-            $(o).data('sourceTag', $('[_tempId="' + $(o).attr('_tempId') + '"]', mainContainer)); //find the match in main container
-            $(o).click(function () { $(this).data('sourceTag').click(); return false; });
-        });
+        $(mainContainer).closest('.t-window-content').css({ position: 'static' }); //becuase absolute objectes, positioned into their nearest non-static parent(http://www.w3schools.com/cssref/pr_class_position.asp)
+        mainContainer.addClass('t-grid-pager g-clearfix g-window-buttonbar');
+        var clonedContainer = mainContainer.clone(false, false).css({ display: 'block', visibility: 'hidden' }).appendTo(windowElement);
+        $('*', clonedContainer).removeAttr('id').removeAttr('name'); //to avoid id confilicting in scripts
+        mainContainer.css({ position: 'absolute', left: 0, right: 0, bottom: 0 });
 
     }
 
