@@ -94,7 +94,7 @@ namespace Greewf.BaseLibrary.MVC
         private void HandleCustomErrors(Exception error, long logId)
         {
             if (_doCustomError)
-                if (!Request.Url.AbsolutePath.EndsWith("/Home/Error"))//the error is not raised in the error handler page
+                if (!Request.Url.AbsolutePath.ToLower().EndsWith("/home/error"))//the error is not raised in the error handler page
                 {
                     string querystring = PrepareQuerystring(error);
 
@@ -108,7 +108,7 @@ namespace Greewf.BaseLibrary.MVC
                 {
 
                     Response.Write("<h2>خطای ناشناخته در صفحه نمایش خطا</h2>\n");
-                    Response.Write("<p>" + GetErrorMessage(error) + "</p>\n");
+                    Response.Write("<code><pre>" + GetErrorMessage(error) + "</pre></code>\n");
                     if (logId > 0)
                         Response.Write("<p>شماره رخداد ثبت شده : " + logId + "</p>\n");
                     else if (logId == -1)
@@ -118,7 +118,7 @@ namespace Greewf.BaseLibrary.MVC
 
                     Server.ClearError();
                     Response.StatusCode = 500;//to make ajax call enable getting it through onError event
-                    Response.Headers.Add("GreewfCustomErrorPage", "true"); //to help ajax onError event to distinguish between regular content or custom error page content.
+                    Response.AddHeader("GreewfCustomErrorPage", "true"); //to help ajax onError event to distinguish between regular content or custom error page content.
 
                 }
         }

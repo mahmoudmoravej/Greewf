@@ -272,7 +272,7 @@ namespace Greewf.BaseLibrary.MVC
             Session["ErrorMessages"] = null;
 
             Response.StatusCode = 500;//to make ajax call enable getting it through onError event
-            Response.Headers.Add("GreewfCustomErrorPage", "true"); //to help ajax onError event to distinguish between regular content or custom error page content.
+            Response.AddHeader("GreewfCustomErrorPage", "true"); //to help ajax onError event to distinguish between regular content or custom error page content.
 
             return View();
 

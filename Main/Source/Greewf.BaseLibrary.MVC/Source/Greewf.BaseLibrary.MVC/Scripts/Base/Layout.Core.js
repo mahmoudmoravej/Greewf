@@ -44,7 +44,7 @@
         else//iframe refresh
         {
             var ifrm = $("iframe", widget.htmlTag)[0];
-            var sameOrigin = this.contentWindow.document != null; //same origin policy makes document == null for external URLs
+            var sameOrigin = this.contentWindow != null && this.contentWindow.document != null; //same origin policy makes document == null for external URLs
             if (!sameOrigin) return;
             changeWidgetTitle(widgetLayout, widgetTitle, 'در حال دریافت...');
 
@@ -96,7 +96,7 @@
 
 
             $("iframe", widget.htmlTag).load(function () {//note : just one iframe is alowed
-                var sameOrigin = this.contentWindow.document != null; //same origin policy makes document == null for external URLs
+                var sameOrigin = this.contentWindow != null && this.contentWindow.document != null; //same origin policy makes document == null for external URLs
                 if (sameOrigin)
                     if (handleSpecialPages(widgetLayout, widget, this.contentWindow.location, null, this.contentWindow.document.body.innerText, true)) return;
 
