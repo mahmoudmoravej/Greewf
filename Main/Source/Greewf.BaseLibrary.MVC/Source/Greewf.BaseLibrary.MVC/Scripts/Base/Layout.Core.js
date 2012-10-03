@@ -92,18 +92,16 @@
 
         }
         else {//iframe request : simple mode
-            widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout) + '<iframe frameborder="0" style="width:100%;height:99%;display:none;" src="' + link + '"></iframe>');
+            widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout) + '<iframe frameborder="0" style="width:0px;height:0px;visibility:hidden;position:absolute;" src="' + link + '"/>');//NOTE! TOO Important : we don't use display:none becuase in firefox & IE it doesnt call the onload event for iframe!
 
-
-            $("iframe", widget.htmlTag).load(function () {//note : just one iframe is alowed
+            $("iframe:first", widget.htmlTag).load(function () {//note : just one iframe is alowed
                 var sameOrigin = this.contentWindow != null && this.contentWindow.document != null; //same origin policy makes document == null for external URLs
                 if (sameOrigin)
                     if (handleSpecialPages(widgetLayout, widget, this.contentWindow.location, null, this.contentWindow.document.body.innerText, true)) return;
 
                 $(this).data('contentLoaded', true);
                 $('div[isProgress]', $(this).parent()).hide();
-                //$(this).css('visibility', 'visible'); //1:jquery hide/show methods makes some problem with inner content,2:making invisible makes problem in first field focusing
-                $(this).show();
+                $(this).css({ visibility: 'visible', width: '100%', height: '99%', position: 'static' }); //1:jquery hide/show methods makes some problem with inner content,2:making invisible makes problem in first field focusing
                 changeWidgetTitle(widgetLayout, widgetTitle, title == '' ? (this.contentWindow.document != undefined ? this.contentWindow.document.title : '') : title);
 
                 if (sameOrigin) {

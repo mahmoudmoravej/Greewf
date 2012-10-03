@@ -104,7 +104,7 @@ namespace Greewf.BaseLibrary.MVC
                     Response.Redirect("~/Home/Error" + (querystring.Length > 0 ? "?" + querystring : ""));
 
                 }
-                else//the error raised in error handler page (so we should ignore redirection)
+                else//the error raised in error handler page (so we should ignore station)
                 {
 
                     Response.Write("<h2>خطای ناشناخته در صفحه نمایش خطا</h2>\n");
@@ -117,6 +117,8 @@ namespace Greewf.BaseLibrary.MVC
                         Response.Write("<p>شماره رخداد ثبت شده : خطا در ثبت رخداد </p>\n");
 
                     Server.ClearError();
+
+                    Response.TrySkipIisCustomErrors = true; //we need it for IIS 7.0 (on win 2008 R2)
                     Response.StatusCode = 500;//to make ajax call enable getting it through onError event
                     Response.AddHeader("GreewfCustomErrorPage", "true"); //to help ajax onError event to distinguish between regular content or custom error page content.
 
