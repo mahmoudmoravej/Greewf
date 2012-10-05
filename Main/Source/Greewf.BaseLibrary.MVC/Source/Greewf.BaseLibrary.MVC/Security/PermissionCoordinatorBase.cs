@@ -10,7 +10,8 @@ namespace Greewf.BaseLibrary.MVC.Security
     /// 
     /// </summary>
     /// <typeparam name="P">Permission Entity Enum</typeparam>
-    public abstract class PermissionCoordinatorBase<P>
+    /// /// <typeparam name="C">PermissionCategory enum</typeparam>
+    public abstract class PermissionCoordinatorBase<P, C>
     {
         protected class RelatedPermission
         {
@@ -34,14 +35,16 @@ namespace Greewf.BaseLibrary.MVC.Security
         private List<RelatedPermission> lstRelatedPermissions = new List<RelatedPermission>();
         private Dictionary<Type, P> dicPermissionEntityEnumMaps = new Dictionary<Type, P>();
         private static Dictionary<P, long> dicOwnRelatedPermissions = new Dictionary<P, long>();
+        private static Dictionary<P, C?> dicPermissionCategories = new Dictionary<P, C?>();
 
         protected PermissionCoordinatorBase()
         {
             LoadPermissionRelationships(dicPermissionEntityEnumMaps, lstRelatedPermissions, dicOwnRelatedPermissions);
+            LoadPermissionCatergories(dicPermissionCategories);
         }
 
-        private static PermissionCoordinatorBase<P> _instance = null;
-        public static T GetInstance<T>() where T : PermissionCoordinatorBase<P>, new()
+        private static PermissionCoordinatorBase<P, C> _instance = null;
+        public static T GetInstance<T>() where T : PermissionCoordinatorBase<P, C>, new()
         {
             if (_instance == null)
                 _instance = new T();
@@ -53,7 +56,8 @@ namespace Greewf.BaseLibrary.MVC.Security
             return result;
         }
 
-        protected abstract void LoadPermissionRelationships( Dictionary<Type, P> enumMaps,List<RelatedPermission> relatedPermissions, Dictionary<P, long> ownPermissionsList);
+        protected abstract void LoadPermissionRelationships(Dictionary<Type, P> enumMaps, List<RelatedPermission> relatedPermissions, Dictionary<P, long> ownPermissionsList);
+        protected abstract void LoadPermissionCatergories(Dictionary<P, C?> categoryPermissions);
 
         public P GetRelatedPermissionItem(Type type)
         {
@@ -83,6 +87,11 @@ namespace Greewf.BaseLibrary.MVC.Security
 
             return false;
 
+        }
+
+        public C? GetPermissionCategory(P permission)
+        {
+            return dicPermissionCategories[permission];
         }
 
     }
