@@ -6,12 +6,15 @@ using System.Text;
 
 namespace Greewf.BaseLibrary.MVC.Security
 {
+
     /// <summary>
     /// 
     /// </summary>
     /// <typeparam name="P">Permission Entity Enum</typeparam>
     /// /// <typeparam name="C">PermissionCategory enum</typeparam>
     public abstract class PermissionCoordinatorBase<P, C>
+        where C:struct
+        where P:struct
     {
         protected class RelatedPermission
         {

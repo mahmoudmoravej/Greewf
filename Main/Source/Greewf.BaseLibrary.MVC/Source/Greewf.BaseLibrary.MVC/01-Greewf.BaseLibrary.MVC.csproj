@@ -159,6 +159,12 @@
     <Content Include="Scripts\Base\Layout.Tooltip.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Compile Include="Security\CurrentUserBase.cs" />
+    <Compile Include="Security\NewVersion\CurrentUserBase.cs" />
+    <Compile Include="Security\NewVersion\PermissionCoordinatorBase.cs" />
+    <Compile Include="Security\NewVersion\PermissionLimiterBase.cs" />
+    <Compile Include="Security\NewVersion\UserPermissionHelper.cs" />
+    <Compile Include="Security\OldVersion\PermissionLimiterBase.cs" />
     <Compile Include="Security\PermissionLimiterBase.cs" />
     <Compile Include="Validators\Localized\FkRequiredAttribute.cs" />
     <Compile Include="Validators\Localized\RangeAttribute.cs" />
@@ -170,13 +176,13 @@
     <Compile Include="Mappers\IModelMapperController.cs" />
     <Compile Include="Mappers\IMapper.cs" />
     <Compile Include="Mappers\ViewModelMapper.cs" />
-    <Compile Include="CurrentUserBase.cs" />
+    <Compile Include="Security\OldVersion\CurrentUserBase.cs" />
     <Compile Include="ProfileCommonBase.cs" />
     <Compile Include="ProfileExtentions.cs" />
     <Compile Include="Security\PermissionAttribute.cs" />
-    <Compile Include="Security\PermissionCoordinatorBase.cs" />
+    <Compile Include="Security\OldVersion\PermissionCoordinatorBase.cs" />
     <Compile Include="Security\SecurityException.cs" />
-    <Compile Include="Security\UserPermissionHelper.cs" />
+    <Compile Include="Security\OldVersion\UserPermissionHelper.cs" />
     <Compile Include="Validators\Localized\ValidatorAttributesLocalizer.cs" />
     <Compile Include="Validators\PersianDateAttribute.cs" />
     <Compile Include="Validators\PersianDateValidationRule.cs" />
@@ -318,6 +324,7 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /Y /E /D "$(TargetDir)\Scripts" "$(SolutionDir)\GreewfRelease\Scripts\"

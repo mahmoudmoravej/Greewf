@@ -191,7 +191,7 @@
             jsonResponse = data;
 
         if (jsonResponse) {
-            var isSuccessFlagUp = handleResponsiveJsonResult(jsonResponse);
+            var isSuccessFlagUp =layoutCore.handleResponsiveJsonResult(jsonResponse);
             widgetLayout.CloseAndDone(location.hash != undefined ? location : null, widget, isSuccessFlagUp); //when ajax request
             handled = true;
         }
@@ -542,7 +542,7 @@
             },
             success: function (json) {
                 succeeded = 1;
-                handleResponsiveJsonResult(json);
+                layoutCore.handleResponsiveJsonResult(json);
                 layoutCore.handleCloseCallBack(link, null, ownerWindow, true);
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -551,7 +551,7 @@
         });
     }
 
-    function handleResponsiveJsonResult(json, widgetLayout, widget, location, linkHash) {
+    layoutCore.handleResponsiveJsonResult = function(json) {
 
         var isSuccessFlagUp = false;
 

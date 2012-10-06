@@ -42,7 +42,12 @@ namespace Greewf.BaseLibrary.MVC.Security
                     return true;
             return false;
         }
-      
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
 
     }
 
@@ -54,6 +59,7 @@ namespace Greewf.BaseLibrary.MVC.Security
     /// <typeparam name="PC">Permission coordinator class</typeparam>
     /// <typeparam name="K">Category Object Key(int or guid in most cases)</typeparam>
     public sealed class UserPermissionHelper<P, C, PC, K>
+        where P : struct
         where PC : PermissionCoordinatorBase<P, C>
         where C : struct
         where K : struct
@@ -87,10 +93,10 @@ namespace Greewf.BaseLibrary.MVC.Security
             var cat = PermissionCoordinator.GetPermissionCategory(permission);
 
             if (cat != null && categoryKey == null)
-                throw new Exception("The requested permission object[" + typeof(P).ToString() + "] has category["+cat.Value.ToString() +"], but you passed a null categoryKey! This permission is only valid within an instance of a category.");
+                throw new Exception("The requested permission object[" + typeof(P).ToString() + "] has category[" + cat.Value.ToString() + "], but you passed a null categoryKey! This permission is only valid within an instance of a category.");
 
             if (cat == null && categoryKey != null)//TODO : we can bypass this instead of exception throwing...
-                throw new Exception("The requested permission object["+ typeof(P).ToString() +"] has no any category, but you passed categoryKey["+categoryKey.ToString()+"]!");
+                throw new Exception("The requested permission object[" + typeof(P).ToString() + "] has no any category, but you passed categoryKey[" + categoryKey.ToString() + "]!");
 
             return acl[new UserAclKey<C, K>(cat, categoryKey)];
         }
