@@ -37,8 +37,8 @@ namespace <#= Model.RepositoryNamespace #>
         {
         }
 
-        public <#= modelName #>Repository(ContextManager contextManager, IValidationDictionary validationDictionary)
-            : base(contextManager, validationDictionary)
+        public <#= modelName #>Repository(ContextManager contextManager, UnitOfRepositories unitOfRepositories)
+            : base(contextManager, unitOfRepositories)
         {
         }
 
