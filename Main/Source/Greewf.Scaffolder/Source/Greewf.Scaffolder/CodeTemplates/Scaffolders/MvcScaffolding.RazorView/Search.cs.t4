@@ -40,7 +40,7 @@ if (!String.IsNullOrEmpty(Model.Layout)) {
 </script>
 @if (! Request.QueryString.AllKeys.Contains ("isCurrentPageCallBack"))
 {
-    using (Ajax.BeginForm("search", new { puremode = 1 , isCurrentPageCallBack = 1 }, new string[] { "simplemode" }, new Greewf.BaseLibrary.MVC.Ajax.CustomizedAjaxOption("searchResult"+ fldstId, "bigprogress-icon t-content")))
+    using (Ajax.BeginForm((string)ViewBag.SearchGridModelResult.DefaultAction, new { puremode = 1 , isCurrentPageCallBack = 1 }, new string[] { "simplemode" }, new Greewf.BaseLibrary.MVC.Ajax.CustomizedAjaxOption("searchResult"+ fldstId, "bigprogress-icon t-content")))
     {    
     <fieldset id='@(fldstId)'>
         <legend>جستجوی <#= GetDisplayName(modelDataType) #>...</legend>
@@ -55,7 +55,7 @@ if (!String.IsNullOrEmpty(Model.Layout)) {
     @{var result = ViewBag.SearchGridModelResult == null ? null : ViewBag.SearchGridModelResult.Data as IEnumerable<object>;}    
     @if (result != null && result.Count() > 0)
 	{
-        if (Request.QueryString.AllKeys.Contains("briefview"))
+        if (Request.QueryString.AllKeys.Contains("briefview") || Request.QueryString.AllKeys.Contains("iswindow"))
         {
             @Html.Partial("_ListBreifView",ViewBag.SearchGridModelResult as object)
         }

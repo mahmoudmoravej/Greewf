@@ -298,6 +298,8 @@ namespace Greewf.BaseLibrary.MVC
             return View();
         }
 
+        protected internal abstract object GetPermissionCategoryKey(long permissionObject);
+
     }
 
     /// <summary>
@@ -360,6 +362,8 @@ namespace Greewf.BaseLibrary.MVC
         //    return TryUpdateModel(model, null, null, sensitiveData == null ? null : sensitiveData.ToStringArray());
         //}
 
+
+        protected internal abstract override object GetPermissionCategoryKey(long permissionObject);
     }
 
 

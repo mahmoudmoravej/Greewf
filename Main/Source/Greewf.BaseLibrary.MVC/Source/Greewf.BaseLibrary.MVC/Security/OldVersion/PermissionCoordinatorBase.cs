@@ -16,7 +16,7 @@ namespace Greewf.BaseLibrary.MVC.Security
         protected class RelatedPermission
         {
             /// <summary>
-            /// اجازه ای که اجازه محدودکننده را نیز شامل می شود
+            /// اجازه ای که اجازه محدود شده را نیز شامل می شود
             /// </summary>
             public long ContainerPermission = -1;
             public long LimitedPermission = -1;
@@ -76,10 +76,10 @@ namespace Greewf.BaseLibrary.MVC.Security
         public bool IsLimitedPermission(P permissionEntity, long requestedPermission, long userPermissions)
         {
 
-            // اگر کاربر فقط اجازه محدود کننده را دارد ولی کلی را ندارد و درخواست اجازه هم برای فقط محدود کننده بود آنگاه باید کاربر چک شود
+            // اگر کاربر فقط اجازه محدود شده را دارد ولی کلی را ندارد و درخواست اجازه هم برای فقط محدود شده بود آنگاه باید کاربر چک شود
             foreach (var item in lstRelatedPermissions.Where(o => o.PermissionEntity.Equals(permissionEntity)))
-                if ((requestedPermission & item.LimitedPermission) != 0)//اگر اجازه درخواستی حاوی اجازه ی محدود کننده ای است
-                    if ((userPermissions & (item.LimitedPermission | item.ContainerPermission)) == item.LimitedPermission)//اگر اجازه های کاربر فقط اجازه محدود کننده را دارد و اجازه کلی آنرا شامل نمی شود
+                if ((requestedPermission & item.LimitedPermission) != 0)//اگر اجازه درخواستی حاوی اجازه ی محدود شده ای است
+                    if ((userPermissions & (item.LimitedPermission | item.ContainerPermission)) == item.LimitedPermission)//اگر اجازه های کاربر فقط اجازه محدود شده را دارد و اجازه کلی آنرا شامل نمی شود
                         return true;
 
             return false;

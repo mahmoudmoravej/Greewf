@@ -263,7 +263,7 @@ namespace <#= Model.ControllerNamespace #>
                 if (<#= Repositories[modelType.FullName].VariableName #>.InsertOrUpdate(old<#= modelName #>)) // if no, ModelState has some values.(Biz rules failed)
                 {
                     <#= Repositories[modelType.FullName].VariableName #>.Save();
-                    return RedirectToSuccessAction(<#= modelName #>ModelMapper.Map(<#= modelVariable #>));
+                    return RedirectToSuccessAction(<#= modelName #>ModelMapper.Map(old<#= modelVariable #>));
 				    // return Redirect(Url.Action("edit"), true, <#= modelName #>ModelMapper.Map(old<#= modelName #>)); //Use this if you want to return to edit mode.
                 }
             }
@@ -324,9 +324,12 @@ namespace <#= Model.ControllerNamespace #>
 
 	#region Search
 
-        private ActionResult GetSearchView(bool doSearch, Action<<#= modelName #>SearchCriteria> enforceCriteria)
+        private ActionResult GetSearchView(bool doSearch, Action<<#= modelName #>SearchCriteria> enforceCriteria, string viewName = null)
         {
-            var gridViewModel = new <#= modelName #>GridViewModel() { Editable = false, IsInSearchMode = true, DefaultAction = "Search" };
+			var actionName = RouteData.Values["action"].ToString();
+            viewName = viewName ?? actionName;
+
+            var gridViewModel = new <#= modelName #>GridViewModel() { Editable = false, IsInSearchMode = true, DefaultAction = actionName };
             if (Request.HttpMethod == "POST" && Request.IsAjaxRequest())
             {
                 if (doSearch)//first postback search(by clicking form button)
@@ -336,19 +339,19 @@ namespace <#= Model.ControllerNamespace #>
                     enforceCriteria(userCriteria);
                     gridViewModel.Data = Get<#= modelNamePlural #>(userCriteria);
                     ViewBag.SearchGridModelResult = gridViewModel;
-                    return View();
+                    return View(viewName);
                 }
                 else//grid post back
                     return GetIndexView(enforceCriteria, gridViewModel);
             }
             else//first page request (GET)
             {
-                var criteria = new ProductSearchCriteria();
+                var criteria = new <#= modelName #>SearchCriteria();
                 enforceCriteria(criteria);
                 gridViewModel.Data = Get<#= modelNamePlural #>(criteria);
                 ViewBag.SearchGridModelResult = gridViewModel;
                 PrepareViewBagLists(ActionType.Search, criteria);
-                return View();
+                return View(viewName);
             }
         }
 

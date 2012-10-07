@@ -14,29 +14,64 @@ namespace Greewf.BaseLibrary.MVC.Security
 
         private readonly IEnumerable<long> permissions;
         private readonly long permissionObject;
+        private readonly string permissionCategoryKeyParameterName;
 
-        protected PermissionAttributeBase(long permissionObject, long permissions)
+        protected PermissionAttributeBase(long permissionObject, long permissions, string permissionCategoryKeyParameterName = null)
         {
             this.permissionObject = permissionObject;
             this.permissions = new long[] { permissions };
+            this.permissionCategoryKeyParameterName = permissionCategoryKeyParameterName;
         }
 
 
-        protected PermissionAttributeBase(long permissionObject, IEnumerable<long> permissions)
+        protected PermissionAttributeBase(long permissionObject, IEnumerable<long> permissions, string permissionCategoryKeyParameterName = null)
         {
             this.permissionObject = permissionObject;
             this.permissions = permissions;
+            this.permissionCategoryKeyParameterName = permissionCategoryKeyParameterName;
         }
+
+        private object _parameterCategoryKey = null;
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
+            var currentUser = CurrentUserBase.GetActiveInstance();
+            var controller = filterContext.Controller as CustomizedControllerBase;
+            if (controller == null) return;
+            if (permissionCategoryKeyParameterName != null)
+                _parameterCategoryKey = filterContext.ActionParameters[permissionCategoryKeyParameterName];//todo : test to have value in ActionExtectued method too.
+
+            object categoryKey = GetPerimssionCategory(currentUser, controller);
+
             foreach (long per in permissions)
             {
-                if (CurrentUserBase.GetActiveInstance().HasPermission(permissionObject, per) != true)
+                if (currentUser.HasPermission(permissionObject, per, null, categoryKey) != true)
                     throw new SecurityException(permissionObject);
             }
 
         }
+
+        private object GetPerimssionCategory(CurrentUserBase currentUser, CustomizedControllerBase controller)
+        {
+            // در سه حالت به دنبال رسته مربوط به اجازه می گردد
+            // 1- پارامتر تابع
+            // 2- در کنترلر توسط تابع مربوطه
+            // 3- در CommonUserBase
+            // کاربر می تواند بسته به نیازش یکی از این روش ها را انتخاب کند
+
+            object result = null;
+            if (_parameterCategoryKey != null)
+                result = _parameterCategoryKey;
+            else
+            {
+                result = controller.GetPermissionCategoryKey(permissionObject);
+                if (result == null)
+                    result = currentUser.GetPermissionCategoryKey(permissionObject);
+            }
+            return result;
+        }
+
+
 
 
         public override void OnActionExecuted(ActionExecutedContext filterContext)
@@ -54,6 +89,8 @@ namespace Greewf.BaseLibrary.MVC.Security
                 {
                     bool? andPartResult = null, orPartResult = null;
                     List<string> errorMessages = new List<string>();
+                    var currentUser = CurrentUserBase.GetActiveInstance();
+                    object categoryKey = GetPerimssionCategory(currentUser, controller);
 
                     foreach (long per in permissions)
                     {
@@ -61,7 +98,7 @@ namespace Greewf.BaseLibrary.MVC.Security
                         foreach (var limiter in limiterModel.LimiterFunctions/*.OrderBy(o => !o.IsAndPart) : no need anymore? */)
                         {
                             if (limiter == null) continue;
-                            bool? x = CurrentUserBase.GetActiveInstance().HasPermission(permissionObject, per, limiter);
+                            bool? x = currentUser.HasPermission(permissionObject, per, limiter, categoryKey);
 
                             if (limiter.IsAndPart)
                                 andPartResult = (andPartResult ?? true) && (x ?? true);

@@ -27,6 +27,11 @@ namespace Greewf.BaseLibrary.MVC
 
         protected override abstract string EnterpriseAdminUsername { get; }
 
+        protected internal override object GetPermissionCategoryKey(long permissionObject)
+        {
+            return null;
+        }
+
 
         #region Permissions
 
@@ -74,7 +79,7 @@ namespace Greewf.BaseLibrary.MVC
             return HasPermission(permissionObject, requestedPermissions, permissionLimiter);
         }
 
-        public override bool? HasPermission(long permissionObject, long requestedPermissions, PermissionLimiterBase permissionLimiter = null)
+        public override bool? HasPermission(long permissionObject, long requestedPermissions, PermissionLimiterBase permissionLimiter = null,object categoryKey=null)
         {
             return HasPermission((P)Enum.Parse(typeof(P), permissionObject.ToString()), requestedPermissions, permissionLimiter);
         }
@@ -140,7 +145,7 @@ namespace Greewf.BaseLibrary.MVC
         }
 
         protected abstract PC LoadPermissionCoordinator();
-
+    
     } 
 
 }

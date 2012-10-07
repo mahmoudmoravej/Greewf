@@ -19,16 +19,16 @@ namespace Greewf.BaseLibrary.MVC.Security
         protected class RelatedPermission
         {
             /// <summary>
-            /// اجازه ای که اجازه محدودکننده را نیز شامل می شود
+            /// اجازه کامل 
             /// </summary>
             public long ContainerPermission = -1;
-            public long LimitedPermission = -1;
+            public long SubPermission = -1;
             public P PermissionEntity;
 
-            public RelatedPermission(P permissionEntity, long limitedPermission, long containerPermission)
+            public RelatedPermission(P permissionEntity, long subPermission, long containerPermission)
             {
                 PermissionEntity = permissionEntity;
-                LimitedPermission = limitedPermission;
+                SubPermission = subPermission;
                 ContainerPermission = containerPermission;
             }
 
@@ -79,13 +79,22 @@ namespace Greewf.BaseLibrary.MVC.Security
             }
         }
 
-        public bool IsLimitedPermission(P permissionEntity, long requestedPermission, long userPermissions)
+        /// <summary>
+        /// آیا فقط اجازه جزیی را دارد و اجازه کامل آنرا ندارد؟
+        /// </summary>
+        /// <param name="permissionEntity"></param>
+        /// <param name="requestedPermission"></param>
+        /// <param name="userPermissions"></param>
+        /// <returns></returns>
+        public bool HasOnlySubPermission(P permissionEntity, long requestedPermission, long userPermissions)
         {
+            //اجازه جزیی : ViewOwn
+            //اجازه کامل : ViewFull
 
-            // اگر کاربر فقط اجازه محدود کننده را دارد ولی کلی را ندارد و درخواست اجازه هم برای فقط محدود کننده بود آنگاه باید کاربر چک شود
+            // اگر کاربر فقط اجازه جزیی را دارد ولی کلی را ندارد و درخواست اجازه هم برای فقط جزیی بود آنگاه باید کاربر چک شود
             foreach (var item in lstRelatedPermissions.Where(o => o.PermissionEntity.Equals(permissionEntity)))
-                if ((requestedPermission & item.LimitedPermission) != 0)//اگر اجازه درخواستی حاوی اجازه ی محدود کننده ای است
-                    if ((userPermissions & (item.LimitedPermission | item.ContainerPermission)) == item.LimitedPermission)//اگر اجازه های کاربر فقط اجازه محدود کننده را دارد و اجازه کلی آنرا شامل نمی شود
+                if ((requestedPermission & item.SubPermission) != 0)//اگر اجازه درخواستی حاوی اجازه ی جزیی ای است
+                    if ((userPermissions & (item.SubPermission | item.ContainerPermission)) == item.SubPermission)//اگر اجازه های کاربر فقط اجازه جزیی را دارد و اجازه کامل آنرا شامل نمی شود
                         return true;
 
             return false;

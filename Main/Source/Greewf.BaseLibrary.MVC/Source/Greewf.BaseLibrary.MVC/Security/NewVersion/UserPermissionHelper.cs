@@ -119,20 +119,20 @@ namespace Greewf.BaseLibrary.MVC.Security
             if (acl.ContainsKey(permissionObject))
             {
 
-                //NOTE : اجازه درخواستی نمی بایست "فول" را داشته باشد. البته "اور" شده ها را می تواند داشته باشد
+                //NOTE : اجازه درخواستی نمی بایست "فول" را داشته باشد. البته "اور" شده جزیی ها را می تواند داشته باشد
                 //       در واقع هیچگاه "فول" ها که فقط در دیتابیس معنی دارند نمی بایست بطور مجزا در "ریکوستت پرمیشن" حاضر شوند
-                //       لذا ممکن است که در اجازه های کاربر یک "فول" وجود داشته باشد اما هرگز در "اجازه های موردنیاز" یک "فول" بطور تنها نیست و "محدود کننده" های آن را نیز شامل می شود
+                //       لذا ممکن است که در اجازه های کاربر(یا همان "یوزر پرمیشن") یک "فول" وجود داشته باشد اما هرگز در "اجازه های موردنیاز" یک "فول" بطور تنها نیست و "جزیی" های آن را نیز شامل می شود
                 long userPermissions = acl[permissionObject];
                 long availablePermissions = userPermissions & (long)requestedPermissions;
                 bool result = availablePermissions != 0;
 
                 if (result &&
                     permissionLimiter != null &&
-                    PermissionCoordinator.IsLimitedPermission(permissionObject, requestedPermissions, userPermissions)) // برای اجازه های فول فراخوانی توابع محدود کننده بی معنی است و اصلا نباید این توابع صدا زده شوند. بطور پیش فرض هم تمامی اجازه ها فول هستند مگر آنکه قبلا تعریف شده باشند
+                    PermissionCoordinator.HasOnlySubPermission(permissionObject, requestedPermissions, userPermissions)) // برای اجازه های کامل فراخوانی توابع محدود شده بی معنی است و اصلا نباید این توابع صدا زده شوند. بطور پیش فرض هم تمامی اجازه ها فول هستند مگر آنکه قبلا تعریف شده باشند
                 {
                     // در صورتیکه اجازه موردنیاز با دسترسی کاربر تطابق داشت و تطبیق آن با شرایط اجرای تابع همخوانی داشت آنگاه تابع را فراخوانی کن
                     // توجه : خالی بودن "limitterPermission" خطرناک است و وضعیت را مبهم میکند
-                    if (permissionLimiter.LimiterPermission != null)//در صورتیکه تابع محدود کننده مخصوص اجازه های خاصی بود
+                    if (permissionLimiter.LimiterPermission != null)//در صورتیکه تابع محدود شده مخصوص اجازه های خاصی بود
                         availablePermissions = availablePermissions & permissionLimiter.LimiterPermission.Value;
 
                     result = availablePermissions != 0;
@@ -160,16 +160,16 @@ namespace Greewf.BaseLibrary.MVC.Security
         /// از ارسال اجازه های ترکیبی به این پارامتر خودداری شود
         /// </summary>
         /// <param name="permissionObject"></param>
-        /// <param name="requestedPermissions"></param>
+        /// <param name="requestedPermission"></param>
         /// <returns></returns>
-        public bool HasFullPermissionOf(P permissionObject, long requestedPermissions, K? categoryKey = null)
+        public bool HasFullPermissionOf(P permissionObject, long requestedPermission, K? categoryKey = null)
         {
             if (IsEnterpriseAdmin != null && IsEnterpriseAdmin()) return true;
             var acl = GetCategoryAcl(permissionObject, categoryKey);
             if (acl.ContainsKey(permissionObject))
             {
                 long userPermissions = acl[permissionObject];
-                return !PermissionCoordinator.IsLimitedPermission(permissionObject, requestedPermissions, userPermissions);
+                return !PermissionCoordinator.HasOnlySubPermission(permissionObject, requestedPermission, userPermissions);
             }
             return false;
         }

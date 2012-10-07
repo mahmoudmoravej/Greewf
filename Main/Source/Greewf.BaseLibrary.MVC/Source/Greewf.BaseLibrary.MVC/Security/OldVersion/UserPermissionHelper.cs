@@ -54,18 +54,18 @@ namespace Greewf.BaseLibrary.MVC.Security
 
                 //NOTE : اجازه درخواستی نمی بایست "فول" را داشته باشد. البته "اور" شده ها را می تواند داشته باشد
                 //       در واقع هیچگاه "فول" ها که فقط در دیتابیس معنی دارند نمی بایست بطور مجزا در "ریکوستت پرمیشن" حاضر شوند
-                //       لذا ممکن است که در اجازه های کاربر یک "فول" وجود داشته باشد اما هرگز در "اجازه های موردنیاز" یک "فول" بطور تنها نیست و "محدود کننده" های آن را نیز شامل می شود
+                //       لذا ممکن است که در اجازه های کاربر یک "فول" وجود داشته باشد اما هرگز در "اجازه های موردنیاز" یک "فول" بطور تنها نیست و "محدود شده" های آن را نیز شامل می شود
                 long userPermissions = acl[permissionObject];
                 long availablePermissions = userPermissions & (long)requestedPermissions;
                 bool result = availablePermissions != 0;
 
                 if (result &&
                     permissionLimiter != null &&
-                    PermissionCoordinator.IsLimitedPermission(permissionObject, requestedPermissions, userPermissions)) // برای اجازه های فول فراخوانی توابع محدود کننده بی معنی است و اصلا نباید این توابع صدا زده شوند. بطور پیش فرض هم تمامی اجازه ها فول هستند مگر آنکه قبلا تعریف شده باشند
+                    PermissionCoordinator.IsLimitedPermission(permissionObject, requestedPermissions, userPermissions)) // برای اجازه های فول فراخوانی توابع محدود شده بی معنی است و اصلا نباید این توابع صدا زده شوند. بطور پیش فرض هم تمامی اجازه ها فول هستند مگر آنکه قبلا تعریف شده باشند
                 {
                     // در صورتیکه اجازه موردنیاز با دسترسی کاربر تطابق داشت و تطبیق آن با شرایط اجرای تابع همخوانی داشت آنگاه تابع را فراخوانی کن
                     // توجه : خالی بودن "limitterPermission" خطرناک است و وضعیت را مبهم میکند
-                    if (permissionLimiter.LimiterPermission != null)//در صورتیکه تابع محدود کننده مخصوص اجازه های خاصی بود
+                    if (permissionLimiter.LimiterPermission != null)//در صورتیکه تابع محدود شده مخصوص اجازه های خاصی بود
                         availablePermissions = availablePermissions & permissionLimiter.LimiterPermission.Value;
 
                     result = availablePermissions != 0;

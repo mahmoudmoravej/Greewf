@@ -6,7 +6,7 @@ using System.Text;
 namespace Greewf.BaseLibrary.MVC.Security
 {
     /// <summary>
-    /// توجه : این کلاس برای اعمال محدودیت تنها بر روی اجازه هایی هست که فول نیستند و محدود کننده هستند
+    /// توجه : این کلاس برای اعمال محدودیت تنها بر روی اجازه هایی هست که فول نیستند و جزیی هستند
     /// لذا برای اجازه های فول اصلا نمی بایست از این کلاس استفاده کرد
     /// </summary>
     public abstract class PermissionLimiterBase
