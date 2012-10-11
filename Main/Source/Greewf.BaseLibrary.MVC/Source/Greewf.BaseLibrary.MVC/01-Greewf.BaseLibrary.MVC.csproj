@@ -99,6 +99,13 @@
     <Compile Include="ChangeTracker\DefaultChangeTracker.cs" />
     <Compile Include="ChangeTracker\ISavingTracker.cs" />
     <Compile Include="ChangeTracker\TrackChangesAttribute.cs" />
+    <Compile Include="Controller\ActionType.cs" />
+    <Compile Include="Controller\ModelPermissionLimiters.cs" />
+    <Compile Include="Controller\RedirectToRouteResultEx.cs" />
+    <Compile Include="Controller\RedirectToRouteResultExtensions.cs" />
+    <Compile Include="Controller\SuccessViewResult.cs" />
+    <Compile Include="Controller\SensetiveFields.cs" />
+    <Compile Include="Controller\CustomizedControllerBase.cs" />
     <Compile Include="CustomHelpers\CheckBoxListFor.cs" />
     <Compile Include="CustomHelpers\ImagePickerFor.cs" />
     <Compile Include="CustomHelpers\PersianDatePickerFor.cs" />
@@ -108,7 +115,7 @@
     <Compile Include="CustomHelpers\WindowValueSelectorFor.cs" />
     <Compile Include="CustomHelpers\Utility.cs" />
     <Compile Include="CustomHelpers\CompundComboListFor.cs" />
-    <Compile Include="CustomizedControllerBase.cs" />
+    <Compile Include="Controller\CustomizedControllerBaseT.cs" />
     <Content Include="Documents\SSO.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
