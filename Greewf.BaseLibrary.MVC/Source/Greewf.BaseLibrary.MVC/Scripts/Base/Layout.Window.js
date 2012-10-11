@@ -178,12 +178,12 @@
 
         //just find all [button,a and input] tags
         $('button,a,input', mainContainer).each(function (i, o) { $(o).attr('_tempId', i) });
-        var clonedContainer = mainContainer.clone().addClass('t-header g-clearfix g-window-buttonbar').appendTo(windowElement).css('display', 'block');
+        var clonedContainer = mainContainer.clone().addClass('t-grid-pager g-clearfix g-window-buttonbar').appendTo(windowElement).css('display', 'block');
 
         //shadow clicking
         $('[_tempId]', clonedContainer).each(function (i, o) {
             $(o).data('sourceTag', $('[_tempId="' + $(o).attr('_tempId') + '"]', mainContainer)); //find the match in main container
-            $(o).click(function () { $(this).data('sourceTag').click(); });
+            $(o).click(function () { $(this).data('sourceTag').click(); return false; });
         });
 
     }
