@@ -13,8 +13,8 @@ namespace Greewf.BaseLibrary.MVC.Security
     /// <typeparam name="P">Permission Entity Enum</typeparam>
     /// /// <typeparam name="C">PermissionCategory enum</typeparam>
     public abstract class PermissionCoordinatorBase<P, C>
-        where C:struct
-        where P:struct
+        where C : struct
+        where P : struct
     {
         protected class RelatedPermission
         {
@@ -104,6 +104,14 @@ namespace Greewf.BaseLibrary.MVC.Security
         public C? GetPermissionCategory(P permission)
         {
             return dicPermissionCategories[permission];
+        }
+
+        public P[] GetCategoryPermissionObjects(C? category)
+        {
+            if (category == null)
+                return dicPermissionCategories.Where(o => o.Value == null).Select(o => o.Key).ToArray();
+            else
+                return dicPermissionCategories.Where(o => o.Value != null && o.Value.Value.Equals(category.Value)).Select(o => o.Key).ToArray();
         }
 
     }
