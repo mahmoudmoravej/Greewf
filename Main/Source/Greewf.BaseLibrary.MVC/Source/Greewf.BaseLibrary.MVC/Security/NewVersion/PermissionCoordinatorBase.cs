@@ -55,7 +55,7 @@ namespace Greewf.BaseLibrary.MVC.Security
             var result = _instance as T;
             if (result == null)
                 throw new Exception(string.Format("This method can be called only with the type that was passed to it first call. It is associated with '{0}' previously." + typeof(T).FullName));
-
+            enumMaps
             return result;
         }
 
@@ -64,7 +64,15 @@ namespace Greewf.BaseLibrary.MVC.Security
 
         public P GetRelatedPermissionItem(Type type)
         {
-            return dicPermissionEntityEnumMaps[type];
+            try
+            {
+                return dicPermissionEntityEnumMaps[type];
+            }
+            catch (KeyNotFoundException x)
+            {
+
+                throw new Exception(string.Format("The given type({0}) is not mapped in PermissionCoordinator's 'LoadPermissionRelationships' method(for 'enumMaps' parameter).", type.ToString()));
+            }
         }
 
         public long GetAllOwnRelatedPermissions(P permissionEntity)

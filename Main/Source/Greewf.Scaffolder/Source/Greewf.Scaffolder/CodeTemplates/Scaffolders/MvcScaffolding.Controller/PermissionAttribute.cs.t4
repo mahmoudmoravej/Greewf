@@ -17,3 +17,7 @@
             : base((long)PermissionEntity.<#= modelNamePlural #>, permissions.Cast<long>())
         {
         }
+        public PermissionsAttribute(string permissionCategoryKeyParameterName, params <#= modelName #>Permission[] permissions)
+            : base((long)PermissionEntity.<#= modelNamePlural #>, permissions.Cast<long>(), permissionCategoryKeyParameterName)
+        {
+        }

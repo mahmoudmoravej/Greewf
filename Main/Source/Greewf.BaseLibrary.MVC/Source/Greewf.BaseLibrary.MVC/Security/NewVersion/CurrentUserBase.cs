@@ -117,7 +117,7 @@ namespace Greewf.BaseLibrary.MVC
         protected internal override object GetPermissionCategoryKey(long permissionObject)
         {
             object obj = permissionObject;
-            var cat = _permissionCoordinator.GetPermissionCategory((P)obj);
+            var cat = PermissionCoordinator.GetPermissionCategory((P)obj);
             return GetPermissionCategoryKey(cat);
         }
 
