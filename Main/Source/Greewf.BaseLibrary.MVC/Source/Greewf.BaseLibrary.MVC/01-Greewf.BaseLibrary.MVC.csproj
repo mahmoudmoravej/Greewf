@@ -107,6 +107,14 @@
     <Compile Include="Controller\SensetiveFields.cs" />
     <Compile Include="Controller\CustomizedControllerBase.cs" />
     <Compile Include="CustomHelpers\CheckBoxListFor.cs" />
+    <Compile Include="CustomHelpers\Commons\GreewfHelperFactoryT.cs" />
+    <Compile Include="CustomHelpers\Commons\GreewfHelperFactory.cs" />
+    <Compile Include="CustomHelpers\Commons\HtmlHelperExtension.cs" />
+    <Compile Include="CustomHelpers\ContextMenu\GreewfHelperFactory.cs" />
+    <Compile Include="CustomHelpers\ContextMenu\ContextMenuItemsBuilder.cs" />
+    <Compile Include="CustomHelpers\ContextMenu\ContextMenuItemBuilder.cs" />
+    <Compile Include="CustomHelpers\ContextMenu\ContextMenuItem.cs" />
+    <Compile Include="CustomHelpers\ContextMenu\ContextMenu.cs" />
     <Compile Include="CustomHelpers\ImagePickerFor.cs" />
     <Compile Include="CustomHelpers\PersianDatePickerFor.cs" />
     <Compile Include="CustomHelpers\ValidationFor.cs" />

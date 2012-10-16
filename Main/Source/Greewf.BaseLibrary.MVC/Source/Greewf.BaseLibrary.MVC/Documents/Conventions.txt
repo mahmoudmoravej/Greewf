@@ -36,7 +36,7 @@ functions : xxxx= {window یا tooltip}
 
 class='g-window-nobuttonbar' در صورتی که می خواهید یکسری دکمه ها در پایین پنجره قرار نگیرند این کلاس را به کانتینر دکمه ها بدهید
 class='g-buttons-content'در صورتی که می خواهید بخشی به پایین پنجره منتقل شود
-
+class='g-warning-content' قالب نمایش هشدار که عموما برا حذف در پنجره ها مورد استفاده قرار می گیرد
 QueryString keys :
 enforceLayout=1
 istab=1

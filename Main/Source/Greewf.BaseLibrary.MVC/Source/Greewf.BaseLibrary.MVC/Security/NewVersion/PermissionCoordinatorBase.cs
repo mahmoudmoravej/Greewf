@@ -55,7 +55,7 @@ namespace Greewf.BaseLibrary.MVC.Security
             var result = _instance as T;
             if (result == null)
                 throw new Exception(string.Format("This method can be called only with the type that was passed to it first call. It is associated with '{0}' previously." + typeof(T).FullName));
-            enumMaps
+            
             return result;
         }
 
