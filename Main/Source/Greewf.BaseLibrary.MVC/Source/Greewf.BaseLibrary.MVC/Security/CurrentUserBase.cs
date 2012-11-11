@@ -14,6 +14,7 @@ namespace Greewf.BaseLibrary.MVC
     public abstract class CurrentUserBase
     {
         public abstract bool? HasPermission(long permissionObject, long requestedPermissions, PermissionLimiterBase limiterFunctionChecker = null, object categoryKey = null);
+        public abstract bool HasAnyCategoryPermission(long permissionObject, long requestedPermissions, PermissionLimiterBase limiterFunctionChecker);
 
         protected internal abstract object GetPermissionCategoryKey(long permissionObject);
 

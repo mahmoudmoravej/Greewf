@@ -98,7 +98,10 @@ namespace Greewf.BaseLibrary.MVC.Security
             if (cat == null && categoryKey != null)//TODO : we can bypass this instead of exception throwing...
                 throw new Exception("The requested permission object[" + typeof(P).ToString() + "] has no any category, but you passed categoryKey[" + categoryKey.ToString() + "]!");
 
-            return acl[new UserAclKey<C, K>(cat, categoryKey)];
+            var key = new UserAclKey<C, K>(cat, categoryKey);
+            if (acl.ContainsKey(key))
+                return acl[key];
+            return null;//مثلا زمانیکه در رسته استان تهران  کلا دسترسی ای برای ایشان تعریف نشده است
         }
 
         public bool HasPermission<T>(T permissions, K? categoryKey = null) where T : struct
@@ -108,7 +111,61 @@ namespace Greewf.BaseLibrary.MVC.Security
             return HasPermission(entityItem, Convert.ToInt64(permissions), categoryKey: categoryKey) ?? false;
         }
 
+        /// <summary>
+        /// بدون توجه به رسته اجازه ها، چک می کند که آیا اجازه ای دارد. برای زمانی مناسب است که مثلا می خواهیم یک منو رو فعال یا غیرفعال کنیم ولی رسته ان بعدا مشخص می شود
+        /// مثال : آیا اجازه ارسال دستور حداقل در یک استان را دارد؟
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="permissions"></param>
+        /// <returns></returns>
+        public bool HasAnyCategoryPermission<T>(T permissions) where T : struct
+        {
+            if (IsEnterpriseAdmin != null && IsEnterpriseAdmin()) return true;
+            var entityItem = PermissionCoordinator.GetRelatedPermissionItem(typeof(T));
+            return HasAnyCategoryPermission(entityItem, Convert.ToInt64(permissions), null);
+        }
 
+        public bool HasAnyCategoryPermission(P permissionObject, long permissions, PermissionLimiterBase limiterFunctionChecker)
+        {
+            if (IsEnterpriseAdmin != null && IsEnterpriseAdmin()) return true;
+
+            var acls = UserAcl();
+
+            foreach (var acl in acls.Values)
+            {
+                if (HasPermissionInAcl(permissionObject, permissions, limiterFunctionChecker, acl) == true)
+                    return true;
+            }
+            return false;
+
+        }
+
+        /// <summary>
+        /// مقدار نال به معنی این است که بر روی همه اجازه دارد و تنها برای مدیر ارشد این موضوع معنا دارد
+        /// برای سایرین لیست خالی یا لیست با مقدار بازگردانده می شود
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="permissions"></param>
+        /// <returns></returns>
+        public List<K?> GetAllowedCategoryObjects<T>(T permissions) where T : struct
+        {
+            if (IsEnterpriseAdmin != null && IsEnterpriseAdmin()) return null;
+            var entityItem = PermissionCoordinator.GetRelatedPermissionItem(typeof(T));
+            var acls = UserAcl();
+            var cat = PermissionCoordinator.GetPermissionCategory(entityItem);
+            var lst = new List<K?>();
+
+            foreach (var aclItem in acls)
+            {
+                if (aclItem.Key.Category.Equals(cat))
+                {
+                    if (HasPermissionInAcl(entityItem, Convert.ToInt64(permissions), null, aclItem.Value) == true)
+                        lst.Add(aclItem.Key.CategoryKey);
+                }
+            }
+            return lst;
+
+        }
 
         public bool? HasPermission(P permissionObject, long requestedPermissions/*NOTE:this parameter can be cumulative: OR base not AND base*/, PermissionLimiterBase permissionLimiter = null, K? categoryKey = null)
         {
@@ -116,6 +173,12 @@ namespace Greewf.BaseLibrary.MVC.Security
             if (IsEnterpriseAdmin != null && IsEnterpriseAdmin()) return true;
             var acl = GetCategoryAcl(permissionObject, categoryKey);
 
+            return HasPermissionInAcl(permissionObject, requestedPermissions, permissionLimiter, acl);
+        }
+
+        private bool? HasPermissionInAcl(P permissionObject, long requestedPermissions, PermissionLimiterBase permissionLimiter, Dictionary<P, long> acl)
+        {
+            if (acl == null) return false;//سطوح دسترسی برای موضوع مورد نظر تعریف نشده است
             if (acl.ContainsKey(permissionObject))
             {
 
@@ -166,7 +229,7 @@ namespace Greewf.BaseLibrary.MVC.Security
         {
             if (IsEnterpriseAdmin != null && IsEnterpriseAdmin()) return true;
             var acl = GetCategoryAcl(permissionObject, categoryKey);
-            if (acl.ContainsKey(permissionObject))
+            if (acl != null && acl.ContainsKey(permissionObject))
             {
                 long userPermissions = acl[permissionObject];
                 return !PermissionCoordinator.HasOnlySubPermission(permissionObject, requestedPermission, userPermissions);

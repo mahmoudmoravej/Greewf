@@ -94,6 +94,31 @@ namespace Greewf.BaseLibrary.MVC
             return UserPermissionHelper.HasFullPermissionOf(permissionObject, requestedPermissions, categoryKey);
         }
 
+        /// <summary>
+        /// بدون توجه به رسته اجازه ها، چک می کند که آیا اجازه ای دارد. برای زمانی مناسب است که مثلا می خواهیم یک منو رو فعال یا غیرفعال کنیم ولی رسته ان بعدا مشخص می شود
+        /// مثال : آیا اجازه ارسال دستور حداقل در یک استان را دارد؟
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="permissions"></param>
+        /// <returns></returns>
+        public bool HasAnyCategoryPermission<T>(T permissions) where T : struct
+        {
+            if (!HttpContext.Current.User.Identity.IsAuthenticated) return false;
+            return UserPermissionHelper.HasAnyCategoryPermission(permissions);
+        }
+
+        public override bool HasAnyCategoryPermission(long permissionObject, long permissions, PermissionLimiterBase limiterFunctionChecker)
+        {
+            if (!HttpContext.Current.User.Identity.IsAuthenticated) return false;
+            return UserPermissionHelper.HasAnyCategoryPermission((P)Enum.Parse(typeof(P), permissionObject.ToString()), permissions, limiterFunctionChecker);
+
+        }
+
+        public List<K?> GetAllowedCategoryObjects<T>(T permissions) where T : struct
+        {
+            return UserPermissionHelper.GetAllowedCategoryObjects(permissions);
+        }
+
         private UserPermissionHelper<P, C, PC, K> UserPermissionHelper
         {
             get
@@ -153,6 +178,10 @@ namespace Greewf.BaseLibrary.MVC
         protected abstract PC LoadPermissionCoordinator();
 
         protected override abstract string EnterpriseAdminUsername { get; }
+
+
+
+
 
 
 

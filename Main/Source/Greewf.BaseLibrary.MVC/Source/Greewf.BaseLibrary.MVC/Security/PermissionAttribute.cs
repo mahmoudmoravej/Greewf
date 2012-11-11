@@ -15,6 +15,7 @@ namespace Greewf.BaseLibrary.MVC.Security
         private readonly IEnumerable<long> permissions;
         private readonly long permissionObject;
         private readonly string permissionCategoryKeyParameterName;
+        private bool anyCategory;
 
         protected PermissionAttributeBase(long permissionObject, long permissions, string permissionCategoryKeyParameterName = null)
         {
@@ -23,13 +24,25 @@ namespace Greewf.BaseLibrary.MVC.Security
             this.permissionCategoryKeyParameterName = permissionCategoryKeyParameterName;
         }
 
-
         protected PermissionAttributeBase(long permissionObject, IEnumerable<long> permissions, string permissionCategoryKeyParameterName = null)
         {
             this.permissionObject = permissionObject;
             this.permissions = permissions;
             this.permissionCategoryKeyParameterName = permissionCategoryKeyParameterName;
         }
+
+        protected PermissionAttributeBase(long permissionObject, IEnumerable<long> permissions, bool anyCategory)
+        {
+            this.permissionObject = permissionObject;
+            this.permissions = permissions;
+            this.anyCategory = anyCategory;
+            permissionCategoryKeyParameterName = null;
+            if (anyCategory == false)
+            {
+                throw new Exception("'anyCategory' parameter of 'PermissionAttributeBase' can only set to be 'true'. For 'false' behavior use other constructor signatures.");
+            }
+        }
+
 
         private object _parameterCategoryKey = null;
 
@@ -45,7 +58,14 @@ namespace Greewf.BaseLibrary.MVC.Security
 
             foreach (long per in permissions)
             {
-                if (currentUser.HasPermission(permissionObject, per, null, categoryKey) != true)
+                bool hasNoPermission;
+
+                if (anyCategory)
+                    hasNoPermission = currentUser.HasAnyCategoryPermission(permissionObject, per, null) != true;
+                else
+                    hasNoPermission = currentUser.HasPermission(permissionObject, per, null, categoryKey) != true;
+
+                if (hasNoPermission)
                     throw new SecurityException(permissionObject);
             }
 
@@ -98,7 +118,11 @@ namespace Greewf.BaseLibrary.MVC.Security
                         foreach (var limiter in limiterModel.LimiterFunctions/*.OrderBy(o => !o.IsAndPart) : no need anymore? */)
                         {
                             if (limiter == null) continue;
-                            bool? x = currentUser.HasPermission(permissionObject, per, limiter, categoryKey);
+                            bool? x;
+                            if (anyCategory)
+                                x = currentUser.HasAnyCategoryPermission(permissionObject, per, limiter);
+                            else
+                                x = currentUser.HasPermission(permissionObject, per, limiter, categoryKey);
 
                             if (limiter.IsAndPart)
                                 andPartResult = (andPartResult ?? true) && (x ?? true);

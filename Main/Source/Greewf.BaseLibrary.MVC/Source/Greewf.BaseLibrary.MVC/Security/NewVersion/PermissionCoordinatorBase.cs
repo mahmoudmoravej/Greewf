@@ -65,7 +65,7 @@ namespace Greewf.BaseLibrary.MVC.Security
         public P GetRelatedPermissionItem(Type type)
         {
             try
-            {
+            {               
                 return dicPermissionEntityEnumMaps[type];
             }
             catch (KeyNotFoundException x)

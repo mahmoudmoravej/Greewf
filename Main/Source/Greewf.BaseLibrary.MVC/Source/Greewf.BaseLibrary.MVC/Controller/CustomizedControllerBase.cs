@@ -228,10 +228,15 @@ namespace Greewf.BaseLibrary.MVC
 
         private ActionResult GetAppropriateJsonResult(ResponsiveJsonResult responsiveJsonResult)
         {
-            if (IsCurrentRequestRunInWindow)
+            if (IsCurrentRequestRunInWindow || IsAjaxCall())
                 return responsiveJsonResult;
             else
                 return View("~/Views/Home/_MessageView.cshtml", responsiveJsonResult);
+        }
+
+        private bool IsAjaxCall()
+        {
+            return Request.Headers["X-Requested-With"] == "XMLHttpRequest";//Refrence : http://en.wikipedia.org/wiki/List_of_HTTP_header_fields
         }
 
         protected SuccessViewResult SuccessView(string viewName, object model)

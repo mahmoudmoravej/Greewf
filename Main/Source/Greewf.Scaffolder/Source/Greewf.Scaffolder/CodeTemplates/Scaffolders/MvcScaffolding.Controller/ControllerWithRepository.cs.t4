@@ -263,7 +263,7 @@ namespace <#= Model.ControllerNamespace #>
                 if (<#= Repositories[modelType.FullName].VariableName #>.InsertOrUpdate(old<#= modelName #>)) // if no, ModelState has some values.(Biz rules failed)
                 {
                     <#= Repositories[modelType.FullName].VariableName #>.Save();
-                    return RedirectToSuccessAction(<#= modelName #>ModelMapper.Map(old<#= modelVariable #>));
+                    return RedirectToSuccessAction(<#= modelName #>ModelMapper.Map(old<#= modelName #>));
 				    // return Redirect(Url.Action("edit"), true, <#= modelName #>ModelMapper.Map(old<#= modelName #>)); //Use this if you want to return to edit mode.
                 }
             }
