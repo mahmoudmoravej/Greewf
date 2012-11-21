@@ -7,7 +7,7 @@
 5- editor-focus, emphasize,
 
 link style :
-<a class="t-button t-grid-edit t-button-icon at-rowEdit" href='...' title='...' (inline='xxx' | newwindow='xxx'|justwindow='xxx'|justMain='xxx' | responsiveAjax='xxx'|tooltipWindow='xxx') windowcallback='ContactGridCallBack' winWidth='50' winHeight='50' winMax='true' winNoModal='1' windowActionsNeedConfirm='true' winNoMaximaizable='x' winDisableBackHide='x' winEnableBackHide='x' ajax='1' isPageCloser='1' showEvents='click...' hideEvents='click unfocus...' autoGrowingSize='1' winAutoButtonsBar='1'> ....</a>
+<a class="t-button t-grid-edit t-button-icon at-rowEdit" href='...' title='...' (inline='xxx' | newwindow='xxx'|justwindow='xxx'|justMain='xxx' | responsiveAjax='xxx'|tooltipWindow='xxx') windowcallback='ContactGridCallBack' winWidth='50' winHeight='50' winMax='true' winNoModal='1' windowActionsNeedConfirm='true' winNoMaximaizable='x' winDisableBackHide='x' winEnableBackHide='x' ajax='1' isPageCloser='1' showEvents='click...' hideEvents='click unfocus...' autoGrowingSize='1' winAutoButtonsBar='1' discardSuccessMessage='1'> ....</a>
 	classes : link,show-icon,link hover-classic,t-link
 
 	winDisableBackHide = در صورتی که می خواهید پنجره پشتی در زمان باز شدن پنجره جدید مخفی نشود
@@ -22,7 +22,7 @@ link style :
 	tooltipWindow=  آیا در یک تول تیپ باز کند؟
 	autoGrowingSize = اندازه پنجره/تول تیپ را با تغییر اندازه محتوای آن بطور خودکار تغییر دهد ** توجه : در صورتی که ارتفاع و یا عرض تنظیم شده باشد در آن بعد غیرفعال می شود فعلا
 	autoCenteredGrowingSize = همان بالایی با این تفاوت که پنجره را در مرکز صفحه نیز قرار می دهد
-
+	discardSuccessMessage = اینکه پیغام موفقیت را نمایش ندهد
 	isPageCloser = آیا این دکمه باعث بسته شدن صفحه می گردد؟ -- فعلا فقط در حالت آجاکسی کار میکند -- در صورتی که به ولیدیشن صفحه نیاز دارید نوع دکمه را سابمیتی انتخاب کنید
 	pageCloserDataFetcher = نام فانکشنی که داده مربوطه را به صدازننده ارسال می کند --فعلا فقط در حالت آجاکسی کار میکند
 	** : تو ویژگی بالا با هم و بر روی صفحه داخلی یک پنجره یا تولتیپ قرار می گیرند. اگر می خواهید یک دکمه در نقش "انصراف" باشد کافیست که با تابع دوم این موضوع را به صفحه اصلی پاس داده و آنجا متوجه شوید که چه چیزی در صفحه  داخلی پنجره رخ داده است

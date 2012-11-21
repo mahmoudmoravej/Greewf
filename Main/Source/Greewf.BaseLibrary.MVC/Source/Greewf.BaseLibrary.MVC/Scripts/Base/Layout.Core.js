@@ -215,7 +215,7 @@
 
         if (link.indexOf("/savedsuccessfully") > 0 || linkHash.indexOf('successfullysaved') > 0) {
             widgetLayout.CloseAndDone(location.hash != undefined ? location : null, widget, true); //when ajax request
-            if (layoutCore.options.notifySuccess && jQuery.noticeAdd) {
+            if (layoutCore.options.notifySuccess && jQuery.noticeAdd && !$(widget.sender).attr('discardSuccessMessage')) {
                 jQuery.noticeAdd({
                     text: layoutCore.options.notifySuccessMessage,
                     stay: false,
