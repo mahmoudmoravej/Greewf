@@ -72,13 +72,15 @@
         return stringToTrim.replace(/^\s+|\s+$/g, "");
     }
 
-    this.loadAjax = function (url, dest, doPost, hideAjaxLoader, successPostBack) {
+    this.loadAjax = function (url, dest, doPost, hideAjaxLoader, successPostBack, timeoutToShowAjaxLoader, ajaxLoaderClass) {
         $.ajax({
             type: doPost ? "POST" : "GET",
             url: url,
             cache: false,
             beforeSend: function () {
-                if (!hideAjaxLoader) dest.html('<div class="bigprogress-icon t-content bigprogress-loader"></div>');
+                timeoutToShowAjaxLoader = timeoutToShowAjaxLoader ? 0 : timeoutToShowAjaxLoader;
+                ajaxLoaderClass = ajaxLoaderClass ? 'bigprogress-icon t-content bigprogress-loader' : ajaxLoaderClass;
+                if (!hideAjaxLoader) { window.setTimeout(function () { dest.html('<div class="' + ajaxLoaderClass + '"></div>'); }, timeoutToShowAjaxLoader); };
             },
             success: function (html) {
                 dest.html(html);

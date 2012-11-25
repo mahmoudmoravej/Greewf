@@ -15,20 +15,23 @@ namespace Greewf.BaseLibrary.MVC.Security
         private readonly IEnumerable<long> permissions;
         private readonly long permissionObject;
         private readonly string permissionCategoryKeyParameterName;
+        private readonly string entityKeyParameter;
         private bool anyCategory;
 
-        protected PermissionAttributeBase(long permissionObject, long permissions, string permissionCategoryKeyParameterName = null)
+        protected PermissionAttributeBase(long permissionObject, long permissions, string entityKeyParameter=null, string permissionCategoryKeyParameterName = null)
         {
             this.permissionObject = permissionObject;
             this.permissions = new long[] { permissions };
             this.permissionCategoryKeyParameterName = permissionCategoryKeyParameterName;
+            this.entityKeyParameter = entityKeyParameter;
         }
 
-        protected PermissionAttributeBase(long permissionObject, IEnumerable<long> permissions, string permissionCategoryKeyParameterName = null)
+        protected PermissionAttributeBase(long permissionObject, IEnumerable<long> permissions, string entityKeyParameter = null, string permissionCategoryKeyParameterName = null)
         {
             this.permissionObject = permissionObject;
             this.permissions = permissions;
             this.permissionCategoryKeyParameterName = permissionCategoryKeyParameterName;
+            this.entityKeyParameter = entityKeyParameter; 
         }
 
         protected PermissionAttributeBase(long permissionObject, IEnumerable<long> permissions, bool anyCategory)
@@ -45,6 +48,7 @@ namespace Greewf.BaseLibrary.MVC.Security
 
 
         private object _parameterCategoryKey = null;
+        private object _entityKey = null;
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
@@ -53,7 +57,9 @@ namespace Greewf.BaseLibrary.MVC.Security
             if (controller == null) return;
             if (permissionCategoryKeyParameterName != null)
                 _parameterCategoryKey = filterContext.ActionParameters[permissionCategoryKeyParameterName];//todo : test to have value in ActionExtectued method too.
-
+            if (entityKeyParameter != null)
+                _entityKey = filterContext.ActionParameters[entityKeyParameter];//todo : test to have value in ActionExtectued method too.
+            
             object categoryKey = GetPerimssionCategory(currentUser, controller);
 
             foreach (long per in permissions)
@@ -84,9 +90,9 @@ namespace Greewf.BaseLibrary.MVC.Security
                 result = _parameterCategoryKey;
             else
             {
-                result = controller.GetPermissionCategoryKey(permissionObject);
+                result = controller.GetPermissionCategoryKey(permissionObject, this.permissions, _entityKey);
                 if (result == null)
-                    result = currentUser.GetPermissionCategoryKey(permissionObject);
+                    result = currentUser.GetPermissionCategoryKey(permissionObject, this.permissions, _entityKey);
             }
             return result;
         }

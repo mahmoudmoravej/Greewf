@@ -45,6 +45,7 @@ namespace Greewf.BaseLibrary.MVC
         private string EnsureSaveFlag(string url, bool setSaveSuccesfullyFlag)
         {
             if (setSaveSuccesfullyFlag == false) return url;
+            Response.AddHeader(SavedSuccessfullyFramgment, "true");
             if (url.Contains("#"))
                 return url + ";" + SavedSuccessfullyFramgment;//surely the hash segment is placed at the end of url , so we add our string to it simply
             else
@@ -54,6 +55,7 @@ namespace Greewf.BaseLibrary.MVC
         private RedirectToRouteResult EnsureSaveFlag(RedirectToRouteResult result, bool setSaveSuccesfullyFlag)
         {
             if (setSaveSuccesfullyFlag == false) return result;
+            Response.AddHeader(SavedSuccessfullyFramgment, "true");
             return result.AddFragment(SavedSuccessfullyFramgment);
         }
 
@@ -303,7 +305,7 @@ namespace Greewf.BaseLibrary.MVC
             return View();
         }
 
-        protected internal abstract object GetPermissionCategoryKey(long permissionObject);
+        protected internal abstract object GetPermissionCategoryKey(long permissionObject,  IEnumerable<long> permissions , object entityKey);
 
     }
 
