@@ -68,6 +68,7 @@
     <Compile Include="Repositories\ContextManager.cs" />
     <Compile Include="Repositories\IRepositoryBase.cs" />
     <Compile Include="Repositories\RepositoryBase.cs" />
+    <Compile Include="Security\UserAclKey.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

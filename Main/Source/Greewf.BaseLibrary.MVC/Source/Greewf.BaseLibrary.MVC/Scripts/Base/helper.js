@@ -73,20 +73,23 @@
     }
 
     this.loadAjax = function (url, dest, doPost, hideAjaxLoader, successPostBack, timeoutToShowAjaxLoader, ajaxLoaderClass) {
+        var received = false;
         $.ajax({
             type: doPost ? "POST" : "GET",
             url: url,
             cache: false,
             beforeSend: function () {
-                timeoutToShowAjaxLoader = timeoutToShowAjaxLoader ? 0 : timeoutToShowAjaxLoader;
-                ajaxLoaderClass = ajaxLoaderClass ? 'bigprogress-icon t-content bigprogress-loader' : ajaxLoaderClass;
-                if (!hideAjaxLoader) { window.setTimeout(function () { dest.html('<div class="' + ajaxLoaderClass + '"></div>'); }, timeoutToShowAjaxLoader); };
+                timeoutToShowAjaxLoader = !timeoutToShowAjaxLoader ? 0 : timeoutToShowAjaxLoader;
+                ajaxLoaderClass = !ajaxLoaderClass ? 'bigprogress-icon t-content bigprogress-loader' : ajaxLoaderClass;
+                if (!hideAjaxLoader) { window.setTimeout(function () {if (received) return; dest.html('<div class="' + ajaxLoaderClass + '"></div>'); }, timeoutToShowAjaxLoader); };
             },
             success: function (html) {
+                received=true;
                 dest.html(html);
                 if (successPostBack) successPostBack();
             },
             error: function (xhr, ajaxOptions, thrownError) {
+                received=true;
                 dest.html(xhr.responseText);
             }
         });

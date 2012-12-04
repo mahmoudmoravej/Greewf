@@ -7,6 +7,7 @@ using System.Web.Profile;
 using System.Collections.Generic;
 using System.Configuration;
 using Greewf.BaseLibrary.MVC.Security;
+using Greewf.BaseLibrary.Security;
 
 
 namespace Greewf.BaseLibrary.MVC

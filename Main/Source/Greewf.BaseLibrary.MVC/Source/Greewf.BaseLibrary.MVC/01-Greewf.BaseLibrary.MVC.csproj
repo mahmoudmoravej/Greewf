@@ -178,6 +178,7 @@
     <Compile Include="Security\NewVersion\CurrentUserBase.cs" />
     <Compile Include="Security\NewVersion\PermissionCoordinatorBase.cs" />
     <Compile Include="Security\NewVersion\PermissionLimiterBase.cs" />
+    <Compile Include="Security\NewVersion\SystemRole.cs" />
     <Compile Include="Security\NewVersion\UserPermissionHelper.cs" />
     <Compile Include="Security\OldVersion\PermissionLimiterBase.cs" />
     <Compile Include="Security\PermissionLimiterBase.cs" />

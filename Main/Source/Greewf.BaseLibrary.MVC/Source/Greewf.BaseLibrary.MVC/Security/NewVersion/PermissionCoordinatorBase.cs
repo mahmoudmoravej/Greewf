@@ -55,7 +55,7 @@ namespace Greewf.BaseLibrary.MVC.Security
             var result = _instance as T;
             if (result == null)
                 throw new Exception(string.Format("This method can be called only with the type that was passed to it first call. It is associated with '{0}' previously." + typeof(T).FullName));
-            
+
             return result;
         }
 
@@ -65,7 +65,7 @@ namespace Greewf.BaseLibrary.MVC.Security
         public P GetRelatedPermissionItem(Type type)
         {
             try
-            {               
+            {
                 return dicPermissionEntityEnumMaps[type];
             }
             catch (KeyNotFoundException x)
@@ -120,6 +120,46 @@ namespace Greewf.BaseLibrary.MVC.Security
                 return dicPermissionCategories.Where(o => o.Value == null).Select(o => o.Key).ToArray();
             else
                 return dicPermissionCategories.Where(o => o.Value != null && o.Value.Value.Equals(category.Value)).Select(o => o.Key).ToArray();
+        }
+
+        public List<SystemRole<P, C, R>> ParseSystemRolesText<R>(string rolesText) where R : struct
+        {
+            rolesText = rolesText.Replace("\r", "").Replace("\n", "");
+            var systemRoles = new List<SystemRole<P, C, R>>();
+            string assemblyQualifiedName = typeof(P).AssemblyQualifiedName;
+
+            foreach (string roleText in rolesText.Split(';'))
+            {
+                var parts = roleText.Split('#');
+                var role = new SystemRole<P, C, R>();
+
+                if (parts[0].Trim().Length != 0)
+                    role.Category = (C)Enum.Parse(typeof(C), parts[0].Trim(), true);
+
+                role.Id = (R)Enum.Parse(typeof(R), parts[1].Trim(), true);
+                role.Name = parts[2].Trim();
+                if (parts.Length == 4)
+                {
+                    var permissions = parts[3].Trim().TrimStart('{').TrimEnd('}').Split(',');                    
+                    foreach (var p in permissions)
+                    {
+                        var x = p.Split('.');
+                        if (x[0].Trim().Length == 0) continue;
+
+                        var pit = Type.GetType(assemblyQualifiedName.Replace(typeof(P).Name, x[0].Trim()), true, true);
+                        var pe = this.GetRelatedPermissionItem(pit);
+
+                        var pi = (long)Enum.Parse(pit, x[1].Trim(), true);
+
+                        role.DefaultPermissions.Add(new KeyValuePair<P, long>(pe, pi));
+
+                    }
+                }
+                systemRoles.Add(role);
+            }
+
+            return systemRoles;
+
         }
 
     }

@@ -18,12 +18,14 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
 
         public enum CheckBoxLisLayout
         {
+            SimpleRaw,
             SimpleHorizontal,
             SimpleVertical,
             Tabular,
             Chosen,
             Tree,
-            PanelBar
+            PanelBar,
+            PanelBarAllOpened,
         }
 
         public enum SelectionMode
@@ -75,7 +77,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
         {
             StringBuilder output = new StringBuilder();
 
-            bool noParent =false;
+            bool noParent = false;
             if (parentItems == null)
             {
                 parentItems = items.Where(o => o.ParentId == null);
@@ -87,6 +89,9 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
 
             switch (layout)
             {
+                case CheckBoxLisLayout.SimpleRaw:
+                    BuildRawFieldSetCheckboxList(name, items, parentItems, checkboxHtmlAttributes, readOnly, layout, output);
+                    break;
                 case CheckBoxLisLayout.SimpleHorizontal:
                 case CheckBoxLisLayout.SimpleVertical:
                     if (noParent)
@@ -101,7 +106,8 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                     BuildTreeCheckboxList(helper, name, items, parentItems, checkboxHtmlAttributes, readOnly, output);
                     break;
                 case CheckBoxLisLayout.PanelBar:
-                    BuildPanelBaredCheckboxList(helper, name, items, parentItems, checkboxHtmlAttributes, readOnly, output);
+                case CheckBoxLisLayout.PanelBarAllOpened:
+                    BuildPanelBaredCheckboxList(helper, name, items, parentItems, checkboxHtmlAttributes, readOnly, output, layout);
                     break;
                 case CheckBoxLisLayout.Chosen:
                     BuildChosenList(helper, name, items, parentItems, checkboxHtmlAttributes, readOnly, output, selectionMode);
@@ -182,6 +188,20 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
 
             if (!isVerticalLayout) output.Append("</tr>");
             output.Append("</table>");
+        }
+
+        private static void BuildRawFieldSetCheckboxList(string name, IEnumerable<SpecialSelectListItem> items, IEnumerable<SpecialSelectListItem> parentItems, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly, CheckBoxLisLayout layout, StringBuilder output)
+        {
+
+            foreach (var parentItem in GetParentItems(parentItems))
+            {
+                output.AppendFormat("<fieldset><legend>{0}</legend>", parentItem.Text);
+
+                foreach (var item in GetChidItems(items, parentItem))
+                    output.Append(BuildCheckBox(name, checkboxHtmlAttributes, readOnly, item));
+
+                output.Append("</fieldset>");
+            }
         }
 
         private static void BuildSimpleCheckboxList(string name, IEnumerable<SpecialSelectListItem> items, IEnumerable<SpecialSelectListItem> parentItems, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly, CheckBoxLisLayout layout, StringBuilder output)
@@ -323,18 +343,19 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
 
         }
 
-        private static void BuildPanelBaredCheckboxList(HtmlHelper helper, string name, IEnumerable<SpecialSelectListItem> items, IEnumerable<SpecialSelectListItem> parentItems, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly, StringBuilder output)
+        private static void BuildPanelBaredCheckboxList(HtmlHelper helper, string name, IEnumerable<SpecialSelectListItem> items, IEnumerable<SpecialSelectListItem> parentItems, IDictionary<string, object> checkboxHtmlAttributes, bool readOnly, StringBuilder output, CheckBoxLisLayout layout)
         {
 
             if (checkboxHtmlAttributes == null) checkboxHtmlAttributes = new Dictionary<string, object>();
             if (!checkboxHtmlAttributes.ContainsKey("height")) checkboxHtmlAttributes.Add("height", "500px");
 
-            var panelBar = helper.Telerik().PanelBar().Name(name).HtmlAttributes(checkboxHtmlAttributes).SelectedIndex(0).ExpandMode(PanelBarExpandMode.Single).ToComponent();
+            var panelBar = helper.Telerik().PanelBar().Name(name).HtmlAttributes(checkboxHtmlAttributes).SelectedIndex(0).ExpandMode(layout == CheckBoxLisLayout.PanelBarAllOpened ? PanelBarExpandMode.Multiple : PanelBarExpandMode.Single).ToComponent();
 
             foreach (var parentItem in GetParentItems(parentItems))
             {
                 var panelBarItem = new PanelBarItem() { Text = parentItem.Text };
                 panelBar.Items.Add(panelBarItem);
+                if (layout == CheckBoxLisLayout.PanelBarAllOpened) panelBarItem.Expanded = true;
 
                 foreach (var item in GetChidItems(items, parentItem))
                     panelBarItem.Items.Add(new PanelBarItem() { Text = BuildCheckBox(name, checkboxHtmlAttributes, readOnly, item), Encoded = false });
