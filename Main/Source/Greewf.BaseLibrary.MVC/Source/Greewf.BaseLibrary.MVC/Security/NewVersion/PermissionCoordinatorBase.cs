@@ -138,21 +138,25 @@ namespace Greewf.BaseLibrary.MVC.Security
 
                 role.Id = (R)Enum.Parse(typeof(R), parts[1].Trim(), true);
                 role.Name = parts[2].Trim();
-                if (parts.Length == 4)
+                if (parts.Length >= 4)
                 {
-                    var permissions = parts[3].Trim().TrimStart('{').TrimEnd('}').Split(',');                    
-                    foreach (var p in permissions)
+                    role.EditableUsers = parts[3].Trim().ToLower() == "true" ? true : false;
+                    if (parts.Length >= 5)
                     {
-                        var x = p.Split('.');
-                        if (x[0].Trim().Length == 0) continue;
+                        var permissions = parts[4].Trim().TrimStart('{').TrimEnd('}').Split(',');
+                        foreach (var p in permissions)
+                        {
+                            var x = p.Split('.');
+                            if (x[0].Trim().Length == 0) continue;
 
-                        var pit = Type.GetType(assemblyQualifiedName.Replace(typeof(P).Name, x[0].Trim()), true, true);
-                        var pe = this.GetRelatedPermissionItem(pit);
+                            var pit = Type.GetType(assemblyQualifiedName.Replace(typeof(P).Name, x[0].Trim()), true, true);
+                            var pe = this.GetRelatedPermissionItem(pit);
 
-                        var pi = (long)Enum.Parse(pit, x[1].Trim(), true);
+                            var pi = (long)Enum.Parse(pit, x[1].Trim(), true);
 
-                        role.DefaultPermissions.Add(new KeyValuePair<P, long>(pe, pi));
+                            role.DefaultPermissions.Add(new KeyValuePair<P, long>(pe, pi));
 
+                        }
                     }
                 }
                 systemRoles.Add(role);
