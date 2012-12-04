@@ -29,5 +29,7 @@ namespace Greewf.BaseLibrary.MVC.Security
 
         public List<KeyValuePair<P, long>> DefaultPermissions { get; private set; }
 
+        public bool EditableUsers { get; set; }
+
     }
 }
