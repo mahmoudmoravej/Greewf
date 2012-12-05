@@ -140,22 +140,26 @@ namespace Greewf.BaseLibrary.MVC.Security
                 role.Name = parts[2].Trim();
                 if (parts.Length >= 4)
                 {
-                    role.EditableUsers = parts[3].Trim().ToLower() == "true" ? true : false;
+                    role.Visible = parts[3].Trim().ToLower() == "true" ? true : false;
                     if (parts.Length >= 5)
                     {
-                        var permissions = parts[4].Trim().TrimStart('{').TrimEnd('}').Split(',');
-                        foreach (var p in permissions)
+                        role.EditableUsers = parts[4].Trim().ToLower() == "true" ? true : false;
+                        if (parts.Length >= 6)
                         {
-                            var x = p.Split('.');
-                            if (x[0].Trim().Length == 0) continue;
+                            var permissions = parts[5].Trim().TrimStart('{').TrimEnd('}').Split(',');
+                            foreach (var p in permissions)
+                            {
+                                var x = p.Split('.');
+                                if (x[0].Trim().Length == 0) continue;
 
-                            var pit = Type.GetType(assemblyQualifiedName.Replace(typeof(P).Name, x[0].Trim()), true, true);
-                            var pe = this.GetRelatedPermissionItem(pit);
+                                var pit = Type.GetType(assemblyQualifiedName.Replace(typeof(P).Name, x[0].Trim()), true, true);
+                                var pe = this.GetRelatedPermissionItem(pit);
 
-                            var pi = (long)Enum.Parse(pit, x[1].Trim(), true);
+                                var pi = (long)Enum.Parse(pit, x[1].Trim(), true);
 
-                            role.DefaultPermissions.Add(new KeyValuePair<P, long>(pe, pi));
+                                role.DefaultPermissions.Add(new KeyValuePair<P, long>(pe, pi));
 
+                            }
                         }
                     }
                 }

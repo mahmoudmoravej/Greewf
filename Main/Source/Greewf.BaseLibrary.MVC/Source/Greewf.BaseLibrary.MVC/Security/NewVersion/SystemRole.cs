@@ -31,5 +31,7 @@ namespace Greewf.BaseLibrary.MVC.Security
 
         public bool EditableUsers { get; set; }
 
+        public bool Visible { get; set; }
+
     }
 }
