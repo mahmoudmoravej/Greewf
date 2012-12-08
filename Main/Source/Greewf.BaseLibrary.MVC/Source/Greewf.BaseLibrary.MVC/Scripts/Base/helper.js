@@ -76,7 +76,7 @@
         var received = false;
         $.ajax({
             type: doPost ? "POST" : "GET",
-            url: url,
+            url: encodeURI(url),//we need this becuase of encoding bug in IE!
             cache: false,
             beforeSend: function () {
                 timeoutToShowAjaxLoader = !timeoutToShowAjaxLoader ? 0 : timeoutToShowAjaxLoader;

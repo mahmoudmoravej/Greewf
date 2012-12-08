@@ -34,6 +34,13 @@
         return confirm
     }
 
+    layoutCore.onClose = function (sender, ownerWindow, autoClose, widget) {
+        if (!autoClose) {//manual close   
+            var urlData = $('#currentPageUrl', widget.htmlTag);
+            $.layoutCore.handleCloseCallBack(sender, { url: urlData.text() }, ownerWindow, false, true);
+        }
+    }
+
     layoutCore.refreshContent = function (widgetLayout, widget, widgetTitle) {
         var ajaxContent = $("#addedAjaxWindowContentContainer", widget.htmlTag);
         if (ajaxContent.length > 0)//ajax refresh
@@ -56,12 +63,12 @@
 
     }
 
-    layoutCore.handleCloseCallBack = function (sender, data, ownerWindow, isSuccessfulFlagUp) {
+    layoutCore.handleCloseCallBack = function (sender, data, ownerWindow, isSuccessfulFlagUp, isClosedManually) {
         var callBack = $(sender, ownerWindow).attr('windowcallback');
         if (callBack)
-            ownerWindow[callBack].apply(this, new Array(sender, data, isSuccessfulFlagUp));
+            ownerWindow[callBack].apply(this, new Array(sender, data, isSuccessfulFlagUp, isClosedManually));
         else if (ownerWindow.Layout_DoneSuccessfullyCallBack)
-            ownerWindow.Layout_DoneSuccessfullyCallBack(sender, data, isSuccessfulFlagUp);
+            ownerWindow.Layout_DoneSuccessfullyCallBack(sender, data, isSuccessfulFlagUp, isClosedManually);
 
     }
 
@@ -191,7 +198,7 @@
             jsonResponse = data;
 
         if (jsonResponse) {
-            var isSuccessFlagUp =layoutCore.handleResponsiveJsonResult(jsonResponse);
+            var isSuccessFlagUp = layoutCore.handleResponsiveJsonResult(jsonResponse);
             widgetLayout.CloseAndDone(location.hash != undefined ? location : null, widget, isSuccessFlagUp); //when ajax request
             handled = true;
         }
@@ -378,7 +385,7 @@
         var dataFetcher = closerButton.attr('pageCloserDataFetcher');
         var data = null;
         if (typeof (dataFetcher) != 'undefined') data = widget.ownerWindow[dataFetcher].apply(closerButton, new Array(closerButton));
-        widgetLayout.CloseAndDone(data, widget);
+        widgetLayout.CloseAndDone(data, widget,null,true);
     }
 
     function ajaxifyInnerForms(widgetLayout, widget, widgetTitle) {
@@ -551,7 +558,7 @@
         });
     }
 
-    layoutCore.handleResponsiveJsonResult = function(json) {
+    layoutCore.handleResponsiveJsonResult = function (json) {
 
         var isSuccessFlagUp = false;
 

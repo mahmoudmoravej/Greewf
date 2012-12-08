@@ -279,6 +279,7 @@
                             lw.modal = w.isModal;
                             lw.open();
                         }
+                        $.layoutCore.onClose(curWin.sender, curWin.ownerWindow, inAutoClose, widget);
                         curWin.win.data('tWindow').destroy();
                         e.preventDefault();
                     }
@@ -329,13 +330,13 @@
         $('.t-window-title', winElement).html(newContentPointer.oldTitle);
     }
 
-    windowLayout.CloseAndDone = function (data, widget, isSuccessfulFlagUp) {
+    windowLayout.CloseAndDone = function (data, widget, isSuccessfulFlagUp, isClosedManually) {
         if (activeWinsQueue.length == 0) return;
         var lw = activeWinsQueue[activeWinsQueue.length - 1];
         inAutoClose = true;
         lw.win.data('tWindow').close();
         inAutoClose = false;
-        $.layoutCore.handleCloseCallBack(lw.sender, data, lw.ownerWindow, isSuccessfulFlagUp);
+        $.layoutCore.handleCloseCallBack(lw.sender, data, lw.ownerWindow, isSuccessfulFlagUp, isClosedManually);
 
         //        var callBack = $(lw.sender).attr('windowcallback');
         //        if (typeof (callBack) != 'undefined')

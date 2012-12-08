@@ -119,12 +119,12 @@
         //$('.g-window-buttonbar', winElement).css('visibility', 'visible'); not button toolbar suprt
     }
 
-    tooltipLayout.CloseAndDone = function (data, tooltip, isSuccessfulFlagUp) {
+    tooltipLayout.CloseAndDone = function (data, tooltip, isSuccessfulFlagUp, isClosedManually) {
         if (!tooltip) tooltip = lastTooltip.widget;
         if (!tooltip) return;
 
         tooltip.api.hide();
-        $.layoutCore.handleCloseCallBack(tooltip.sender, data, tooltip.ownerWindow, isSuccessfulFlagUp);
+        $.layoutCore.handleCloseCallBack(tooltip.sender, data, tooltip.ownerWindow, isSuccessfulFlagUp, isClosedManually);
     }
 
     tooltipLayout.CloseTopMost = function (tooltip/*can be null*/) {
