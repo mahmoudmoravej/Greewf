@@ -9,7 +9,7 @@
     padding: 5px;
     margin: 0px;
     display: block;
-    border-width: 1px 0 0;
+    border-width: 1px 0 0!important;
 }
 
 .g-buttons-content button {

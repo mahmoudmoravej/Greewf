@@ -124,7 +124,7 @@
         if (!tooltip) return;
 
         tooltip.api.hide();
-        $.layoutCore.handleCloseCallBack(tooltip.sender, data, tooltip.ownerWindow, isSuccessfulFlagUp, isClosedManually);
+        $.layoutCore.handleCloseCallBack(tooltip.sender, data, tooltip.ownerWindow, isSuccessfulFlagUp, isClosedManually, lastTooltip.widget);
     }
 
     tooltipLayout.CloseTopMost = function (tooltip/*can be null*/) {

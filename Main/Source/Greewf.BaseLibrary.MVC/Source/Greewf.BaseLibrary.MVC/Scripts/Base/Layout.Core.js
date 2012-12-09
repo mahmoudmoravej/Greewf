@@ -36,8 +36,7 @@
 
     layoutCore.onClose = function (sender, ownerWindow, autoClose, widget) {
         if (!autoClose) {//manual close   
-            var urlData = $('#currentPageUrl', widget.htmlTag);
-            $.layoutCore.handleCloseCallBack(sender, { url: urlData.text() }, ownerWindow, false, true);
+            $.layoutCore.handleCloseCallBack(sender, null, ownerWindow, false, true, widget);
         }
     }
 
@@ -63,8 +62,13 @@
 
     }
 
-    layoutCore.handleCloseCallBack = function (sender, data, ownerWindow, isSuccessfulFlagUp, isClosedManually) {
+    layoutCore.handleCloseCallBack = function (sender, data, ownerWindow, isSuccessfulFlagUp, isClosedManually, widget) {
         var callBack = $(sender, ownerWindow).attr('windowcallback');
+        if (widget && widget.htmlTag) {
+            if (data == null) data = {};
+            var urlData = $('#currentPageUrl', widget.htmlTag);
+            $.extend(data, { pageUrl: urlData.text() });
+        }
         if (callBack)
             ownerWindow[callBack].apply(this, new Array(sender, data, isSuccessfulFlagUp, isClosedManually));
         else if (ownerWindow.Layout_DoneSuccessfullyCallBack)
@@ -385,7 +389,7 @@
         var dataFetcher = closerButton.attr('pageCloserDataFetcher');
         var data = null;
         if (typeof (dataFetcher) != 'undefined') data = widget.ownerWindow[dataFetcher].apply(closerButton, new Array(closerButton));
-        widgetLayout.CloseAndDone(data, widget,null,true);
+        widgetLayout.CloseAndDone(data, widget, null, true);
     }
 
     function ajaxifyInnerForms(widgetLayout, widget, widgetTitle) {

@@ -106,6 +106,7 @@
             actions: type == 6 ? new Array() : new Array('Close'),
             html: msgHtml,
             onClose: function (s) {
+                $(s.target).css('z-index', '').css('visibility', 'hidden');
                 var x = $('.editor-focus2', this); //it works with helper.js to return the focus to the previous item
                 if (x.data('closeHandler') != undefined) x.data('closeHandler')();
                 if (s.currentTarget == msgBoxWindow[0]/*to ensure it is for current window call*/ && options.callBack && !options.callBackHandled) options.callBack(false);
@@ -336,7 +337,7 @@
         inAutoClose = true;
         lw.win.data('tWindow').close();
         inAutoClose = false;
-        $.layoutCore.handleCloseCallBack(lw.sender, data, lw.ownerWindow, isSuccessfulFlagUp, isClosedManually);
+        $.layoutCore.handleCloseCallBack(lw.sender, data, lw.ownerWindow, isSuccessfulFlagUp, isClosedManually, widget);
 
         //        var callBack = $(lw.sender).attr('windowcallback');
         //        if (typeof (callBack) != 'undefined')
