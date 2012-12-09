@@ -69,8 +69,13 @@
             var urlData = $('#currentPageUrl', widget.htmlTag);
             $.extend(data, { pageUrl: urlData.text() });
         }
-        if (callBack)
-            ownerWindow[callBack].apply(this, new Array(sender, data, isSuccessfulFlagUp, isClosedManually));
+
+        if (callBack) {
+            if (ownerWindow[callBack])
+                ownerWindow[callBack].apply(this, new Array(sender, data, isSuccessfulFlagUp, isClosedManually));
+            else
+                console.warn('the passed callback function (' + callBack + ') is not defined! check the spell or function existance.');
+        }
         else if (ownerWindow.Layout_DoneSuccessfullyCallBack)
             ownerWindow.Layout_DoneSuccessfullyCallBack(sender, data, isSuccessfulFlagUp, isClosedManually);
 
