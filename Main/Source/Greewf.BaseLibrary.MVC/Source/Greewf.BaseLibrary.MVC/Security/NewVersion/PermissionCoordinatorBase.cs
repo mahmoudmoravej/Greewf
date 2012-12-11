@@ -130,6 +130,7 @@ namespace Greewf.BaseLibrary.MVC.Security
 
             foreach (string roleText in rolesText.Split(';'))
             {
+                if (string.IsNullOrWhiteSpace(roleText)) continue;
                 var parts = roleText.Split('#');
                 var role = new SystemRole<P, C, R>();
 

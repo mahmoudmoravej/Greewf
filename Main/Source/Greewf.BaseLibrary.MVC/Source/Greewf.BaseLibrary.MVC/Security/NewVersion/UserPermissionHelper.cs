@@ -7,7 +7,7 @@ using System.Text;
 namespace Greewf.BaseLibrary.MVC.Security
 {
 
-  
+
 
     /// <summary>
     /// 
@@ -50,11 +50,15 @@ namespace Greewf.BaseLibrary.MVC.Security
             var acl = UserAcl();
             var cat = PermissionCoordinator.GetPermissionCategory(permission);
 
-            if (cat != null && categoryKey == null)
-                throw new Exception("The requested permission object[" + typeof(P).ToString() + "] has category[" + cat.Value.ToString() + "], but you passed a null categoryKey! This permission is only valid within an instance of a category.");
+            // In some senarios, we haven't set the categorykey yet. so we shouldn't get exception!
+            //   if (cat != null && categoryKey == null)
+            //       throw new Exception("The requested permission object[" + typeof(P).ToString() + "] has category[" + cat.Value.ToString() + "], but you passed a null categoryKey! This permission is only valid within an instance of a category.");
 
-            if (cat == null && categoryKey != null)//TODO : we can bypass this instead of exception throwing...
-                throw new Exception("The requested permission object[" + typeof(P).ToString() + "] has no any category, but you passed categoryKey[" + categoryKey.ToString() + "]!");
+            // In some senarios, we pass the categoryKey always (by controller) but it shouldn't be used for permissions with no category. so we comment it and make the related key.
+            //if (cat == null && categoryKey != null)//TODO : we can bypass this instead of exception throwing...
+            //    throw new Exception("The requested permission object[" + typeof(P).ToString() + "] has no any category, but you passed categoryKey[" + categoryKey.ToString() + "]!");
+
+            if (cat == null) categoryKey = null;//In some senarios, we pass the categoryKey always (by controller) but it shouldn't be used for permissions with no category. 
 
             var key = new UserAclKey<C, K>(cat, categoryKey);
             if (acl.ContainsKey(key))
