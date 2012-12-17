@@ -159,7 +159,7 @@ namespace Greewf.BaseLibrary.MVC
 
             if (Request.QueryString.AllKeys.Contains("simplemode"))
                 querystring += "&simplemode=1";
-            if (Request.QueryString.AllKeys.Contains("puremode"))
+            if (Request.QueryString.AllKeys.Contains("puremode") || Request.Url.ToString().Contains("/puremode"))
                 querystring += "&puremode=1";
             if (Request.QueryString.AllKeys.Contains("iswindow"))
                 querystring += "&iswindow=1";

@@ -43,6 +43,9 @@ namespace Greewf.BaseLibrary.MVC
         public bool HasFullPermissionOf<T>(T permissions, K? categoryKey = null) where T : struct
         {
             if (!HttpContext.Current.User.Identity.IsAuthenticated) return false;
+            if (categoryKey == null)
+                categoryKey = GetPermissionCategoryKey(PermissionCoordinator.GetPermissionCategory(PermissionCoordinator.GetRelatedPermissionItem(typeof(T))));
+
             return UserPermissionHelper.HasFullPermissionOf<T>(permissions, categoryKey);
         }
 
@@ -65,11 +68,11 @@ namespace Greewf.BaseLibrary.MVC
 
             permissionLimiter =
                 new PL()
-                .ForPermissions(PermissionCoordinator.GetAllOwnRelatedPermissions(permissionObject))
-                .MakeLimitsBy(() => this.UserName == itemCreatorUserName);
+                .On(PermissionCoordinator.GetAllOwnRelatedPermissions(permissionObject))
+                .Except(() => this.UserName == itemCreatorUserName);
 
 
-            return HasPermission(permissionObject, requestedPermissions, permissionLimiter);
+            return HasPermission(permissionObject, requestedPermissions, permissionLimiter, categoryKey);
         }
 
         public override bool? HasPermission(long permissionObject, long requestedPermissions, PermissionLimiterBase permissionLimiter = null, object categoryKey = null)
@@ -80,6 +83,8 @@ namespace Greewf.BaseLibrary.MVC
         public bool? HasPermission(P permissionObject, long requestedPermissions/*NOTE:this parameter can be cumulative*/, PermissionLimiterBase permissionLimiter, K? categoryKey = null)
         {
             if (!HttpContext.Current.User.Identity.IsAuthenticated) return false;
+            if (categoryKey == null)
+                categoryKey = GetPermissionCategoryKey(PermissionCoordinator.GetPermissionCategory(permissionObject));
             return UserPermissionHelper.HasPermission(permissionObject, requestedPermissions, permissionLimiter, categoryKey);
         }
 

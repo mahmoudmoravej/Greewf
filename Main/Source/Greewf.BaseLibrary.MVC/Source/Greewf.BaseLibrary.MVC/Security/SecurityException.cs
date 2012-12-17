@@ -10,12 +10,12 @@ namespace Greewf.BaseLibrary.MVC.Security
     {
         public string[] ErrorMessages { get; set; }
 
-        public SecurityException(long permissionObject, string username = "")
+        public SecurityException( long permissionObject, string username = "")
         {
 
         }
 
-        public SecurityException(long permissionObject, string[] messages, string username = "")
+        public SecurityException( long permissionObject, string[] messages, string username = "")
         {
             ErrorMessages = messages;
         }

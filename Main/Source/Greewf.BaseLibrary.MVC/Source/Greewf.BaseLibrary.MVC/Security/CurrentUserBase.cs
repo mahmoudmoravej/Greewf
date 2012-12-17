@@ -58,7 +58,7 @@ namespace Greewf.BaseLibrary.MVC
                     {
                         var user = Membership.GetUser();
                         if (user == null)
-                            throw new SystemAccessException();
+                            throw new SystemAccessException(HttpContext.Current.Request.Url.ToString());
                         HttpContext.Current.Session["userInfo"] = user;
                     }
 

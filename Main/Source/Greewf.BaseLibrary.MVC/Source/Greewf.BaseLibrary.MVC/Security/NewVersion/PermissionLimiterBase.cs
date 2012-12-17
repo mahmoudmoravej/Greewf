@@ -18,20 +18,38 @@ namespace Greewf.BaseLibrary.MVC.Security
         }
 
 
-        public PermissionLimiterBase<P, C, PC> ForPermissions<Y>(Y permissions) where Y : struct
+        public PermissionLimiterBase<P, C, PC> On<Y>(Y permissions) where Y : struct
         {
             LimiterPermission = (long)Convert.ChangeType(permissions, typeof(Y));
             return this;
         }
 
-        public PermissionLimiterBase<P, C, PC> ForOwnsPermissionsOf(P permissionEntity)
+        //public PermissionLimiterBase<P, C, PC> ForPermissions<Y>(Y permissions) where Y : struct
+        //{
+        //    LimiterPermission = (long)Convert.ChangeType(permissions, typeof(Y));
+        //    return this;
+        //}
+
+        public PermissionLimiterBase<P, C, PC> OnOwnsPermissionsOf(P permissionEntity)
         {
             LimiterPermission = PermissionCoordinator.GetAllOwnRelatedPermissions(permissionEntity);
             return this;
         }
 
+        //public PermissionLimiterBase<P, C, PC> ForOwnsPermissionsOf(P permissionEntity)
+        //{
+        //    LimiterPermission = PermissionCoordinator.GetAllOwnRelatedPermissions(permissionEntity);
+        //    return this;
+        //}
+       
 
-        public PermissionLimiterBase<P, C, PC> MakeLimitsBy(Func<bool> limitterFunction)
+        //public PermissionLimiterBase<P, C, PC> MakeLimitsBy(Func<bool> limitterFunction)
+        //{
+        //    LimiterFunction = limitterFunction;
+        //    return this;
+        //}
+
+        public PermissionLimiterBase<P, C, PC> Except(Func<bool> limitterFunction)
         {
             LimiterFunction = limitterFunction;
             return this;

@@ -18,7 +18,7 @@ namespace Greewf.BaseLibrary.MVC.Security
         private readonly string entityKeyParameter;
         private bool anyCategory;
 
-        protected PermissionAttributeBase(long permissionObject, long permissions, string entityKeyParameter=null, string permissionCategoryKeyParameterName = null)
+        protected PermissionAttributeBase(long permissionObject, long permissions, string entityKeyParameter = null, string permissionCategoryKeyParameterName = null)
         {
             this.permissionObject = permissionObject;
             this.permissions = new long[] { permissions };
@@ -31,7 +31,7 @@ namespace Greewf.BaseLibrary.MVC.Security
             this.permissionObject = permissionObject;
             this.permissions = permissions;
             this.permissionCategoryKeyParameterName = permissionCategoryKeyParameterName;
-            this.entityKeyParameter = entityKeyParameter; 
+            this.entityKeyParameter = entityKeyParameter;
         }
 
         protected PermissionAttributeBase(long permissionObject, IEnumerable<long> permissions, bool anyCategory)
@@ -59,7 +59,7 @@ namespace Greewf.BaseLibrary.MVC.Security
                 _parameterCategoryKey = filterContext.ActionParameters[permissionCategoryKeyParameterName];//todo : test to have value in ActionExtectued method too.
             if (entityKeyParameter != null)
                 _entityKey = filterContext.ActionParameters[entityKeyParameter];//todo : test to have value in ActionExtectued method too.
-            
+
             object categoryKey = GetPerimssionCategory(currentUser, controller);
 
             foreach (long per in permissions)
@@ -72,7 +72,7 @@ namespace Greewf.BaseLibrary.MVC.Security
                     hasNoPermission = currentUser.HasPermission(permissionObject, per, null, categoryKey) != true;
 
                 if (hasNoPermission)
-                    throw new SecurityException(permissionObject);
+                    throw new SecurityException( permissionObject);
             }
 
         }
