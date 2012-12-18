@@ -136,7 +136,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                               "if (inLoadPhase && (ddC.value() && ddC.value()!=0)) return;",//in load phase and child has value so return.
                 string.Format("ddC.dataBind({{}}); $($('#{0}').data('child-listeners')).each(function(i,o){{ o(); }});", childKeyName),// means : if ddP has not value
                               "if(!(ddP.value() && ddP.value()!=0)) {return;} ddC.disable();ddP.disable();",// means : if ddP has not value
-                string.Format("$.ajax({{ type: 'POST',url: '{0}',data: '{1}=' + ddP.value(),success: function (data) {{ddC.enable();ddP.enable();ddC.dataBind(data);}},error: function (req, status, error) {{ddC.enable();ddP.enable();alert('خطا در دریافت اطلاعات')}} }});", GetUrl(childsLoaderUrl), childsLoaderUrlParameterName)
+                string.Format("$.ajax({{ type: 'POST',url: '{0}',data: '{1}=' + ddP.value(),success: function (data) {{ddC.enable();ddP.enable();ddC.dataBind(data);}},error: function (xhr, status, error) {{ddC.enable();ddP.enable();if (xhr.getResponseHeader('GreewfAccessDeniedPage')) {{ var x = $(xhr.responseText).appendTo(document.body); x.remove(); }} else alert('خطا در دریافت اطلاعات'); }} }});", GetUrl(childsLoaderUrl), childsLoaderUrlParameterName)
             );
 
             output.Append("</script>");

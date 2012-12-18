@@ -128,7 +128,7 @@ namespace Greewf.BaseLibrary.MVC
         private void CompleteErrorMessageSession(Exception error, long logId)
         {
             var errorMessages = new string[] { logId.ToString(), "" };
-            errorMessages[1]= GetErrorMessage(error);
+            errorMessages[1] = GetErrorMessage(error);
 
             Session["ErrorMessages"] = errorMessages;
         }
@@ -156,17 +156,33 @@ namespace Greewf.BaseLibrary.MVC
         private string PrepareQuerystring(Exception error)
         {
             string querystring = "";
+            bool layoutFlagSet = false;
 
             if (Request.QueryString.AllKeys.Contains("simplemode"))
+            {
                 querystring += "&simplemode=1";
+                layoutFlagSet = true;
+            }
+
             if (Request.QueryString.AllKeys.Contains("puremode") || Request.Url.ToString().Contains("/puremode"))
+            {
                 querystring += "&puremode=1";
+                layoutFlagSet = true;
+            }
+
             if (Request.QueryString.AllKeys.Contains("iswindow"))
+            {
                 querystring += "&iswindow=1";
+                layoutFlagSet = true;
+            }
+
             if (Request.QueryString.AllKeys.Contains("includeUrlInContent"))
                 querystring += "&includeUrlInContent=1";
             if (error is SystemAccessException)
                 querystring += "&systemAccessError=1";
+
+            if (!layoutFlagSet && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                querystring += "&puremode=1";
 
             querystring = querystring.Trim('&');
             return querystring;

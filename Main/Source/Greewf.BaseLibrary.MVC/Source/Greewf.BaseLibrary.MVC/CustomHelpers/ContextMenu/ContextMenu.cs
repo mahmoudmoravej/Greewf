@@ -118,13 +118,18 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
 
             var output = new StringBuilder();
             output.AppendFormat("<ul class='{0}' {1} {2}>", getRootStyle(), getInlineRootCss(), _openOnClick ? "g-open-onclick='true'" : "");
-            output.Append("<li class='t-item t-state-default' style='border:0px;display:block'>");
+            output.Append("<li class='t-item XXX-PALCEHOLDER-XXX' style='border:0px;display:block'>");
             output.AppendFormat("<span class='t-link'{0}>{1}<span class='t-icon t-arrow-down'></span></span>", getHeaderStyle(), getHeaderText(renderClientTemplates));
             output.AppendFormat("<div class='t-animation-container' style='display: none;{0}'>", _adjustRight ? "" : "left:-1px;right:auto;");
             output.Append("<ul class='t-group' style='display: block;'>");
 
+            bool hasVisibleItem = false;
             foreach (var itemBuilder in _itemsBuilder)
-                if (itemBuilder.Item.Visible) output.AppendFormat("<li class='t-item t-state-default'>{0}</li>", getMenuText(renderClientTemplates, itemBuilder));
+                if (itemBuilder.Item.Visible)
+                {
+                    output.AppendFormat("<li class='t-item t-state-default'>{0}</li>", getMenuText(renderClientTemplates, itemBuilder));
+                    hasVisibleItem = true;
+                }
 
             output.Append("</ul>");
             output.Append("</div>");
@@ -132,7 +137,10 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
             output.Append("</ul>");
             output.Append("</ul>");
 
-            return output.ToString();
+            if (hasVisibleItem)
+                return output.Replace("XXX-PALCEHOLDER-XXX", "t-state-default").ToString();
+            else
+                return output.Replace("XXX-PALCEHOLDER-XXX", "t-state-disabled").ToString();
         }
 
         private static string getMenuText(bool renderClientTemplates, ContextMenuItemBuilder<TModel> itemBuilder)

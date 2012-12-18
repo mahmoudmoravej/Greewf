@@ -120,9 +120,14 @@ namespace Greewf.BaseLibrary.MVC
 
         }
 
-        public List<K?> GetAllowedCategoryObjects<T>(T permissions) where T : struct
+        public List<K?> GetAllowedPermissionObjects<T>(T permissions) where T : struct
         {
-            return UserPermissionHelper.GetAllowedCategoryObjects(permissions);
+            return UserPermissionHelper.GetAllowedObjects(permissions);
+        }
+
+        public List<K?> GetAllowedCategoryObjects(C? category)
+        {
+            return UserPermissionHelper.GetAllowedCategoryObjects(category);
         }
 
         private UserPermissionHelper<P, C, PC, K> UserPermissionHelper

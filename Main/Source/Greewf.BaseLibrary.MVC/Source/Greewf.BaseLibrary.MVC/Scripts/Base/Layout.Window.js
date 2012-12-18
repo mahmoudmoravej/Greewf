@@ -106,9 +106,10 @@
             actions: type == 6 ? new Array() : new Array('Close'),
             html: msgHtml,
             onClose: function (s) {
+                window.clearInterval( $(this).data('alwaysOnTop'));
                 $(s.target).css('z-index', '').css('visibility', 'hidden');
                 var x = $('.editor-focus2', this); //it works with helper.js to return the focus to the previous item
-                if (x.data('closeHandler') != undefined) x.data('closeHandler')();
+                if (x.data('closeHandler')) x.data('closeHandler')();
                 if (s.currentTarget == msgBoxWindow[0]/*to ensure it is for current window call*/ && options.callBack && !options.callBackHandled) options.callBack(false);
                 x.attr('class', '');
                 $(s).remove();
@@ -143,6 +144,7 @@
             createButtonsBar(msgBoxWindow);
 
         w.center().open();
+        msgBoxWindow.data('alwaysOnTop', window.setInterval(function () { w.bringToTop(); }, 100));
         $('button.t-button.editor-focus2', msgBoxWindow).focus();
 
     }

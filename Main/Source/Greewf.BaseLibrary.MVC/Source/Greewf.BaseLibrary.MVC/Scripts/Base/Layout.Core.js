@@ -278,6 +278,10 @@
             error: function (xhr, ajaxOptions, thrownError) {
                 if (xhr.getResponseHeader("GreewfCustomErrorPage"))//custom error page
                     insertAjaxContent(widgetLayout, widget, widgetTitle, title, link, xhr.responseText); //returns false when handled through special pages
+                else if (xhr.getResponseHeader("GreewfAccessDeniedPage")) {//access denied page
+                    widgetLayout.setContent(widget, xhr.responseText);//todo : currently it doesn't make any problem because the access denied page content is a script which calls windowLayout.ShowErrorMessage. But if we change it, the content may disapear after next line call(CloseTopMost).
+                    widgetLayout.CloseTopMost(widget);
+                }
                 else
                     widgetLayout.setContent(widget, xhr.responseText);
             }
@@ -446,6 +450,10 @@
                 $('#currentPageUrl', x).remove();
                 $('#currentPageTitle', x).remove();
 
+            }
+            else if (xhr.getResponseHeader("GreewfAccessDeniedPage")) {//access denied page
+                widgetLayout.setContent(widget, xhr.responseText);//todo : currently it doesn't make any problem because the access denied page content is a script which calls windowLayout.ShowErrorMessage. But if we change it, the content may disapear after next line call(CloseTopMost).
+                widgetLayout.CloseTopMost(widget);
             }
             else//regular error
                 layoutHelper.windowLayout.ShowErrorMessage('<div style="overflow:auto;direction:ltr;max-width:500px;max-height:600px">' + xhr.responseText + '</div>', 'بروز خطا');

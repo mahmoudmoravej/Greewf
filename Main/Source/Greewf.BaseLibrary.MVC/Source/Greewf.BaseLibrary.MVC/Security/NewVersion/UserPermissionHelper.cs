@@ -103,13 +103,13 @@ namespace Greewf.BaseLibrary.MVC.Security
         }
 
         /// <summary>
-        /// مقدار نال به معنی این است که بر روی همه اجازه دارد و تنها برای مدیر ارشد این موضوع معنا دارد
+        /// مقدار بازگشتی نال به معنی این است که بر روی همه موجودیت ها اجازه دارد. این موضوع تنها برای مدیر ارشد معنا دارد
         /// برای سایرین لیست خالی یا لیست با مقدار بازگردانده می شود
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="permissions"></param>
         /// <returns></returns>
-        public List<K?> GetAllowedCategoryObjects<T>(T permissions) where T : struct
+        public List<K?> GetAllowedObjects<T>(T permissions) where T : struct
         {
             if (IsEnterpriseAdmin != null && IsEnterpriseAdmin()) return null;
             var entityItem = PermissionCoordinator.GetRelatedPermissionItem(typeof(T));
@@ -125,6 +125,24 @@ namespace Greewf.BaseLibrary.MVC.Security
                         lst.Add(aclItem.Key.CategoryKey);
                 }
             }
+            return lst;
+
+        }
+
+        /// <summary>
+        /// مقدار بازگشتی نال به معنی این است که بر روی همه موجودیت ها اجازه دارد. این موضوع تنها برای مدیر ارشد معنا دارد
+        /// برای سایرین لیست خالی یا لیست با مقدار بازگردانده می شود
+        /// </summary>
+        public List<K?> GetAllowedCategoryObjects(C? category)
+        {
+            if (IsEnterpriseAdmin != null && IsEnterpriseAdmin()) return null;
+            var acls = UserAcl();
+            var lst = new List<K?>();
+
+            foreach (var aclItem in acls)
+                if (aclItem.Key.Category.Equals(category))
+                    lst.Add(aclItem.Key.CategoryKey);
+
             return lst;
 
         }

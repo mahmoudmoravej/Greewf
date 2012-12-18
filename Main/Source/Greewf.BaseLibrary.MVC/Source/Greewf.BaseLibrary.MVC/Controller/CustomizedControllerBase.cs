@@ -284,6 +284,11 @@ namespace Greewf.BaseLibrary.MVC
         {
             ViewBag.ErrorMessages = Session["ErrorMessages"] ?? new string[] { };
             Session["ErrorMessages"] = null;
+
+            Response.TrySkipIisCustomErrors = true;//we need it for IIS 7.0 (on win 2008 R2)
+            Response.StatusCode = 500;//to make ajax call enable getting it through onError event
+            Response.AddHeader("GreewfAccessDeniedPage", "true"); //to help ajax onError event to distinguish between regular content or custom error page content.
+
             return View();
         }
 
