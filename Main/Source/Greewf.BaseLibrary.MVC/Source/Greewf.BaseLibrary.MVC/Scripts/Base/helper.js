@@ -287,7 +287,11 @@ telerikHelper = new function () {
         }, 200); /*oh my god! you should pass a value for "delay"...the init delay is not sufficient*/
     }
 
-    this.handleServerSideModelErrors = function (args) {
+    this.handleServerSideModelErrors = function (args, overrideDefaultBehavior) {
+        return handleServerSideErrors(args, overrideDefaultBehavior);
+    }
+
+    this.handleServerSideErrors = function (args,overrideDefaultBehavior) {
         if (args.textStatus == "modelstateerror" && args.modelState) {
             var message = "";
             $.each(args.modelState, function (key, value) {
@@ -299,6 +303,18 @@ telerikHelper = new function () {
             });
             args.preventDefault();
             layoutHelper.windowLayout.ShowErrorMessage(message, 'بروز خطا');
+            return true;
+        }
+        else if (e.XMLHttpRequest.getResponseHeader('GreewfAccessDeniedPage')) {
+            var x = $(e.XMLHttpRequest.responseText).appendTo(document.body);
+            x.remove();
+            args.preventDefault();
+            return true;
+        }
+        else if (overrideDefaultBehavior) {
+            alert('خطا در دریافت اطلاعات');
+            e.preventDefault();
+            return true;
         }
     }
 
@@ -331,6 +347,7 @@ telerikHelper = new function () {
         }
 
     }
+
 
 };
 
