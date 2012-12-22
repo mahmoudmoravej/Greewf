@@ -305,15 +305,15 @@ telerikHelper = new function () {
             layoutHelper.windowLayout.ShowErrorMessage(message, 'بروز خطا');
             return true;
         }
-        else if (e.XMLHttpRequest.getResponseHeader('GreewfAccessDeniedPage')) {
-            var x = $(e.XMLHttpRequest.responseText).appendTo(document.body);
+        else if (args.XMLHttpRequest.getResponseHeader('GreewfAccessDeniedPage')) {
+            var x = $(args.XMLHttpRequest.responseText).appendTo(document.body);
             x.remove();
             args.preventDefault();
             return true;
         }
         else if (overrideDefaultBehavior) {
             alert('خطا در دریافت اطلاعات');
-            e.preventDefault();
+            args.preventDefault();
             return true;
         }
     }
