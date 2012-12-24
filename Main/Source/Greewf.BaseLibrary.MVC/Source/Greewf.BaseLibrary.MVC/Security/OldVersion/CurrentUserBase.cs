@@ -27,7 +27,7 @@ namespace Greewf.BaseLibrary.MVC
 
         protected override abstract string EnterpriseAdminUsername { get; }
 
-        protected internal override object GetPermissionCategoryKey(long permissionObject, IEnumerable<long> permissions, object entityKey)
+        protected internal override object GetPermissionCategoryKey(long permissionObject, IEnumerable<long> permissions, object entityKey, string entityKeyParameterName)
         {
             return null;
         }

@@ -48,6 +48,7 @@ namespace Greewf.BaseLibrary.MVC.Security
 
 
         private object _parameterCategoryKey = null;
+        private string _parameterCategoryKeyName = null;
         private object _entityKey = null;
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
@@ -60,7 +61,7 @@ namespace Greewf.BaseLibrary.MVC.Security
             if (entityKeyParameter != null)
                 _entityKey = filterContext.ActionParameters[entityKeyParameter];//todo : test to have value in ActionExtectued method too.
 
-            object categoryKey = GetPerimssionCategory(currentUser, controller);
+            object categoryKey = GetPerimssionCategoryKey(currentUser, controller);
 
             foreach (long per in permissions)
             {
@@ -77,7 +78,7 @@ namespace Greewf.BaseLibrary.MVC.Security
 
         }
 
-        private object GetPerimssionCategory(CurrentUserBase currentUser, CustomizedControllerBase controller)
+        private object GetPerimssionCategoryKey(CurrentUserBase currentUser, CustomizedControllerBase controller)
         {
             // در سه حالت به دنبال رسته مربوط به اجازه می گردد
             // 1- پارامتر تابع
@@ -90,9 +91,9 @@ namespace Greewf.BaseLibrary.MVC.Security
                 result = _parameterCategoryKey;
             else
             {
-                result = controller.GetPermissionCategoryKey(permissionObject, this.permissions, _entityKey);
+                result = controller.GetPermissionCategoryKey(permissionObject, this.permissions, _entityKey, entityKeyParameter);
                 if (result == null)
-                    result = currentUser.GetPermissionCategoryKey(permissionObject, this.permissions, _entityKey);
+                    result = currentUser.GetPermissionCategoryKey(permissionObject, this.permissions, _entityKey, entityKeyParameter);
             }
             return result;
         }
@@ -116,7 +117,7 @@ namespace Greewf.BaseLibrary.MVC.Security
                     bool? andPartResult = null, orPartResult = null;
                     List<string> errorMessages = new List<string>();
                     var currentUser = CurrentUserBase.GetActiveInstance();
-                    object categoryKey = GetPerimssionCategory(currentUser, controller);
+                    object categoryKey = GetPerimssionCategoryKey(currentUser, controller);
 
                     foreach (long per in permissions)
                     {

@@ -76,7 +76,7 @@ namespace Greewf.BaseLibrary.MVC
         //}
 
 
-        protected internal abstract override object GetPermissionCategoryKey(long permissionObject, IEnumerable<long> permissions, object entityKey);
+        protected internal abstract override object GetPermissionCategoryKey(long permissionObject, IEnumerable<long> permissions, object entityKey, string entityKeyParameterName);
     }
 
 }

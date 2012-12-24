@@ -310,7 +310,7 @@ namespace Greewf.BaseLibrary.MVC
             return View();
         }
 
-        protected internal abstract object GetPermissionCategoryKey(long permissionObject,  IEnumerable<long> permissions , object entityKey);
+        protected internal abstract object GetPermissionCategoryKey(long permissionObject, IEnumerable<long> permissions, object entityKey, string entityKeyParameterName);
 
     }
 

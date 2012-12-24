@@ -150,7 +150,7 @@ namespace Greewf.BaseLibrary.MVC
 
         #endregion
 
-        protected internal override object GetPermissionCategoryKey(long permissionObject, IEnumerable<long> permissions, object entityKey)
+        protected internal override object GetPermissionCategoryKey(long permissionObject, IEnumerable<long> permissions, object entityKey, string entityKeyParameterName)
         {
             object obj = permissionObject;
             var cat = PermissionCoordinator.GetPermissionCategory((P)obj);
