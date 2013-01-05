@@ -46,9 +46,10 @@ namespace Greewf.BaseLibrary.MVC.Security
             }
         }
 
+  
+
 
         private object _parameterCategoryKey = null;
-        private string _parameterCategoryKeyName = null;
         private object _entityKey = null;
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)

@@ -6,6 +6,7 @@ using System.Web.Security;
 using System.Security.Principal;
 using Greewf.BaseLibrary.MVC.Security;
 using Greewf.BaseLibrary.MVC.Logging;
+using System.Web;
 /// ref1 : http://msdn.microsoft.com/en-us/library/eb0zx8fc.aspx
 /// ref2 : http://blog.ie-soft.de/post/2007/12/globalasax-events.aspx
 /// ref3 :http://msdn.microsoft.com/en-us/library/1d3t3c61.aspx
@@ -65,6 +66,8 @@ namespace Greewf.BaseLibrary.MVC
 
             if (error is SecurityException)
                 HandleSecurityExceptions(error);
+            else if (error is HttpUnhandledException && error.InnerException is SecurityException)
+                HandleSecurityExceptions(error.InnerException);
             else//regular error
             {
                 long logId = 0;
@@ -89,6 +92,7 @@ namespace Greewf.BaseLibrary.MVC
             Server.ClearError();
             Session["ErrorMessages"] = (error as SecurityException).ErrorMessages;
             Response.Redirect("~/home/accessdenied" + (querystring.Length > 0 ? "?" + querystring : ""));
+            //Server.Execute("~/home/accessdenied" + (querystring.Length > 0 ? "?" + querystring : ""), false);
         }
 
         private void HandleCustomErrors(Exception error, long logId)
@@ -102,6 +106,7 @@ namespace Greewf.BaseLibrary.MVC
                     CompleteErrorMessageSession(error, logId);
 
                     Response.Redirect("~/Home/Error" + (querystring.Length > 0 ? "?" + querystring : ""));
+                    //Server.Execute("~/Home/Error" + (querystring.Length > 0 ? "?" + querystring : ""), false);
 
                 }
                 else//the error raised in error handler page (so we should ignore station)

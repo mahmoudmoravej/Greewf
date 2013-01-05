@@ -81,15 +81,15 @@
             beforeSend: function () {
                 timeoutToShowAjaxLoader = !timeoutToShowAjaxLoader ? 0 : timeoutToShowAjaxLoader;
                 ajaxLoaderClass = !ajaxLoaderClass ? 'bigprogress-icon t-content bigprogress-loader' : ajaxLoaderClass;
-                if (!hideAjaxLoader) { window.setTimeout(function () {if (received) return; dest.html('<div class="' + ajaxLoaderClass + '"></div>'); }, timeoutToShowAjaxLoader); };
+                if (!hideAjaxLoader) { window.setTimeout(function () { if (received) return; dest.html('<div class="' + ajaxLoaderClass + '"></div>'); }, timeoutToShowAjaxLoader); };
             },
             success: function (html) {
-                received=true;
+                received = true;
                 dest.html(html);
                 if (successPostBack) successPostBack();
             },
             error: function (xhr, ajaxOptions, thrownError) {
-                received=true;
+                received = true;
                 dest.html(xhr.responseText);
             }
         });
@@ -108,6 +108,16 @@
         });
 
     }
+
+    this.handleSecurityError = function (xhr) {
+        if (xhr.getResponseHeader('GreewfAccessDeniedPage')) {
+            var x = $(xhr.responseText).appendTo(document.body);
+            x.remove();
+            return true;
+        }
+        return false;
+    }
+
 
 };
 
@@ -288,10 +298,10 @@ telerikHelper = new function () {
     }
 
     this.handleServerSideModelErrors = function (args, overrideDefaultBehavior) {
-        return handleServerSideErrors(args, overrideDefaultBehavior);
+        return this.handleServerSideErrors(args, overrideDefaultBehavior); 
     }
 
-    this.handleServerSideErrors = function (args,overrideDefaultBehavior) {
+    this.handleServerSideErrors = function (args, overrideDefaultBehavior) {
         if (args.textStatus == "modelstateerror" && args.modelState) {
             var message = "";
             $.each(args.modelState, function (key, value) {
@@ -305,9 +315,7 @@ telerikHelper = new function () {
             layoutHelper.windowLayout.ShowErrorMessage(message, 'بروز خطا');
             return true;
         }
-        else if (args.XMLHttpRequest.getResponseHeader('GreewfAccessDeniedPage')) {
-            var x = $(args.XMLHttpRequest.responseText).appendTo(document.body);
-            x.remove();
+        else if (jsHelper.handleSecurityError(args.XMLHttpRequest)) {
             args.preventDefault();
             return true;
         }
