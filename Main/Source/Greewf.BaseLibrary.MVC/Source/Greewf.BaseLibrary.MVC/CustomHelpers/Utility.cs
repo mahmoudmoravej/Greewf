@@ -63,7 +63,10 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                 var form = HttpContext.Current.Request.Form;
                 foreach (var item in form.AllKeys)
                 {
-                    lst.Add(CustomHelper.SearchCriteriaPrefix + "." + item, form[item]);
+                    var value = form[item];
+                    if (string.Compare(value, "true,false", true) == 0) value = "true";//Html.Checkbox() send this when the item is selected. 
+                    if (string.Compare(value, "false,true", true) == 0) value = "false";//indeed we dont need it. because Html.Checkbox() send false when it was not selected
+                    lst.Add(CustomHelper.SearchCriteriaPrefix + "." + item, value);
                 }
             }
             return lst;
