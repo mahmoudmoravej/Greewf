@@ -269,7 +269,7 @@
     function loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, postSuccessAction) {
         widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout));
         $.ajax({
-            url: link,
+            url: encodeURI(link),
             cache: false,
             success: function (html) {
                 var result = insertAjaxContent(widgetLayout, widget, widgetTitle, title, link, html); //returns false when handled through special pages
@@ -414,7 +414,7 @@
 
                 $.ajax({
                     type: this.method.toLowerCase() == 'get' ? 'GET' : 'POST',
-                    url: link,
+                    url: encodeURI(link),
                     cache: false,
                     data: appendSubmitButtonValue($(this).serialize(), this),
                     beforeSend: function () {
@@ -549,7 +549,7 @@
         var succeeded;
         $.ajax({
             type: 'POST',
-            url: link.href,
+            url: encodeURI(link.href),
             cache: false,
             beforeSend: function () {
                 var progress;
