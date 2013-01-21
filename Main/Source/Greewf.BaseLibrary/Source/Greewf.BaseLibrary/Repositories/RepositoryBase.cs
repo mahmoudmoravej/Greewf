@@ -14,7 +14,7 @@ namespace Greewf.BaseLibrary.Repositories
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="Y">UnitOfRepository</typeparam>
     public class RepositoryBase<T, Y>
-        where T : DbContext, new()
+        where T : DbContext, ISavingTracker, new()
         where Y : class , new()
     {
         protected T context = null;
@@ -36,9 +36,21 @@ namespace Greewf.BaseLibrary.Repositories
                 ValidationDictionary = ContextManager.ValidationDictionary;
             }
 
+            context.OnSavedChanges += OnChangesSaved;
+            context.OnSavingChanges += OnChangesSaving;
+            
             UoR = unitOfRepository;
 
         }
+
+        protected virtual void OnChangesSaving(DbContext context)
+        {
+        }
+
+        protected virtual void OnChangesSaved(DbContext context)
+        {
+        }
+
 
         protected IQueryable<X> AllIncluding<X>(DbSet<X> dbset, params Expression<Func<X, object>>[] includeProperties) where X : class ,new()
         {

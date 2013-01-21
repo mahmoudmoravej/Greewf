@@ -95,7 +95,7 @@
             msgHtml = commonMessageTemplate.replace('###2', msg).replace('###1', getMessageIcon(type));
 
         var oldWin = closeOldWin(type);
-        if (type != 6)//if not proggress, hide all old progress
+        if (type != 6)//if not progress, hide all old progress
             closeOldWin(6);
 
         msgBoxWindow = $.telerik.window.create({
@@ -161,6 +161,18 @@
 
         return oldWin;
 
+    }
+
+    windowLayout.closeAllMessageWindows = function () {//Note: close all except progress windows
+        $(messageWins).each(function (i, oldWin) {
+            if (oldWin.type != 6) {
+                if (oldWin != null && oldWin.win != null) {
+                    oldWin.win.data('tWindow').close();
+                    oldWin.win.data('tWindow').destroy();
+                    oldWin.win = null;
+                }
+            }
+        });
     }
 
     function createButtonsBar(windowElement, assumeLastParagraphAsButtonBar/*and only if it has buttons*/) {/*NOTE : NOT Works for IFRAME mode!*/
@@ -302,6 +314,7 @@
     }
 
     windowLayout.show = function (window) {
+        windowLayout.closeAllMessageWindows();
         window.core.data('tWindow').center().open();
     }
 

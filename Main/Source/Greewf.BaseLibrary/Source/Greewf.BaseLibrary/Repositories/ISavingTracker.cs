@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Data.Entity;
 
-namespace Greewf.BaseLibrary.MVC.ChangeTracker
+namespace Greewf.BaseLibrary.Repositories
 {
     public interface ISavingTracker
     {
-        Action<DbContext> OnSavingChanges { get; set; }
-        Action<DbContext> OnSavedChanges { get; set; }
+        event Action<DbContext> OnSavingChanges;
+        event Action<DbContext> OnSavedChanges;
     }
 }

@@ -8,6 +8,7 @@ using System.Security;
 using Greewf.BaseLibrary.MVC.Logging.LogContext;
 using Greewf.BaseLibrary.MVC;
 using System.Data.Entity;
+using Greewf.BaseLibrary.Repositories;
 
 
 namespace Greewf.BaseLibrary.MVC.ChangeTracker

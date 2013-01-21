@@ -67,6 +67,7 @@
     <Compile Include="ProxyDataContractResolverAttribute.cs" />
     <Compile Include="Repositories\ContextManager.cs" />
     <Compile Include="Repositories\IRepositoryBase.cs" />
+    <Compile Include="Repositories\ISavingTracker.cs" />
     <Compile Include="Repositories\RepositoryBase.cs" />
     <Compile Include="Security\UserAclKey.cs" />
   </ItemGroup>

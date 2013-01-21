@@ -159,7 +159,7 @@ namespace Greewf.BaseLibrary.MVC
         {
             get
             {
-                return !HttpContext.Current.Request.Cookies.AllKeys.Contains("isTabularLayout") ? false : bool.Parse(HttpContext.Current.Request.Cookies["isTabularLayout"].Value.ToString());
+                return !HttpContext.Current.Request.Cookies.AllKeys.Contains("isTabularLayout") ? true : bool.Parse(HttpContext.Current.Request.Cookies["isTabularLayout"].Value.ToString());
             }
             set
             {
@@ -171,11 +171,25 @@ namespace Greewf.BaseLibrary.MVC
         {
             get
             {
-                return !HttpContext.Current.Request.Cookies.AllKeys.Contains("theme") ? "Office2007" : HttpContext.Current.Request.Cookies["theme"].Value.ToString();
+                return !HttpContext.Current.Request.Cookies.AllKeys.Contains("theme") ? "WebBlue" : HttpContext.Current.Request.Cookies["theme"].Value.ToString();
             }
             set
             {
                 HttpContext.Current.Response.Cookies.Set(new HttpCookie("theme") { Value = value, Expires = DateTime.MaxValue });
+            }
+        }
+
+
+
+        public bool IsSPA
+        {
+            get
+            {
+                return !HttpContext.Current.Request.Cookies.AllKeys.Contains("isSPA") ? true : bool.Parse(HttpContext.Current.Request.Cookies["isSPA"].Value.ToString());
+            }
+            set
+            {
+                HttpContext.Current.Response.Cookies.Set(new HttpCookie("isSPA") { Value = value.ToString(), Expires = DateTime.MaxValue });
             }
         }
 

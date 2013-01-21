@@ -1,7 +1,7 @@
 ﻿(function ($) {
 
     tabStripMain = {};
-    var options = { tabstripId: 'tabstripMain', firstPageUrl: '/', firstPageTitle: '', isNewWindowOk: true };
+    var options = { tabstripId: 'tabstripMain', firstPageUrl: '/', firstPageTitle: '', isNewWindowOk: true, isSPA: true };
     var arrTabs = new Array();
     var linkPattern = 'a[href][href!^="#"][href!^="#"]:not([href^="javascript:"]):not([href*="ajax=True"]):not([inline]):not([justwindow]):not([justMain]):not([responsiveAjax]):not([tooltipWindow])'; //pattern which accept links to open
     var currentTabId = -1;
@@ -10,40 +10,33 @@
         $.extend(options, o); //merge user passed options with default
         if (options.tabstripId.charAt[0] != '#') options.tabstripId = '#' + options.tabstripId;
         if (options.isNewWindowOk) { linkPattern = linkPattern + ':not([newwindow])'; }
-        var tabStrip = $(options.tabstripId);
 
-        var $tabs = tabStrip.tabs({
-            tabTemplate: "<li><a href='#{href}' class='t-link'>#{label}</a><span class='t-icon t-delete' style='cursor:pointer'>بستن</span></li>",
-            select: function (event, ui) {
-                $(arrTabs).each(function (i, o) {
-                    if (ui.panel.id == o.id) {
-                        var ifrm = $('iframe', '#' + o.id)[0];
-                        if (ifrm != null) { setTimeout(function () { ifrm.focus(); ifrm.contentWindow.focus(); if (ifrm.contentWindow.setInitialFocusForCurrentPage != null) ifrm.contentWindow.setInitialFocusForCurrentPage(ifrm); }); }
-                        currentTabId = o.id;
-                        window.location.hash = o.link;
-                        window.document.title = $('li>a[href="#' + o.id + '"]', tabStrip).text();
-                    };
-                })
-            }
+        if (!options.isSPA) {
+            var tabStrip = $(options.tabstripId);
+            var $tabs = tabStrip.tabs({
+                tabTemplate: "<li><a href='#{href}' class='t-link'>#{label}</a><span class='t-icon t-delete' style='cursor:pointer'>بستن</span></li>",
+                select: function (event, ui) {
+                    $(arrTabs).each(function (i, o) {
+                        if (ui.panel.id == o.id) {
+                            var ifrm = $('iframe', '#' + o.id)[0];
+                            if (ifrm != null) { setTimeout(function () { ifrm.focus(); ifrm.contentWindow.focus(); if (ifrm.contentWindow.setInitialFocusForCurrentPage != null) ifrm.contentWindow.setInitialFocusForCurrentPage(ifrm); }); }
+                            currentTabId = o.id;
+                            window.location.hash = o.link;
+                            window.document.title = $('li>a[href="#' + o.id + '"]', tabStrip).text();
+                        };
+                    })
+                }
 
-        });
+            });
 
-        $(options.tabstripId + " span.t-icon.t-delete").live("click", function () {
-            var tabItem = $("li", $tabs);
-            var index = tabItem.index($(this).parent());
-            $tabs.tabs("remove", index);
-            $tabs.tabs("select", index == 0 ? 0 : index - 1);
+            $(options.tabstripId + " span.t-icon.t-delete").live("click", function () {
+                var tabItem = $("li", $tabs);
+                var index = tabItem.index($(this).parent());
+                $tabs.tabs("remove", index);
+                $tabs.tabs("select", index == 0 ? 0 : index - 1);
 
-        });
-
-        //        function setFocusToActiveTab() {
-        //            $(arrTabs).each(function (i, o) { 
-        //            if (o.id==currentTabId)
-        //                var ifrm = $('iframe', '#' + o.id)[0];
-        //            });
-        //        }
-
-        //arrTabs.push({ id: 'tabs-1', link: options.firstPageUrl });
+            });
+        }
 
         //listen to all links click
         $(linkPattern).live('click', function () {
@@ -51,7 +44,8 @@
             return false;
         });
 
-        $tabs.tabs("remove", 0);
+        if (!options.isSPA)
+            $tabs.tabs("remove", 0);
         if (o.firstPageUrl.length > 0) tabStripMain.addByLink(o.firstPageUrl, options.firstPageTitle);
 
     }
@@ -84,6 +78,13 @@
     }
 
     tabStripMain.addByLink = function (link, title, replaceActiveTab) {
+        if (options.isSPA)
+            tabStripMain.addByLinkForSPA(link, title);
+        else
+            tabStripMain.addByLinkForTab(link, title, replaceActiveTab);
+    }
+
+    tabStripMain.addByLinkForTab = function (link, title, replaceActiveTab) {
 
         var url = link.replace(/\//g, "_");
         var tabStrip = $(options.tabstripId);
@@ -126,6 +127,27 @@
             tabStrip.tabs('select', pos);
 
         }
+
+        makePanelReady(panel, link, tabStrip);
+
+    }
+
+    tabStripMain.addByLinkForSPA = function (link, title) {
+
+        var url = link.replace(/\//g, "_");
+        link = clearLink(link);
+
+        //make the tab ready (make it or replace it)
+        panel = $(options.tabstripId);
+        panel.attr('link', link);
+        $(panel).html(''); //alert(1);
+        var g = $('<div style="position:absolute;width:100%;height:100%;left:0;right:0;bottom:0;top:0;z-index:999999999"></div>').appendTo(document.body).focus();//it is just to make the shown menu to be hide (because of mouse over!--indeed telerik bug...it should hide the menu after the click...isn't it?)
+        makePanelReady(panel, link);
+        window.setTimeout(function () { g.remove() });
+
+    }
+
+    function makePanelReady(panel, link, tabStrip) {
         panel.css('overflow', 'hidden'); //new to ...
         panel.append('<div class="bigprogress-icon t-content" style="width:95%;height:90%;position:absolute;background-color:inherit;border:0px;" ></div>');
         panel.append('<iframe frameborder="0" style="width:100%;height:100%;background-color:inherit;direction:rtl;" ></iframe>');
@@ -143,18 +165,23 @@
         iframe.attr('src', link);
 
         iframe.load(function () {
-            contentWindowPath = this.contentWindow.location.pathname + this.contentWindow.location.search;
+            var contentWindowPath = this.contentWindow.location.pathname + this.contentWindow.location.search;
             window.location.hash = contentWindowPath;
-            var tabId = $(this).parent()[0].id;
-            $(arrTabs).each(function (i, o) {
-                if (o.id == tabId) { o.link = clearLink(contentWindowPath); }
-            });
+
+            if (!options.isSPA) {
+                var tabId = $(this).parent()[0].id;
+                $(arrTabs).each(function (i, o) {
+                    if (o.id == tabId) { o.link = clearLink(contentWindowPath); }
+                });
+            }
 
             $('div.bigprogress-icon', panel).hide();
             //$('iframe',panel).first().css('visibility','visible'); //NOTE!! : making iframe invisible at load causes to lost focus at start up (in IE,Firefox)
-            $('li>a[href="#' + panelId + '"]', tabStrip).text(this.contentWindow.document.title);
+            if (!options.isSPA) $('li>a[href="#' + panel.attr('id') + '"]', tabStrip).text(this.contentWindow.document.title);
             window.document.title = this.contentWindow.document.title;
         });
+
+
     }
 
 

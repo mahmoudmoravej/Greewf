@@ -97,7 +97,6 @@
     <Compile Include="ChangeTracker\ChangeTrackerDetailsProvider.cs" />
     <Compile Include="ChangeTracker\ChangeTrackerEntityDetailsProvider.cs" />
     <Compile Include="ChangeTracker\DefaultChangeTracker.cs" />
-    <Compile Include="ChangeTracker\ISavingTracker.cs" />
     <Compile Include="ChangeTracker\TrackChangesAttribute.cs" />
     <Compile Include="Controller\ActionType.cs" />
     <Compile Include="Controller\ModelPermissionLimiters.cs" />
