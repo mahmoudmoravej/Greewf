@@ -4,7 +4,8 @@
     var options = { tabstripId: 'tabstripMain', firstPageUrl: '/', firstPageTitle: '', isNewWindowOk: true, isSPA: true };
     var arrTabs = new Array();
     var telerikGridRefreshPattern = ':not(div.t-status>a.t-icon.t-refresh)'//this is because of telerik grid refresh button problem in ajax mode
-    var linkPattern = 'a[href][href!^="#"][href!^="#"]:not([href^="javascript:"]):not([href*="ajax=True"]):not([inline]):not([justwindow]):not([justMain]):not([responsiveAjax]):not([tooltipWindow])' + telerikGridRefreshPattern; //pattern which accept links to open
+    var telerikGridGroupingPattern = ':not(div.t-group-indicator>a)'//this is because of telerik grid grouping buttons(server-side initiated ones) problem in ajax mode
+    var linkPattern = 'a[href][href!^="#"][href!^="#"]:not([href^="javascript:"]):not([href*="ajax=True"]):not([inline]):not([justwindow]):not([justMain]):not([responsiveAjax]):not([tooltipWindow])' + telerikGridRefreshPattern + telerikGridGroupingPattern; //pattern which accept links to open
     var currentTabId = -1;
 
     tabStripMain.load = function (o) {
