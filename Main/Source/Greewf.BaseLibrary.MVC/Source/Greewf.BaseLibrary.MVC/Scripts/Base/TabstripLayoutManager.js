@@ -3,14 +3,14 @@
     tabStripMain = {};
     var options = { tabstripId: 'tabstripMain', firstPageUrl: '/', firstPageTitle: '', isNewWindowOk: true, isSPA: true };
     var arrTabs = new Array();
-    var linkPattern = 'a[href][href!^="#"][href!^="#"]:not([href^="javascript:"]):not([href*="ajax=True"]):not([inline]):not([justwindow]):not([justMain]):not([responsiveAjax]):not([tooltipWindow])'; //pattern which accept links to open
+    var telerikGridRefreshPattern = ':not(div.t-status>a.t-icon.t-refresh)'//this is because of telerik grid refresh button problem in ajax mode
+    var linkPattern = 'a[href][href!^="#"][href!^="#"]:not([href^="javascript:"]):not([href*="ajax=True"]):not([inline]):not([justwindow]):not([justMain]):not([responsiveAjax]):not([tooltipWindow])' + telerikGridRefreshPattern; //pattern which accept links to open
     var currentTabId = -1;
 
     tabStripMain.load = function (o) {
         $.extend(options, o); //merge user passed options with default
         if (options.tabstripId.charAt[0] != '#') options.tabstripId = '#' + options.tabstripId;
         if (options.isNewWindowOk) { linkPattern = linkPattern + ':not([newwindow])'; }
-
         if (!options.isSPA) {
             var tabStrip = $(options.tabstripId);
             var $tabs = tabStrip.tabs({
@@ -28,7 +28,6 @@
                 }
 
             });
-
             $(options.tabstripId + " span.t-icon.t-delete").live("click", function () {
                 var tabItem = $("li", $tabs);
                 var index = tabItem.index($(this).parent());
@@ -44,9 +43,13 @@
             return false;
         });
 
+        var firstPageContent;
         if (!options.isSPA)
-            $tabs.tabs("remove", 0);
-        if (o.firstPageUrl.length > 0) tabStripMain.addByLink(o.firstPageUrl, options.firstPageTitle);
+            firstPageContent = $('#tabstripMain > div:first>*');
+
+        if (o.firstPageUrl.length > 0) tabStripMain.addByLink(o.firstPageUrl, options.firstPageTitle, null, firstPageContent);
+        if (!options.isSPA)
+            $tabs.tabs("remove", 0);//we should remove it after inserting(moving) content to prevent javascript functions brake
 
     }
 
@@ -77,15 +80,15 @@
         return link;
     }
 
-    tabStripMain.addByLink = function (link, title, replaceActiveTab) {
+    tabStripMain.addByLink = function (link, title, replaceActiveTab, pageContent) {
         if (options.isSPA)
-            tabStripMain.addByLinkForSPA(link, title);
+            tabStripMain.addByLinkForSPA(link, title, pageContent);
         else
-            tabStripMain.addByLinkForTab(link, title, replaceActiveTab);
+            tabStripMain.addByLinkForTab(link, title, replaceActiveTab, pageContent);
     }
 
-    tabStripMain.addByLinkForTab = function (link, title, replaceActiveTab) {
-
+    tabStripMain.addByLinkForTab = function (link, title, replaceActiveTab, pageContent) {
+        link = link.toLowerCase();
         var url = link.replace(/\//g, "_");
         var tabStrip = $(options.tabstripId);
 
@@ -103,7 +106,7 @@
 
         var tabStrip = $(options.tabstripId);
         var pos = tabStrip.tabs('length');
-        title = 'در حال دریافت...';
+        title = pageContent ? title : 'در حال دریافت...';
         var panelId = '';
         var panel = null;
 
@@ -111,12 +114,12 @@
         if (replaceActiveTab) {//replace tab
             panelId = currentTabId;
             $('li>a[href="#' + panelId + '"]', tabStrip).text(title);
-            panel = $('#' + panelId, tabStrip);
+            panel = $('>#' + panelId, tabStrip);
             $(arrTabs).each(function (i, o) {
                 if (currentTabId == o.id) { o.link = link; };
             });
             tabStrip.tabs('select', currentTabId);
-            $('iframe', panel).remove();
+            $('>*', panel).remove();
         }
         else {//new tab
             pos = tabStrip.tabs('length');
@@ -128,11 +131,11 @@
 
         }
 
-        makePanelReady(panel, link, tabStrip);
+        makePanelReady(panel, link, tabStrip, pageContent);
 
     }
 
-    tabStripMain.addByLinkForSPA = function (link, title) {
+    tabStripMain.addByLinkForSPA = function (link, title, pageContent) {
 
         var url = link.replace(/\//g, "_");
         link = clearLink(link);
@@ -140,16 +143,23 @@
         //make the tab ready (make it or replace it)
         panel = $(options.tabstripId);
         panel.attr('link', link);
-        $(panel).html(''); //alert(1);
+        $('>*', panel).remove();
         var g = $('<div style="position:absolute;width:100%;height:100%;left:0;right:0;bottom:0;top:0;z-index:999999999"></div>').appendTo(document.body).focus();//it is just to make the shown menu to be hide (because of mouse over!--indeed telerik bug...it should hide the menu after the click...isn't it?)
-        makePanelReady(panel, link);
+        makePanelReady(panel, link, pageContent);
         window.setTimeout(function () { g.remove() });
 
     }
 
-    function makePanelReady(panel, link, tabStrip) {
+    function makePanelReady(panel, link, tabStrip, pageContent) {
+
+        if (pageContent) {
+            panel.append(pageContent);
+            return;
+        }
+
         panel.css('overflow', 'hidden'); //new to ...
         panel.append('<div class="bigprogress-icon t-content" style="width:95%;height:90%;position:absolute;background-color:inherit;border:0px;" ></div>');
+
         panel.append('<iframe frameborder="0" style="width:100%;height:100%;background-color:inherit;direction:rtl;" ></iframe>');
 
         var iframe = $("iframe", panel);
@@ -165,13 +175,13 @@
         iframe.attr('src', link);
 
         iframe.load(function () {
-            var contentWindowPath = this.contentWindow.location.pathname + this.contentWindow.location.search;
+            var contentWindowPath = clearLink(this.contentWindow.location.pathname + this.contentWindow.location.search).toLowerCase();
             window.location.hash = contentWindowPath;
 
             if (!options.isSPA) {
                 var tabId = $(this).parent()[0].id;
                 $(arrTabs).each(function (i, o) {
-                    if (o.id == tabId) { o.link = clearLink(contentWindowPath); }
+                    if (o.id == tabId) { o.link = contentWindowPath; }
                 });
             }
 

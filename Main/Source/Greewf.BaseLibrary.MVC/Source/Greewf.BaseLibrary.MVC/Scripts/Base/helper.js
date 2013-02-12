@@ -170,23 +170,36 @@ layoutHelper = new function () {
         return 'none';
     }
 
-    Object.defineProperty(this, "core", {
-        get: function () {
-            return (parent.$.layoutCore != null) ? parent.$.layoutCore : $.layoutCore;
-        }
-    });
+    try {
+        Object.defineProperty(this, "core", {
+            get: function () {
+                return (parent.$.layoutCore != null) ? parent.$.layoutCore : $.layoutCore;
+            }
+        });
+    } catch (e) {
+        this.core = parent.$.layoutCore != null ? parent.$.layoutCore : $.layoutCore;
+    }
 
-    Object.defineProperty(this, "windowLayout", {
-        get: function () {
-            return (parent.$.layoutCore != null) ? parent.$.windowLayout : $.windowLayout;
-        }
-    });
+    try {
+        Object.defineProperty(this, "windowLayout", {
+            get: function () {
+                return (parent.$.layoutCore != null) ? parent.$.windowLayout : $.windowLayout;
+            }
+        });
+    } catch (e) {
+        this.windowLayout = (parent.$.layoutCore != null) ? parent.$.windowLayout : $.windowLayout;
+    }
 
-    Object.defineProperty(this, "tooltipLayout", {
-        get: function () {
-            return (parent.$.layoutCore != null) ? parent.$.tooltipLayout : $.tooltipLayout;
-        }
-    });
+
+    try {
+        Object.defineProperty(this, "tooltipLayout", {
+            get: function () {
+                return (parent.$.layoutCore != null) ? parent.$.tooltipLayout : $.tooltipLayout;
+            }
+        });
+    } catch (e) {
+        this.tooltipLayout = (parent.$.layoutCore != null) ? parent.$.tooltipLayout : $.tooltipLayout;
+    }
 
     this.getActiveLayout = function (isTooltip) {
         if (isTooltip)
@@ -240,7 +253,7 @@ layoutHelper = new function () {
                 var self = $(this);
                 window[changeTimer] = setTimeout(function () {
                     $('.t-button', '#' + containerId).click();
-                }, 800);
+                }, 3000);
             };
             var f2 = function () { clearTimeout(window[changeTimer]); };
             $('input[type^="text"]', '#' + containerId).bind('textchange', f1).keypress(f2);
@@ -298,7 +311,7 @@ telerikHelper = new function () {
     }
 
     this.handleServerSideModelErrors = function (args, overrideDefaultBehavior) {
-        return this.handleServerSideErrors(args, overrideDefaultBehavior); 
+        return this.handleServerSideErrors(args, overrideDefaultBehavior);
     }
 
     this.handleServerSideErrors = function (args, overrideDefaultBehavior) {

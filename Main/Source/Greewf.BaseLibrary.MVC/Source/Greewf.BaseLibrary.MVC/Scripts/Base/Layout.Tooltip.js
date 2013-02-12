@@ -5,6 +5,23 @@
     var lastQtipSender = null;
     var lastQtipContainer = null;
     var lastTooltip = null;
+    var lastTooltipHeight = null;
+    var lastTooltipWidth = null;
+    var insideRepositioningTimer = false;
+
+    window.setInterval(function () {
+        if (insideRepositioningTimer) return;
+        insideRepositioningTimer = true;
+        if (lastTooltip != null) {
+            if (lastTooltipWidth != lastTooltip.widget.htmlTag.innerWidth() || lastTooltipHeight != lastTooltip.widget.htmlTag.innerHeight()) {
+                lastTooltip.widget.api.reposition();
+                lastTooltipWidth = lastTooltip.widget.htmlTag.innerWidth();
+                lastTooltipHeight = lastTooltip.widget.htmlTag.innerHeight();
+            }
+        }
+        insideRepositioningTimer = false;
+
+    }, 700);
 
     tooltipLayout.getTypeCode = function () {
         return 2; //by convention
@@ -27,6 +44,7 @@
 
         var winWidth = $(sender).attr('winwidth');
         var winHeight = $(sender).attr('winheight');
+        var winMaxHeight = $(sender).attr('winMaxHeight');
         var showEvents = $(sender).attr('showEvents');
         var hideEvents = $(sender).attr('hideEvents');
         showEvents = showEvents == null ? 'click' : showEvents;
@@ -42,7 +60,7 @@
 
         if (sender.qtip('api') == null)
             sender.qtip({
-                content: { text: ' ', title: { text: ' ', button: 'close'} }, //sender with empty title (at least) cause error in creation!
+                content: { text: ' ', title: { text: ' ', button: 'close' } }, //sender with empty title (at least) cause error in creation!
                 show: {
                     event: showEvents,
                     solo: true,
@@ -59,9 +77,9 @@
                 },
                 style: {
                     classes: 'ui-tooltip-wiki ui-tooltip-light ui-tooltip-shadow',
-                    height: winHeight,
+                    height: 'auto',//because of bug we set it always to auto and change the content height instead. If we don't do this, the shadow of tooltip collapses.
                     width: winWidth,
-                    tip: { offset: 15 }
+                    tip: { offset: 5 }
                 },
                 position: {
                     my: 'top right',
@@ -81,9 +99,12 @@
         var api = sender.qtip('api');
         api.render();
         if (winHeight > 0) $(api.elements.content).height(winHeight); //becuase of bug in qtip we should handle it manually
+        if (winMaxHeight > 0) $(api.elements.content).css('max-height', winMaxHeight + 'px'); //becuase of bug in qtip we should handle it manually
         $(api.elements.button).attr('title', 'بستن');
 
         lastTooltip = { widget: { api: api, sender: sender, htmlTag: api.elements.content, ownerWindow: ownerWindow }, widgetTitle: sender.qtip('api') };
+        lastTooltipWidth = api.elements.content.innerWidth();
+        lastTooltipHeight = api.elements.content.innerHeight();
         return lastTooltip;
 
     }

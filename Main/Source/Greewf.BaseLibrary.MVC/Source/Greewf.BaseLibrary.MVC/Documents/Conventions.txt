@@ -30,6 +30,7 @@ link style :
 	showevents = رویدادهایی که باعث نمایش آن می شوند : فعلا فقط برای تولتیپ -- کاملا بر اساس "کیو تیپ" می باشد (http://api.jquery.com/category/events/)
 	hideevents = رویدادهایی که باعث بسته شدن آن می شوند : فعلا فقط برای تولتیپ -- کاملا بر اساس "کیو تیپ" می باشد (http://api.jquery.com/category/events/) 
 	windowActionsNeedConfirm = اگر بخواهیم که رفرش شدن پنجره یا بسته شدن پنجره با تایید کاربر باشد
+	winMaxHeight = حداکثر طول مجاز پنجره. در حال حاضر فقط در تولتیپ پیاده سازی شده است
 functions : xxxx= {window یا tooltip}
 	layoutHelper.xxxxLayout.MaximizeToContent = function (adjustCenter)  یک ویجت پنجره یا تولتیپ را با محتوای آن هم اندازه می کند. پارامتر مشخص می کند که بعد از تغییر اندازه آنرا در مرکز پنجره کند یا خیر.
 

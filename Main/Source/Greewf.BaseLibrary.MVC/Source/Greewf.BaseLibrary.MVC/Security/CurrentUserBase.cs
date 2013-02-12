@@ -159,7 +159,7 @@ namespace Greewf.BaseLibrary.MVC
         {
             get
             {
-                return !HttpContext.Current.Request.Cookies.AllKeys.Contains("isTabularLayout") ? true : bool.Parse(HttpContext.Current.Request.Cookies["isTabularLayout"].Value.ToString());
+                return !HttpContext.Current.Request.Cookies.AllKeys.Contains("isTabularLayout") ? false : bool.Parse(HttpContext.Current.Request.Cookies["isTabularLayout"].Value.ToString());
             }
             set
             {
@@ -185,7 +185,7 @@ namespace Greewf.BaseLibrary.MVC
         {
             get
             {
-                return !HttpContext.Current.Request.Cookies.AllKeys.Contains("isSPA") ? true : bool.Parse(HttpContext.Current.Request.Cookies["isSPA"].Value.ToString());
+                return !HttpContext.Current.Request.Cookies.AllKeys.Contains("isSPA") ? false : bool.Parse(HttpContext.Current.Request.Cookies["isSPA"].Value.ToString());
             }
             set
             {

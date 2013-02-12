@@ -528,7 +528,7 @@
 
         $.extend(options, settings);
 
-        layoutCore.openWidgetFor(sender, link, options, 2);
+        layoutCore.openWidgetFor(sender, link, options, 2);//TODO : id don't know why but it has some problems in multi-tab mode with telerik controls (without any error) for example the loaded tabstrip doesn't work
     }
 
     layoutCore.openWidgetFor = function (sender, link, settings, widgetType) {
