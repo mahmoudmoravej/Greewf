@@ -4,6 +4,7 @@
     tooltipLayout = {};
     var lastQtipSender = null;
     var lastQtipContainer = null;
+    var lastQtip$ = null;
     var lastTooltip = null;
     var lastTooltipHeight = null;
     var lastTooltipWidth = null;
@@ -37,11 +38,11 @@
     }
 
     tooltipLayout.closeLastTip = function () {
-        $(lastQtipSender, lastQtipContainer).qtip('hide');
+        if (lastQtipSender)
+            lastQtip$(lastQtipSender, lastQtipContainer).qtip('hide');
     }
 
     tooltipLayout.makeReadyToShow = function (sender, link, title, ownerWindow) {
-
         var winWidth = $(sender).attr('winwidth');
         var winHeight = $(sender).attr('winheight');
         var winMaxHeight = $(sender).attr('winMaxHeight');
@@ -57,6 +58,7 @@
         sender = $(sender);
         lastQtipSender = sender;
         lastQtipContainer = sender.closest('body');
+        lastQtip$ = $;
 
         if (sender.qtip('api') == null)
             sender.qtip({
@@ -84,8 +86,8 @@
                 position: {
                     my: 'top right',
                     at: 'bottom right',
-                    viewport: $(ownerWindow), //$(window), // Keep it on-screen at all times if possible
-                    container: lastQtipContainer,
+                    viewport: $(ownerWindow), //$(window), // Keep it on-screen at all times if possible. NOTE : dont change it to "window" it causes to have problem in repositioning in iframes
+                    container: lastQtipContainer,//becuase of correct positioning when inside of iframe
                     target: sender,
                     adjust: { x: -10, y: -5 }
                 },
@@ -121,7 +123,8 @@
 
     tooltipLayout.setContent = function (tooltip, content, hideOldContent) {
         if (!hideOldContent)
-            tooltip.api.set('content.text', $(content));
+            tooltip.ownerWindow.$(tooltip.htmlTag).html(content);//NOTE!!! if we dont do this, all the inner tooltip content scripts run inside the "TOP FRAME" and not the main IFRAME. This problem shows itself when running in tabular layout
+            //tooltip.api.set('content.text', content);
         else {//hide old content (to enable retriving it in error conditions)
             var tooltipElement = tooltip.htmlTag;
             $('>*', tooltipElement).css('display', 'none');

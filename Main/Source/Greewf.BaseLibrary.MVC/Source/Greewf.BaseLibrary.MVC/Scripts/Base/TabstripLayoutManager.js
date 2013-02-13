@@ -62,8 +62,9 @@
         addOrReplace($(anchor), true);
     }
 
-    tabStripMain.AddTab = function (anchor) {
+    tabStripMain.AddTab = function (anchor, beforeAddingCallBack) {
         if ($(anchor).attr('href')[0].indexOf('#') == 0) return; //becuase anchor.href returns full url. then the pattern works fails in some bookmarking 
+        if (beforeAddingCallBack) beforeAddingCallBack();
         addOrReplace($(anchor), false);
     }
 
@@ -198,8 +199,9 @@
 
     tabStripMain.HandleChildPageLinks = function (ownerWindow) {
         $(linkPattern, ownerWindow.document).live('click', function () {
-            layoutHelper.tooltipLayout.closeLastTip();
-            parent.$.tabStripMain.AddTab(this);
+            parent.$.tabStripMain.AddTab(this, function () {
+                layoutHelper.tooltipLayout.closeLastTip();
+            });
             return false;
         });
     }
