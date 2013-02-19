@@ -244,6 +244,7 @@ layoutHelper = new function () {
 
 
     this.handleAutoSubmit = function (containerId) {
+        if (!this.core.options.handleAutoSubmit) return;
         var changeTimer = containerId + 'ChangeTimer';
         window[changeTimer] = null;
 

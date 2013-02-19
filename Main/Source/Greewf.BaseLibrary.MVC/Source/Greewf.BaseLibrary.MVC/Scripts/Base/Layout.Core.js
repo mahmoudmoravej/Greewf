@@ -9,6 +9,7 @@
         ajax: false,
         responsiveAjaxProgress: true,
         showPageFormErrorsInExternalWindow: true,
+        handleAutoSubmit: false,
         window: { autoCenteredGrowingSize: false, autoGrowingSize: false, autoButtonBar: true, autoBackHide: false }
     }
 
