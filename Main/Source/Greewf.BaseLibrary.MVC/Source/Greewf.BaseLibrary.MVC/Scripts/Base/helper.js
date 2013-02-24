@@ -231,6 +231,19 @@ layoutHelper = new function () {
         }
     }
 
+    this.disableEnterKeyFormSubmission = function (container) {
+        if (container == undefined)
+            container = layoutHelper.windowLayoutActiveDocument();
+        var x = $('.g-noEnterSubmit', container);
+
+        x.bind('keypress', function (e) {
+            if (e.which == 13) return false;
+        });
+        x.find('input').bind('keypress', function (e) {
+            if (e.which == 13) return false;
+        });
+    }
+
     function makeFocusToInput($, container) {
         var frame = $('.editor-focus iframe', container);
         if (frame.length == 0)
@@ -244,21 +257,23 @@ layoutHelper = new function () {
 
 
     this.handleAutoSubmit = function (containerId) {
-        if (!this.core.options.handleAutoSubmit) return;
-        var changeTimer = containerId + 'ChangeTimer';
-        window[changeTimer] = null;
+        $(document).ready(function () {
+            if (!this.core || !this.core.options || !this.core.options.handleAutoSubmit) return;
+            var changeTimer = containerId + 'ChangeTimer';
+            window[changeTimer] = null;
 
-        $().ready(function () {
-            var f1 = function () {
-                clearTimeout(window[changeTimer]);
-                var self = $(this);
-                window[changeTimer] = setTimeout(function () {
-                    $('.t-button', '#' + containerId).click();
-                }, 3000);
-            };
-            var f2 = function () { clearTimeout(window[changeTimer]); };
-            $('input[type^="text"]', '#' + containerId).bind('textchange', f1).keypress(f2);
-            $('select,input[type!="text"]', '#' + containerId).change(f1).keypress(f2);
+            $().ready(function () {
+                var f1 = function () {
+                    clearTimeout(window[changeTimer]);
+                    var self = $(this);
+                    window[changeTimer] = setTimeout(function () {
+                        $('.t-button', '#' + containerId).click();
+                    }, 3000);
+                };
+                var f2 = function () { clearTimeout(window[changeTimer]); };
+                $('input[type^="text"]', '#' + containerId).bind('textchange', f1).keypress(f2);
+                $('select,input[type!="text"]', '#' + containerId).change(f1).keypress(f2);
+            });
         });
     }
 
