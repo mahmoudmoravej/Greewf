@@ -237,7 +237,10 @@ layoutHelper = new function () {
         var x = $('.g-noEnterSubmit', container);
 
         x.bind('keypress', function (e) {
-            if (e.which == 13) return false;
+            if (e.which == 13) {
+                if (e.srcElement.tagName.toUpperCase() != "TEXTAREA")
+                    return false;
+            }
         });
         x.find('input').bind('keypress', function (e) {
             if (e.which == 13) return false;
@@ -256,9 +259,9 @@ layoutHelper = new function () {
     }
 
 
-    this.handleAutoSubmit = function (containerId) {
+    this.handleAutoSubmit = function (containerId, force, timeout) {
         $(document).ready(function () {
-            if (!this.core || !this.core.options || !this.core.options.handleAutoSubmit) return;
+            if (!force && (!this.core || !this.core.options || !this.core.options.handleAutoSubmit)) return;
             var changeTimer = containerId + 'ChangeTimer';
             window[changeTimer] = null;
 
@@ -268,7 +271,7 @@ layoutHelper = new function () {
                     var self = $(this);
                     window[changeTimer] = setTimeout(function () {
                         $('.t-button', '#' + containerId).click();
-                    }, 3000);
+                    }, timeout ? timeout : 3000);
                 };
                 var f2 = function () { clearTimeout(window[changeTimer]); };
                 $('input[type^="text"]', '#' + containerId).bind('textchange', f1).keypress(f2);
