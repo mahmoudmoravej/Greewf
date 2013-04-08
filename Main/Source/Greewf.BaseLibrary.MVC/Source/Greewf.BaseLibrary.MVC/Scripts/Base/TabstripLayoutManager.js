@@ -1,7 +1,7 @@
 ﻿(function ($) {
 
     tabStripMain = {};
-    var options = { tabstripId: 'tabstripMain', firstPageUrl: '/', firstPageTitle: '', isNewWindowOk: true, isSPA: true };
+    var options = { tabstripId: 'tabstripMain', firstPageUrl: '/', firstPageTitle: '', isNewWindowOk: true, isSPA: true, isAJAX: false };
     var arrTabs = new Array();
     var telerikGridRefreshPattern = ':not(div.t-status>a.t-icon.t-refresh)'//this is because of telerik grid refresh button problem in ajax mode
     var telerikGridGroupingPattern = ':not(div.t-group-indicator>a)'//this is because of telerik grid grouping buttons(server-side initiated ones) problem in ajax mode
@@ -153,6 +153,14 @@
     }
 
     function makePanelReady(panel, link, tabStrip, pageContent) {
+
+        if (!pageContent && options.isAJAX) {//we should load the link content through an ajax call. NOTE : it is practical in SPA mode. in none SPA mode , we are prone to have lots of errors (because of javascript interference)
+        }
+        else
+            setPanelContent(panel, link, tabStrip, pageContent);
+    }
+
+    function setPanelContent(panel, link, tabStrip, pageContent) {
 
         if (pageContent) {
             panel.append(pageContent);
