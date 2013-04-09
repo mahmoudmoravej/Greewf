@@ -235,6 +235,7 @@
     <Content Include="Scripts\TelerikModified\telerik.window.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\_references.js" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Documents\Conventions.txt">

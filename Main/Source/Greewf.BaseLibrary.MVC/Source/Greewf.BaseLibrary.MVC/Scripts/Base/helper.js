@@ -201,6 +201,16 @@ layoutHelper = new function () {
         this.tooltipLayout = (parent.$.layoutCore != null) ? parent.$.tooltipLayout : $.tooltipLayout;
     }
 
+    try {
+        Object.defineProperty(this, "formAjaxifier", {
+            get: function () {
+                return (parent.$.layoutCore != null) ? parent.$.formAjaxifier : $.formAjaxifier;
+            }
+        });
+    } catch (e) {
+        this.formAjaxifier = (parent.$.layoutCore != null) ? parent.$.formAjaxifier : $.formAjaxifier;
+    }
+
     this.getActiveLayout = function (isTooltip) {
         if (isTooltip)
             return this.tooltipLayout;

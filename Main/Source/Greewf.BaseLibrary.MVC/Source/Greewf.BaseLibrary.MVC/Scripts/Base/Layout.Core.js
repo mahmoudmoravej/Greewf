@@ -96,7 +96,7 @@
         var doAjax = $(sender).attr('ajax');
         doAjax = doAjax != undefined ? true : layoutCore.options.ajax;
 
-        link = correctLink(link, doAjax, true, true, widgetLayout.getTypeCode());
+        link = layoutHelper.formAjaxifier.correctLink(link, doAjax, true, true, widgetLayout.getTypeCode());
 
         //ajax or iframe?
         if (doAjax) {//ajax request : pure mode
@@ -250,73 +250,63 @@
 
     }
 
-    function correctLink(link, isPure, isInWindow, inclueUrlInContent, widgetType) {
-        if (link.indexOf('?') == -1)
-            link = link + "?";
-        else
-            link = link + "&";
-        link = link + (isPure ? checkToPaste(link, 'puremode=1') : checkToPaste(link, 'simplemode=1'));
-        if (isInWindow) link = link + checkToPaste(link, '&iswindow=1');
-        if (widgetType == 2) link = link + checkToPaste(link, '&istooltip=1'); //1:window , 2:tooltip
-        if (inclueUrlInContent) link = link + checkToPaste(link, '&includeUrlInContent=1');
-
-        return link;
-    }
-
-    function checkToPaste(str, value) {
-        return (str.indexOf(value) >= 0) ? '' : value;
-    }
-
     function loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, postSuccessAction) {
-        widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout));
-        $.ajax({
-            url: encodeURI(link),
-            cache: false,
-            success: function (html) {
-                var result = insertAjaxContent(widgetLayout, widget, widgetTitle, title, link, html); //returns false when handled through special pages
-                if (postSuccessAction && result) postSuccessAction();
+        $.layoutCore.formAjaxifier.ajax({
+            link: link,
+            widgetHtmlTag: widget.htmlTag,
+            widgetType: widgetLayout.getTypeCode(),
+            beforeSend: function () {
+                widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout));
             },
-            error: function (xhr, ajaxOptions, thrownError) {
-                if (xhr.getResponseHeader("GreewfCustomErrorPage"))//custom error page
-                    insertAjaxContent(widgetLayout, widget, widgetTitle, title, link, xhr.responseText); //returns false when handled through special pages
-                else if (xhr.getResponseHeader("GreewfAccessDeniedPage")) {//access denied page
-                    widgetLayout.setContent(widget, xhr.responseText);//todo : currently it doesn't make any problem because the access denied page content is a script which calls windowLayout.ShowErrorMessage. But if we change it, the content may disapear after next line call(CloseTopMost).
-                    widgetLayout.CloseTopMost(widget);
-                }
+            contentReady: function (content, isErrorContent) {
+                widgetLayout.setContent(widget, content);
+            },
+            widgetLinkCorrected: function () {
+                if (handleSpecialPages(widgetLayout, widget, link, null, html, false)) return { cancel: true };
+
+                var pageContentTitle = $('#currentPageTitle', widget.htmlTag);
+                if (widgetTitle != null)
+                    if (pageContentTitle.length > 0)
+                        changeWidgetTitle(widgetLayout, widgetTitle, pageContentTitle.text());
+                    else
+                        changeWidgetTitle(widgetLayout, widgetTitle, '');
+
+                if (widgetTitle != null && title != null && title != '') changeWidgetTitle(widgetLayout, widgetTitle, title);
+
+                return { cancel: false };
+            },
+            loadCompleted: function (isErrorContent) {
+                handleCloseButtons(widgetLayout, widget);
+                widgetLayout.contentLoaded(widget);
+
+            },
+            afterSuccessLoadCompleted: postSuccessAction,
+            error: function (isCustomErrorPage, isAccessDeniedPage) {
+                //if (isAccessDeniedPage)
+                    //widgetLayout.CloseTopMost(widget);//i think we dont need this anymore!
+            },
+            innerFormBeforeSubmit: function (form) {
+                if (handlePageCloserSubmitButtons(form, widgetLayout, widget)) return { cancel: true }; //no submit for submit page closer ,they are just for validation purpose
+                return { cancel: false };
+            },
+            innerFormBeforeSend: function () {
+                var newContentPointer;
+                if (layoutCore.options.showPageFormErrorsInExternalWindow)
+                    newContentPointer = widgetLayout.setContent(widget, formAjaxifier.progressHtml(widgetLayout), true);
                 else
-                    widgetLayout.setContent(widget, xhr.responseText);
+                    widgetLayout.setContent(widget, formAjaxifier.progressHtml(widgetLayout));
+                changeWidgetTitle(widgetLayout, widgetTitle, 'در حال دریافت...'); //we do it here because we may need to access the current title in "setContent" function
+                return newContentPointer;
+            },
+            retrieveOldContent: function (newContentPointer) {
+                widgetLayout.retrieveOldContent(widget, newContentPointer);
             }
         });
+
+     
     }
 
-    function insertAjaxContent(widgetLayout, widget, widgetTitle, title, link, html) {
-
-        widgetLayout.setContent(widget, '<div id="addedAjaxWindowContentContainer" link="' + link + '">' + html + '</div>');
-        var urlData = $('#currentPageUrl', widget.htmlTag); //when redirecting in ajax request
-        if (urlData.length > 0) {
-            link = urlData.text();
-            $('#addedAjaxWindowContentContainer', widget.htmlTag).attr('link', link);
-        }
-
-        if (handleSpecialPages(widgetLayout, widget, link, null, html, false)) return false;
-
-        //handle page title
-        var pageContentTitle = $('#currentPageTitle', widget.htmlTag);
-        if (widgetTitle != null)
-            if (pageContentTitle.length > 0)
-                changeWidgetTitle(widgetLayout, widgetTitle, pageContentTitle.text());
-            else
-                changeWidgetTitle(widgetLayout, widgetTitle, '');
-
-        //handle validation+content
-        if (widgetTitle != null && title != null && title != '') changeWidgetTitle(widgetLayout, widgetTitle, title);
-        enableValidation(widgetLayout, widget);
-        ajaxifyInnerForms(widgetLayout, widget, widgetTitle);
-        handleCloseButtons(widgetLayout, widget);
-        widgetLayout.contentLoaded(widget);
-        return true;
-
-    }
+   
 
     function correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, correctionCondition, contentHieght, contentWidth, justGrow, discardCentering) {
         if (winMax != undefined) widgetLayout.maximize(widget);
@@ -354,29 +344,6 @@
         correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, true, realHeight, realWidth, true, adjustCenter != true);
     }
 
-    function enableValidation(widgetLayout, widget) {
-        //unobtrusive validation
-        if ($.validator.unobtrusive != undefined && $.validator.unobtrusive != null) {
-            $(widget.htmlTag).find('form').each(function (i, o) {
-                $.validator.unobtrusive.parse(o);
-            });
-        }
-        //non-unobtrusive validation
-        if (window.Sys && Sys.Mvc && Sys.Mvc.FormContext) {
-            Sys.Mvc.FormContext._Application_Load();
-        }
-    }
-
-    function handleInnerFormSubmitButtons(form) {
-        var buttons = $(':submit', form);
-        buttons.each(function (i, o) {
-            $(o).click(function () {
-                if (this.name != null && this.name.length > 0) $(this).closest('form').attr('submiterName', this.name).data('submitter', o);
-            });
-        });
-
-        return buttons.length == 1 ? buttons[0] : null; //as default button when exactly one submit button presents
-    }
 
     function handleCloseButtons(widgetLayout, widget) {
         $(widget.htmlTag).find('[isPageCloser]:not(:submit)').each(function (i, o) {
@@ -401,79 +368,6 @@
         if (typeof (dataFetcher) != 'undefined') data = widget.ownerWindow[dataFetcher].apply(closerButton, new Array(closerButton));
         widgetLayout.CloseAndDone(data, widget, null, true);
     }
-
-    function ajaxifyInnerForms(widgetLayout, widget, widgetTitle) {
-        //NOTE: just disable unobtrosive forms! TODO : handle old fasion ajax forms too
-        $(widget.htmlTag).find('form:not([data-ajax*="true"])').each(function (i, o) {
-            var defaultSubmitButton = handleInnerFormSubmitButtons(o);
-            $(o).submit(function () {
-                if (!$(this).valid()) return false;
-                if (defaultSubmitButton != null && $(this).data('submitter') == null) $(this).data('submitter', defaultSubmitButton); //asume default button
-                if (handlePageCloserSubmitButtons(this, widgetLayout, widget)) return false; //no submit , just for validation needs
-                var link = correctLink(this.action, true, true, true, widgetLayout.getTypeCode());
-                var newContentPointer = null; //just when having external window show for errors to preserve current content in error conditions.
-
-                $.ajax({
-                    type: this.method.toLowerCase() == 'get' ? 'GET' : 'POST',
-                    url: encodeURI(link),
-                    cache: false,
-                    data: appendSubmitButtonValue($(this).serialize(), this),
-                    beforeSend: function () {
-                        if (layoutCore.options.showPageFormErrorsInExternalWindow)
-                            newContentPointer = widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout), true);
-                        else
-                            widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout));
-                        changeWidgetTitle(widgetLayout, widgetTitle, 'در حال دریافت...'); //we do it here because we may need to access the current title in "setContent" function
-                    },
-                    success: function (html, status, xhr) {
-                        insertAjaxContent(widgetLayout, widget, widgetTitle, null, link, html);
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        handleSubmittedFormAjaxErrorContent(widgetLayout, widget, widgetTitle, link, xhr, newContentPointer);
-                    }
-                });
-                return false;
-            });
-        });
-
-    }
-
-    function handleSubmittedFormAjaxErrorContent(widgetLayout, widget, widgetTitle, link, xhr, newContentPointer) {
-        if (layoutCore.options.showPageFormErrorsInExternalWindow) {
-            if (xhr.getResponseHeader("GreewfCustomErrorPage"))//custom error page
-            { //TODO : change it if your custom error content needs a different way to show.
-                var x = $('.custom-error-page', widget.htmlTag);
-                if (x.length == 0)
-                    x = $("<div style='display:none' class='custom-error-page'></div>").appendTo(widget.htmlTag);
-                x.html(xhr.responseText);
-
-                //we remove these to avoid conflicting with current page (specially we need the previous one in refreshing click)
-                $('#currentPageUrl', x).remove();
-                $('#currentPageTitle', x).remove();
-
-            }
-            else if (xhr.getResponseHeader("GreewfAccessDeniedPage")) {//access denied page
-                widgetLayout.setContent(widget, xhr.responseText);//todo : currently it doesn't make any problem because the access denied page content is a script which calls windowLayout.ShowErrorMessage. But if we change it, the content may disapear after next line call(CloseTopMost).
-                widgetLayout.CloseTopMost(widget);
-            }
-            else//regular error
-                layoutHelper.windowLayout.ShowErrorMessage('<div style="overflow:auto;direction:ltr;max-width:500px;max-height:600px">' + xhr.responseText + '</div>', 'بروز خطا');
-            widgetLayout.retrieveOldContent(widget, newContentPointer);
-        }
-        else//internal view is ok
-            insertAjaxContent(widgetLayout, widget, widgetTitle, null, link, xhr.responseText);
-
-    }
-
-    function appendSubmitButtonValue(serializedString, form) {
-        var buttonName = $(form).attr('submiterName');
-        if (buttonName == null || buttonName == '') return serializedString;
-        if (serializedString.length > 0) serializedString = serializedString + '&';
-        serializedString = serializedString + buttonName + '=' + $('[name="' + buttonName + '"]', form).val();
-        return serializedString;
-    }
-
-
 
     layoutCore.HandleChildPageLinks = function (ownerWindow, isWindowLayout, isTabularLayout) {
         var pattern = 'a[justwindow]:not([tooltipWindow])';
