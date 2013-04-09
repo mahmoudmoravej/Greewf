@@ -251,7 +251,7 @@
     }
 
     function loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, postSuccessAction) {
-        $.layoutCore.formAjaxifier.ajax({
+        layoutHelper.formAjaxifier.ajax({
             link: link,
             widgetHtmlTag: widget.htmlTag,
             widgetType: widgetLayout.getTypeCode(),
@@ -261,8 +261,8 @@
             contentReady: function (content, isErrorContent) {
                 widgetLayout.setContent(widget, content);
             },
-            widgetLinkCorrected: function () {
-                if (handleSpecialPages(widgetLayout, widget, link, null, html, false)) return { cancel: true };
+            widgetLinkCorrected: function (correctedLink, content) {
+                if (handleSpecialPages(widgetLayout, widget, correctedLink, null, content, false)) return { cancel: true };
 
                 var pageContentTitle = $('#currentPageTitle', widget.htmlTag);
                 if (widgetTitle != null)
@@ -283,7 +283,7 @@
             afterSuccessLoadCompleted: postSuccessAction,
             error: function (isCustomErrorPage, isAccessDeniedPage) {
                 //if (isAccessDeniedPage)
-                    //widgetLayout.CloseTopMost(widget);//i think we dont need this anymore!
+                //widgetLayout.CloseTopMost(widget);//i think we dont need this anymore!
             },
             innerFormBeforeSubmit: function (form) {
                 if (handlePageCloserSubmitButtons(form, widgetLayout, widget)) return { cancel: true }; //no submit for submit page closer ,they are just for validation purpose
@@ -292,9 +292,9 @@
             innerFormBeforeSend: function () {
                 var newContentPointer;
                 if (layoutCore.options.showPageFormErrorsInExternalWindow)
-                    newContentPointer = widgetLayout.setContent(widget, formAjaxifier.progressHtml(widgetLayout), true);
+                    newContentPointer = widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout), true);
                 else
-                    widgetLayout.setContent(widget, formAjaxifier.progressHtml(widgetLayout));
+                    widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout));
                 changeWidgetTitle(widgetLayout, widgetTitle, 'در حال دریافت...'); //we do it here because we may need to access the current title in "setContent" function
                 return newContentPointer;
             },
@@ -303,10 +303,10 @@
             }
         });
 
-     
+
     }
 
-   
+
 
     function correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, correctionCondition, contentHieght, contentWidth, justGrow, discardCentering) {
         if (winMax != undefined) widgetLayout.maximize(widget);

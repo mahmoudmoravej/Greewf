@@ -1,12 +1,16 @@
 ﻿(function ($) {
 
     tabStripMain = {};
-    var options = { tabstripId: 'tabstripMain', firstPageUrl: '/', firstPageTitle: '', isNewWindowOk: true, isSPA: true, isAJAX: false };
+    var options = { tabstripId: 'tabstripMain', firstPageUrl: '/', firstPageTitle: '', isNewWindowOk: true, isSPA: true, isAJAX: true };
     var arrTabs = new Array();
     var telerikGridRefreshPattern = ':not(div.t-status>a.t-icon.t-refresh)'//this is because of telerik grid refresh button problem in ajax mode
     var telerikGridGroupingPattern = ':not(div.t-group-indicator>a)'//this is because of telerik grid grouping buttons(server-side initiated ones) problem in ajax mode
     var linkPattern = 'a[href][href!^="#"][href!^="#"]:not([href^="javascript:"]):not([href*="ajax=True"]):not([inline]):not([justwindow]):not([justMain]):not([responsiveAjax]):not([tooltipWindow])' + telerikGridRefreshPattern + telerikGridGroupingPattern; //pattern which accept links to open
     var currentTabId = -1;
+
+    function ajaxProgressHtml() {
+        return '<div isProgress="1" class="bigprogress-icon t-content" style="width:99%;height:100%;position:absolute;" ></div>';
+    }
 
     tabStripMain.load = function (o) {
         $.extend(options, o); //merge user passed options with default
@@ -78,7 +82,23 @@
     }
 
     function clearLink(link) {
-        link = link.replace('&istab=1', '').replace('?istab=1&', '?').replace('?istab=1', '').replace(/^\s+|\s+$/g, "").replace(/\?$/g, "").replace(/\#$/g, '');
+        link = link.toLowerCase()
+            .replace('&istab=1', '')
+            .replace('?istab=1&', '?')
+            .replace('?istab=1', '')
+            .replace('&puremode=1', '')
+            .replace('?puremode=1&', '?')
+            .replace('?puremode=1', '')
+            .replace('&includeurlincontent=1', '')
+            .replace('?includeurlincontent=1&', '?')
+            .replace('?includeurlincontent=1', '')
+            .replace(/^\s+|\s+$/g, "")
+            .replace(/\?$/g, "").replace(/\#$/g, '');
+
+        if (link.indexOf("http://") == 0 && link.indexOf("http://" + window.location.hostname.toLowerCase()) == 0)
+            link = link.replace("http://" + window.location.hostname, "");
+
+
         return link;
     }
 
@@ -147,23 +167,22 @@
         panel.attr('link', link);
         $('>*', panel).remove();
         var g = $('<div style="position:absolute;width:100%;height:100%;left:0;right:0;bottom:0;top:0;z-index:999999999"></div>').appendTo(document.body).focus();//it is just to make the shown menu to be hide (because of mouse over!--indeed telerik bug...it should hide the menu after the click...isn't it?)
-        makePanelReady(panel, link, pageContent);
+        makePanelReady(panel, link, null, pageContent);
         window.setTimeout(function () { g.remove() });
 
     }
 
     function makePanelReady(panel, link, tabStrip, pageContent) {
 
-        if (!pageContent && options.isAJAX) {//we should load the link content through an ajax call. NOTE : it is practical in SPA mode. in none SPA mode , we are prone to have lots of errors (because of javascript interference)
-        }
+        if (!pageContent && options.isAJAX) //we should load the link content through an ajax call. NOTE : it is practical in SPA mode. in none SPA mode , we are prone to have lots of errors (because of javascript interference)
+            loadThroughAjax(link, panel);
         else
             setPanelContent(panel, link, tabStrip, pageContent);
     }
 
     function setPanelContent(panel, link, tabStrip, pageContent) {
-
         if (pageContent) {
-            panel.append(pageContent);
+            panel.html(pageContent);
             return;
         }
 
@@ -204,6 +223,53 @@
 
     }
 
+    function loadThroughAjax(link, panel) {
+        layoutHelper.formAjaxifier.ajax({
+            link: layoutHelper.formAjaxifier.correctLink(link, true, false, true, null),
+            widgetHtmlTag: panel,
+            widgetType: -1,//means tab
+            getAddedAjaxWindowContentContainerStyle: function () {
+                return 'height:100%';
+            },
+            beforeSend: function () {
+                setPanelContent(panel, link, null, ajaxProgressHtml());
+            },
+            contentReady: function (content, isErrorContent) {
+                setPanelContent(panel, link, null, content);
+            },
+            widgetLinkCorrected: function (correctedLink, content) {
+                window.location.hash = clearLink(correctedLink).toLowerCase();
+
+                var pageContentTitle = $('#currentPageTitle', panel);
+                if (pageContentTitle.length > 0)
+                    window.document.title = pageContentTitle.text();
+                else
+                    window.document.title = '';
+            },
+            loadCompleted: function (isErrorContent) {
+            },
+            afterSuccessLoadCompleted: function () {
+            },
+            error: function (isCustomErrorPage, isAccessDeniedPage) {
+            },
+            innerFormBeforeSubmit: function (form) {
+            },
+            innerFormBeforeSend: function () {
+                //var newContentPointer;
+                //if (layoutCore.options.showPageFormErrorsInExternalWindow)
+                //    newContentPointer = widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout), true);
+                //else
+                //    widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout));
+                //changeWidgetTitle(widgetLayout, widgetTitle, 'در حال دریافت...'); //we do it here because we may need to access the current title in "setContent" function
+                //return newContentPointer;
+            },
+            retrieveOldContent: function (newContentPointer) {
+                //widgetLayout.retrieveOldContent(widget, newContentPointer);
+            }
+        });
+
+
+    }
 
     tabStripMain.HandleChildPageLinks = function (ownerWindow) {
         $(linkPattern, ownerWindow.document).live('click', function () {
