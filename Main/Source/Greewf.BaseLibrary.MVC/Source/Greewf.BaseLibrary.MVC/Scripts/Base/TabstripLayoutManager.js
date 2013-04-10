@@ -1,7 +1,7 @@
 ﻿(function ($) {
 
     tabStripMain = {};
-    var options = { tabstripId: 'tabstripMain', firstPageUrl: '/', firstPageTitle: '', isNewWindowOk: true, isSPA: true, isAJAX: true };
+    var options = { tabstripId: 'tabstripMain', currentPageUrl: '/', currentPageTitle: '', isNewWindowOk: true, isSPA: true, isAJAX: true };
     var arrTabs = new Array();
     var telerikGridRefreshPattern = ':not(div.t-status>a.t-icon.t-refresh)'//this is because of telerik grid refresh button problem in ajax mode
     var telerikGridGroupingPattern = ':not(div.t-group-indicator>a)'//this is because of telerik grid grouping buttons(server-side initiated ones) problem in ajax mode
@@ -14,6 +14,7 @@
 
     tabStripMain.load = function (o) {
         $.extend(options, o); //merge user passed options with default
+        if (!options.isSPA) options.isAJAX = false;//todo : we dont support none SPA (tabular) ajax view.
         if (options.tabstripId.charAt[0] != '#') options.tabstripId = '#' + options.tabstripId;
         if (options.isNewWindowOk) { linkPattern = linkPattern + ':not([newwindow])'; }
         if (!options.isSPA) {
@@ -48,13 +49,12 @@
             return false;
         });
 
-        var firstPageContent;
-        if (!options.isSPA)
-            firstPageContent = $('#tabstripMain > div:first>*');
-
-        if (o.firstPageUrl.length > 0) tabStripMain.addByLink(o.firstPageUrl, options.firstPageTitle, null, firstPageContent);
+        currentPageContent = $('> div:first>*', options.tabstripId);
+        if (o.currentPageUrl.length > 0) tabStripMain.addByLink(o.currentPageUrl, options.currentPageTitle, null, currentPageContent);
         if (!options.isSPA)
             $tabs.tabs("remove", 0);//we should remove it after inserting(moving) content to prevent javascript functions brake
+        else
+            $('> div:first', options.tabstripId).remove();//anyway, removing it is not important!
 
     }
 
@@ -81,7 +81,18 @@
 
     }
 
-    function clearLink(link) {
+    function getQueryStringParameterByName(name, link) {
+        name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+        var regexS = "[\\?&]" + name + "=([^&#]*)";
+        var regex = new RegExp(regexS);
+        var results = regex.exec(link);
+        if (results == null)
+            return "";
+        else
+            return decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+
+    tabStripMain.clearLink = function (link) {
         link = link.toLowerCase()
             .replace('&istab=1', '')
             .replace('?istab=1&', '?')
@@ -98,6 +109,14 @@
         if (link.indexOf("http://") == 0 && link.indexOf("http://" + window.location.hostname.toLowerCase()) == 0)
             link = link.replace("http://" + window.location.hostname, "");
 
+        var p = getQueryStringParameterByName("_", link);//jquery parameter
+        if (p.length > 0) {
+            p = "_=" + p;
+            link = link
+            .replace('&' + p, '')
+            .replace('?' + p + '&', '?')
+            .replace('?' + p, '');
+        }
 
         return link;
     }
@@ -115,7 +134,7 @@
         var tabStrip = $(options.tabstripId);
 
         var oldTabItem = null;
-        link = clearLink(link);
+        link = tabStripMain.clearLink(link);
         $(arrTabs).each(function (i, item) { if (item.link == link) oldTabItem = item });
 
         //select if opened previously
@@ -160,10 +179,11 @@
     tabStripMain.addByLinkForSPA = function (link, title, pageContent) {
 
         var url = link.replace(/\//g, "_");
-        link = clearLink(link);
+        link = tabStripMain.clearLink(link);
 
         //make the tab ready (make it or replace it)
-        panel = $(options.tabstripId);
+        panel = $('#spaContainer' + options.tabstripId.replace('#', ''), options.tabstripId);
+        if (panel.length == 0) panel = $('<div style="height:100%" id="' + 'spaContainer' + options.tabstripId.replace('#', '') + '"></div>').appendTo(options.tabstripId);
         panel.attr('link', link);
         $('>*', panel).remove();
         var g = $('<div style="position:absolute;width:100%;height:100%;left:0;right:0;bottom:0;top:0;z-index:999999999"></div>').appendTo(document.body).focus();//it is just to make the shown menu to be hide (because of mouse over!--indeed telerik bug...it should hide the menu after the click...isn't it?)
@@ -174,20 +194,21 @@
 
     function makePanelReady(panel, link, tabStrip, pageContent) {
 
-        if (!pageContent && options.isAJAX) //we should load the link content through an ajax call. NOTE : it is practical in SPA mode. in none SPA mode , we are prone to have lots of errors (because of javascript interference)
-            loadThroughAjax(link, panel);
+        if (options.isAJAX) //we should load the link content through an ajax call(if the pageContent is ready we should ajaxify it). NOTE : it is practical in SPA mode. in none SPA mode , we are prone to have lots of errors (because of javascript interference)
+            loadThroughAjax(link, panel, pageContent);
         else
             setPanelContent(panel, link, tabStrip, pageContent);
     }
 
     function setPanelContent(panel, link, tabStrip, pageContent) {
         if (pageContent) {
-            panel.html(pageContent);
+            panel.html('');
+            panel.append(pageContent);
             return;
         }
 
         panel.css('overflow', 'hidden'); //new to ...
-        panel.append('<div class="bigprogress-icon t-content" style="width:95%;height:90%;position:absolute;background-color:inherit;border:0px;" ></div>');
+        panel.append('<div class="bigprogress-icon t-content" style="width:95%;height:99.5%;position:absolute;background-color:inherit;border:0px;" ></div>');
 
         panel.append('<iframe frameborder="0" style="width:100%;height:100%;background-color:inherit;direction:rtl;" ></iframe>');
 
@@ -204,8 +225,11 @@
         iframe.attr('src', link);
 
         iframe.load(function () {
-            var contentWindowPath = clearLink(this.contentWindow.location.pathname + this.contentWindow.location.search).toLowerCase();
-            window.location.hash = contentWindowPath;
+            var contentWindowPath = tabStripMain.clearLink(this.contentWindow.location.pathname + this.contentWindow.location.search).toLowerCase();
+            if ((window.location.pathname + window.location.search).toLowerCase() != contentWindowPath)
+                window.location.hash = contentWindowPath;
+            else
+                window.location.hash = "";
 
             if (!options.isSPA) {
                 var tabId = $(this).parent()[0].id;
@@ -223,9 +247,19 @@
 
     }
 
-    function loadThroughAjax(link, panel) {
-        layoutHelper.formAjaxifier.ajax({
+    function loadThroughAjax(link, panel, pageContent) {
+        if (link.indexOf('istab=1') == -1) {
+            if (link.indexOf('?') == -1)
+                link = link + "?";
+            else
+                link = link + "&";
+            link = link + 'istab=1';
+        }
+
+
+        layoutHelper.formAjaxifier.load({
             link: layoutHelper.formAjaxifier.correctLink(link, true, false, true, null),
+            content: pageContent,
             widgetHtmlTag: panel,
             widgetType: -1,//means tab
             getAddedAjaxWindowContentContainerStyle: function () {
@@ -238,13 +272,24 @@
                 setPanelContent(panel, link, null, content);
             },
             widgetLinkCorrected: function (correctedLink, content) {
-                window.location.hash = clearLink(correctedLink).toLowerCase();
+                correctedLink = correctedLink.toLowerCase();
+                if (correctedLink != null && correctedLink.indexOf('enforcelayout=1') != -1) {
+                    window.location = tabStripMain.clearLink(correctedLink).replace('enforcelayout=1', '');
+                    return { cancel: true };
+                } else if (correctedLink != null && (correctedLink.indexOf("/savedsuccessfully") > 0 || correctedLink.indexOf('successfullysaved') > 0)) {
+                    layoutHelper.windowLayout.ShowSuccessMessage('اطلاعات با موفقیت ذخیره شد', 'پیغام سیستم');
+                }
+                var contentWindowPath = tabStripMain.clearLink(window.location.pathname + window.location.search).toLowerCase();
+                if (tabStripMain.clearLink(window.location.pathname + window.location.search).toLowerCase() != tabStripMain.clearLink(correctedLink))
+                    window.location.hash = tabStripMain.clearLink(correctedLink).toLowerCase();
+                else
+                    window.location.hash = "";
 
                 var pageContentTitle = $('#currentPageTitle', panel);
                 if (pageContentTitle.length > 0)
                     window.document.title = pageContentTitle.text();
-                else
-                    window.document.title = '';
+                // else
+                //     window.document.title = '';
             },
             loadCompleted: function (isErrorContent) {
             },
@@ -267,6 +312,8 @@
                 //widgetLayout.retrieveOldContent(widget, newContentPointer);
             }
         });
+
+
 
 
     }

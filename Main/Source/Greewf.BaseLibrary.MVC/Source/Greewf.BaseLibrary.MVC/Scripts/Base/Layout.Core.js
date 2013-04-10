@@ -191,7 +191,7 @@
         return $(frame).attr('isrefresh') != 'true' && frame.contentWindow.location.toString().indexOf("/SavedSuccessfully") == -1 && frame.contentWindow.location.hash.toString().indexOf('successfullysaved') == -1;
     }
 
-    function handleSpecialPages(widgetLayout, widget, location, linkHash, data, isIframeBody) {
+    function handleSpecialPages(widgetLayout, widget, location, linkHash, data/*it may be a jquery object*/, isIframeBody) {
         var handled = handleSpecialPagesByLink(widgetLayout, widget, location, linkHash);
         if (handled) return true;
         var jsonResponse = null;
@@ -204,7 +204,7 @@
                     return false;
                 }
         }
-        else //it is json result in ajax mode
+        else if (data instanceof jQuery == false) //it is json result in ajax mode
             jsonResponse = data;
 
         if (jsonResponse) {
@@ -251,8 +251,9 @@
     }
 
     function loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, postSuccessAction) {
-        layoutHelper.formAjaxifier.ajax({
+        layoutHelper.formAjaxifier.load({
             link: link,
+            content: null,
             widgetHtmlTag: widget.htmlTag,
             widgetType: widgetLayout.getTypeCode(),
             beforeSend: function () {

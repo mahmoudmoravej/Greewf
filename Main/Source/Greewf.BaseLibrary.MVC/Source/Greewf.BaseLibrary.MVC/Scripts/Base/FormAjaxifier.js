@@ -9,7 +9,7 @@
         link = link + (isPure ? checkToPaste(link, 'puremode=1') : checkToPaste(link, 'simplemode=1'));
         if (isInWindow) link = link + checkToPaste(link, '&iswindow=1');
         if (widgetType == 2) link = link + checkToPaste(link, '&istooltip=1'); //1:window , 2:tooltip , -1:tab
-        //if (widgetType == -1) link = link + checkToPaste(link, '&istab=1'); //1:window , 2:tooltip , -1:tab
+        if (widgetType == -1) link = link + checkToPaste(link, '&istab=1'); //1:window , 2:tooltip , -1:tab
         if (inclueUrlInContent) link = link + checkToPaste(link, '&includeUrlInContent=1');
 
         return link;
@@ -19,14 +19,21 @@
         return (str.indexOf(value) >= 0) ? '' : value;
     }
 
-    formAjaxifier.ajax = function (options) {//items should be set are : link,
+    formAjaxifier.load = function (options) {
+        if (options.content) {
+            loadContent(options, options.content);
+        }
+        else
+            ajax(options);
+    }
+
+    function ajax(options) {
         if (options.beforeSend) options.beforeSend();
         $.ajax({
             url: encodeURI(options.link),
             cache: false,
             success: function (html) {
-                var result = insertAjaxContent(options, html, false); //returns false when handled through special pages
-                if (!result.cancel && options.afterSuccessLoadCompleted) options.afterSuccessLoadCompleted();
+                loadContent(options, html);
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 insertAjaxContent(options, xhr.responseText, true);
@@ -35,13 +42,20 @@
         });
     }
 
-    function insertAjaxContent(options, html, isErrorContent) {
+    function loadContent(options, html) {
+        var result = insertAjaxContent(options, html, false); //returns false when handled through special pages
+        if (!result.cancel && options.afterSuccessLoadCompleted) options.afterSuccessLoadCompleted();
+    }
 
+    function insertAjaxContent(options, html/*it may be an jquery object*/, isErrorContent) {
         var containerStyle = null;
         if (options.getAddedAjaxWindowContentContainerStyle)
             containerStyle = options.getAddedAjaxWindowContentContainerStyle();
 
-        options.contentReady('<div id="addedAjaxWindowContentContainer" style="' + containerStyle + '" link="' + options.link + '">' + html + '</div>', isErrorContent);
+        if (html instanceof jQuery)
+            options.contentReady($('<div id="addedAjaxWindowContentContainer" style="' + containerStyle + '" link="' + options.link + '"></div>').append(html), isErrorContent);
+        else
+            options.contentReady('<div id="addedAjaxWindowContentContainer" style="' + containerStyle + '" link="' + options.link + '">' + html + '</div>', isErrorContent);
 
         var urlData = $('#currentPageUrl', options.widgetHtmlTag); //when redirecting in ajax request
         if (urlData.length > 0) {
@@ -103,7 +117,7 @@
                     result = options.innerFormBeforeSubmit(this);
                     if (result && result.cancel) return false;
                 }
-                var link = layoutHelper.formAjaxifier.correctLink(this.action, true, true, true, options.widgetType);
+                var link = layoutHelper.formAjaxifier.correctLink(this.action, true, options.widgetType == 1, true, options.widgetType);
                 var newContentPointer = null; //just when having external window show for errors to preserve current content in error conditions.
 
                 $.ajax({

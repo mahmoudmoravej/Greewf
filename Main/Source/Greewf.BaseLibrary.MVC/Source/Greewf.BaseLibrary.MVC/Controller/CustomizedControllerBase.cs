@@ -134,6 +134,7 @@ namespace Greewf.BaseLibrary.MVC
         {
             //this method should also ensures Puremode and Simplemode too
             EnsureFlag(routeValues, IsCurrentRequestRunInWindow, "iswindow");
+            EnsureFlag(routeValues, Request.QueryString.AllKeys.Contains("istab"), "istab");
             EnsureFlag(routeValues, Request.QueryString.AllKeys.Contains("puremode"), "puremode");
             EnsureFlag(routeValues, Request.QueryString.AllKeys.Contains("simplemode"), "simplemode");
             EnsureFlag(routeValues, Request.QueryString.AllKeys.Contains("includeUrlInContent"), "includeUrlInContent");
@@ -144,9 +145,11 @@ namespace Greewf.BaseLibrary.MVC
         {
             //this method should also ensures Puremode and Simplemode too
             url = EnsureFlag(url, IsCurrentRequestRunInWindow, "iswindow");
+            url = EnsureFlag(url, Request.QueryString.AllKeys.Contains("istab"), "istab");
             url = EnsureFlag(url, Request.QueryString.AllKeys.Contains("puremode"), "puremode");
             url = EnsureFlag(url, Request.QueryString.AllKeys.Contains("simplemode"), "simplemode");
             url = EnsureFlag(url, Request.QueryString.AllKeys.Contains("includeUrlInContent"), "includeUrlInContent");
+
 
             return url;
         }
