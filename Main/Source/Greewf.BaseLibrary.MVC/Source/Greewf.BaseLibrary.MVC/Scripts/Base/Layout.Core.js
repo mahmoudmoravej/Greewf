@@ -384,11 +384,15 @@
 
         $('a[justMain]', ownerWindow.document).live('click', function () {
             layoutHelper.tooltipLayout.closeLastTip();
-            if (ownerWindow.location.toString().indexOf('iswindow=1') != -1)
+            if (ownerWindow.location.toString().indexOf('iswindow=1') != -1)//inform window
                 if (layoutHelper.isParentLayoutPresent()) layoutHelper.windowLayout.CloseTopMost();
 
+            var container = $(this).closest('div#addedAjaxWindowContentContainer').attr('link');
+            if (container && container.toLowerCase().indexOf('iswindow=1') != -1)//ajax window
+                layoutHelper.windowLayout.CloseTopMost();
+
             if (isTabularLayout)
-                parent.$.tabStripMain.AddTab(this);
+                $.tabStripMain.AddTab(this);
             else
                 parent.location = this.href;
 

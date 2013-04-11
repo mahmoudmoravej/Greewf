@@ -71,7 +71,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
 
             output.Append(helper.TextBox(titleName, titleValue, new { ReadOnly = true, Title = titleValue }).ToHtmlString());//helper.textbox is wise enough to correct the name regard of its container
             output.AppendFormat(
-               "<a id='{0}' class='t-link {6}' justwindow='true' href='{1}' ajax='1' style='display:{2}'>{7}</a><a id='{10}' class='t-link {11}' href='#' style='display:{12}'>{13}</a><a id='{3}' href='{4}' windowcallback='{5}' class='t-link {8}' justwindow='true'>{9}</a>",
+               "<a id='{0}' class='t-link {6}' justwindow='true' href='{1}' ajax='1' style='display:{2}'>{7}</a><a id='{10}' class='t-link {11}' href='#' style='display:{12}'>{13}</a><a id='{3}' ajax='1' href='{4}' windowcallback='{5}' class='t-link {8}' justwindow='true'>{9}</a>",
                viewerName,
                viewerUrlPrefix + value,
                hasValue ? "" : "none",

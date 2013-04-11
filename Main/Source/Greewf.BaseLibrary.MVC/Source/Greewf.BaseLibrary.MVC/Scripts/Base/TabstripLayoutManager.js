@@ -19,6 +19,7 @@
         if (options.isNewWindowOk) { linkPattern = linkPattern + ':not([newwindow])'; }
         if (!options.isSPA) {
             var tabStrip = $(options.tabstripId);
+            tabStrip.find('>ul').show();
             var $tabs = tabStrip.tabs({
                 tabTemplate: "<li><a href='#{href}' class='t-link'>#{label}</a><span class='t-icon t-delete' style='cursor:pointer'>بستن</span></li>",
                 select: function (event, ui) {
@@ -41,7 +42,8 @@
                 $tabs.tabs("select", index == 0 ? 0 : index - 1);
 
             });
-        }
+        } else //in spa mode we dont need it, it causes page height problem
+            $(options.tabstripId).find('>ul').remove();
 
         //listen to all links click
         $(linkPattern).live('click', function () {
