@@ -35,7 +35,7 @@ namespace Greewf.BaseLibrary.MVC
         {
             ViewData.Model = model;
             url = CheckRedirectAddress(url, setSaveSuccesfullyFlag);
-            url = EnsureWindowFlag(url);
+            url = EnsureLayoutFlags(url);
             url = EnsureSaveFlag(url, setSaveSuccesfullyFlag);
 
             return base.Redirect(url);
@@ -45,7 +45,7 @@ namespace Greewf.BaseLibrary.MVC
         private string EnsureSaveFlag(string url, bool setSaveSuccesfullyFlag)
         {
             if (setSaveSuccesfullyFlag == false) return url;
-            Response.AddHeader(SavedSuccessfullyFramgment, "true");
+            Response.AddHeader(SavedSuccessfullyFramgment, "true");//surely this line is not usefull! because the redirect action in clinet doesn't resend the header. so we can remove this line as we don't use it anywhere too
             if (url.Contains("#"))
                 return url + ";" + SavedSuccessfullyFramgment;//surely the hash segment is placed at the end of url , so we add our string to it simply
             else
@@ -55,21 +55,31 @@ namespace Greewf.BaseLibrary.MVC
         private RedirectToRouteResult EnsureSaveFlag(RedirectToRouteResult result, bool setSaveSuccesfullyFlag)
         {
             if (setSaveSuccesfullyFlag == false) return result;
-            Response.AddHeader(SavedSuccessfullyFramgment, "true");
+            Response.AddHeader(SavedSuccessfullyFramgment, "true");//surely this line is not usefull! because the redirect action in clinet doesn't resend the header. so we can remove this line as we don't use it anywhere too
             return result.AddFragment(SavedSuccessfullyFramgment);
         }
 
         private string CheckRedirectAddress(string url, bool setSaveSuccesfullyFlag)
         {
-            if (IsCurrentRequestRunInWindow && setSaveSuccesfullyFlag)//when the current request is in window and it is savedsucessfully, we redirect it to home/SavedSuccessfully page automatically
+            bool ispopup = IsCurrentRequestRunInWindow;
+            if (ispopup && setSaveSuccesfullyFlag)//when the current request is in window and it is savedsucessfully, we redirect it to home/SavedSuccessfully page automatically
                 return string.Format(SavedSuccessfullyUrlFormat, url);
+            else if (!ispopup && setSaveSuccesfullyFlag)//in a Single page or a tab
+                return string.Format(SavedSuccessfullyUrlFormat, url) + "&forceToPassedUrl=1";
+
             return url;
         }
 
         private RedirectToRouteResult CheckRedirectAddress(RedirectToRouteResult result, bool setSaveSuccesfullyFlag)
         {
-            if (IsCurrentRequestRunInWindow && setSaveSuccesfullyFlag)//when the current request is in window and it is savedsucessfully, we redirect it to home/SavedSuccessfully page automatically
+            bool ispopup = IsCurrentRequestRunInWindow;
+            if (ispopup && setSaveSuccesfullyFlag)//when the current request is in window and it is savedsucessfully, we redirect it to home/SavedSuccessfully page automatically
                 return base.RedirectToAction(SavedSuccessfullyActionName, SavedSuccessfullyControllerName, new { url = result.ToString(this.ControllerContext) });
+            else if (!ispopup && setSaveSuccesfullyFlag)//in a Single page or a tab 
+                if (!(result.RouteValues["controller"].ToString().ToLower() == SavedSuccessfullyControllerName.ToLower() || 
+                    result.RouteValues["action"].ToString().ToLower() == SavedSuccessfullyActionName.ToLower() ))//and the request is different from SavedSuccessfullyActionName
+                    return base.RedirectToAction(SavedSuccessfullyActionName, SavedSuccessfullyControllerName, new { url = result.ToString(this.ControllerContext), forceToPassedUrl = 1 });
+
             return result;
         }
 
@@ -118,7 +128,7 @@ namespace Greewf.BaseLibrary.MVC
         {
 
             result = CheckRedirectAddress(result, setSaveSuccesfullyFlag);
-            EnsureWindowFlag(result.RouteValues);
+            EnsureLayoutFlags(result.RouteValues);
             result = EnsureSaveFlag(result, setSaveSuccesfullyFlag);
 
             return result;
@@ -126,11 +136,11 @@ namespace Greewf.BaseLibrary.MVC
 
         protected override RedirectToRouteResult RedirectToRoute(string routeName, System.Web.Routing.RouteValueDictionary routeValues)
         {
-            EnsureWindowFlag(routeValues);
+            EnsureLayoutFlags(routeValues);
             return base.RedirectToRoute(routeName, routeValues);
         }
 
-        private void EnsureWindowFlag(System.Web.Routing.RouteValueDictionary routeValues)
+        private void EnsureLayoutFlags(System.Web.Routing.RouteValueDictionary routeValues)
         {
             //this method should also ensures Puremode and Simplemode too
             EnsureFlag(routeValues, IsCurrentRequestRunInWindow, "iswindow");
@@ -141,7 +151,7 @@ namespace Greewf.BaseLibrary.MVC
 
         }
 
-        private string EnsureWindowFlag(string url)
+        private string EnsureLayoutFlags(string url)
         {
             //this method should also ensures Puremode and Simplemode too
             url = EnsureFlag(url, IsCurrentRequestRunInWindow, "iswindow");
@@ -317,5 +327,5 @@ namespace Greewf.BaseLibrary.MVC
 
     }
 
-   
+
 }

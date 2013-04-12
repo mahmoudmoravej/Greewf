@@ -114,7 +114,7 @@
             $("iframe:first", widget.htmlTag).load(function () {//note : just one iframe is alowed
                 var sameOrigin = this.contentWindow != null && this.contentWindow.document != null; //same origin policy makes document == null for external URLs
                 if (sameOrigin)
-                    if (handleSpecialPages(widgetLayout, widget, this.contentWindow.location, null, this.contentWindow.document.body.innerText, true)) return;
+                    if (handleSpecialPages(widgetLayout, widget, widgetTitle, title, this.contentWindow.location, null, this.contentWindow.document.body.innerText, null, this)) return;
 
                 $(this).data('contentLoaded', true);
                 $('div[isProgress]', $(this).parent()).hide();
@@ -191,13 +191,13 @@
         return $(frame).attr('isrefresh') != 'true' && frame.contentWindow.location.toString().indexOf("/SavedSuccessfully") == -1 && frame.contentWindow.location.hash.toString().indexOf('successfullysaved') == -1;
     }
 
-    function handleSpecialPages(widgetLayout, widget, location, linkHash, data/*it may be a jquery object*/, isIframeBody) {
-        var handled = handleSpecialPagesByLink(widgetLayout, widget, location, linkHash);
+    function handleSpecialPages(widgetLayout, widget, widgetTitle, title, location, linkHash, data/*it may be a jquery object*/, postSuccessAction, iframeContainer) {
+        var handled = handleSpecialPagesByLink(widgetLayout, widget, widgetTitle, title, location, linkHash, postSuccessAction, iframeContainer);
         if (handled) return true;
         var jsonResponse = null;
         //maybe response json results
         if (typeof (data) === "string") {//means html data. but it may be a json data in Iframe mode
-            if (isIframeBody)
+            if (iframeContainer)
                 try {
                     jsonResponse = $.parseJSON(data);
                 } catch (e) {
@@ -217,7 +217,7 @@
 
     }
 
-    function handleSpecialPagesByLink(widgetLayout, widget, location, linkHash) {
+    function handleSpecialPagesByLink(widgetLayout, widget, widgetTitle, title, location, linkHash, postSuccessAction, iframeContainer) {
         var handled = false;
         var link = location;
         if (linkHash == null) linkHash = ''; //todo : linkhash is null in ajax mode.
@@ -227,18 +227,17 @@
             linkHash = location.hash.toString();
         }
 
-        link = link.toLocaleLowerCase();
-        linkHash = linkHash.toLocaleLowerCase()
+        link = link.toLowerCase();
+        linkHash = linkHash.toLowerCase()
 
-        if (link.indexOf("/savedsuccessfully") > 0 || linkHash.indexOf('successfullysaved') > 0) {
+        if (link.indexOf("/savedsuccessfully") > 0 && link.indexOf("forcetopassedurl=1") > 0) {
+            notifySuccess(widget);
+            redirectToUrl(widgetLayout, widget, widgetTitle, title, decodeURI(jsHelper.getQueryStringParameterByName('url', link)), postSuccessAction, iframeContainer);
+            handled = true;
+        }
+        else if ((link.indexOf("/savedsuccessfully") > 0 && link.indexOf("forcetopassedurl=1") == -1) || linkHash.indexOf('successfullysaved') > 0) {
             widgetLayout.CloseAndDone(location.hash != undefined ? location : null, widget, true); //when ajax request
-            if (layoutCore.options.notifySuccess && jQuery.noticeAdd && !$(widget.sender).attr('discardSuccessMessage')) {
-                jQuery.noticeAdd({
-                    text: layoutCore.options.notifySuccessMessage,
-                    stay: false,
-                    stayTime: layoutCore.options.notifySuccessTimeout
-                });
-            }
+            notifySuccess(widget);
             handled = true;
         }
         else if (link.indexOf("/accessdenied") > 0 || link.indexOf("/error") > 0) {
@@ -248,6 +247,24 @@
 
         return handled;
 
+    }
+
+    function notifySuccess(widget) {
+        if (layoutCore.options.notifySuccess && jQuery.noticeAdd && !$(widget.sender).attr('discardSuccessMessage')) {
+            jQuery.noticeAdd({
+                text: layoutCore.options.notifySuccessMessage,
+                stay: false,
+                stayTime: layoutCore.options.notifySuccessTimeout
+            });
+
+        }
+    }
+
+    function redirectToUrl(widgetLayout, widget, widgetTitle, title, link, postSuccessAction, iframeContainer) {
+        if (iframeContainer)
+            iframeContainer.contentWindow.location = link;
+        else//ajax call
+            loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, postSuccessAction);
     }
 
     function loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, postSuccessAction) {
@@ -263,7 +280,7 @@
                 widgetLayout.setContent(widget, content);
             },
             widgetLinkCorrected: function (correctedLink, content) {
-                if (handleSpecialPages(widgetLayout, widget, correctedLink, null, content, false)) return { cancel: true };
+                if (handleSpecialPages(widgetLayout, widget, widgetTitle, title, correctedLink, null, content, postSuccessAction, null)) return { cancel: true };
 
                 var pageContentTitle = $('#currentPageTitle', widget.htmlTag);
                 if (widgetTitle != null)

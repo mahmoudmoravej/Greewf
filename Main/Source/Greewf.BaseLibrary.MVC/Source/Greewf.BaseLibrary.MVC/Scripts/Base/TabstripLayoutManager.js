@@ -83,17 +83,6 @@
 
     }
 
-    function getQueryStringParameterByName(name, link) {
-        name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-        var regexS = "[\\?&]" + name + "=([^&#]*)";
-        var regex = new RegExp(regexS);
-        var results = regex.exec(link);
-        if (results == null)
-            return "";
-        else
-            return decodeURIComponent(results[1].replace(/\+/g, " "));
-    }
-
     tabStripMain.clearLink = function (link) {
         link = link.toLowerCase()
             .replace('&istab=1', '')
@@ -111,7 +100,7 @@
         if (link.indexOf("http://") == 0 && link.indexOf("http://" + window.location.hostname.toLowerCase()) == 0)
             link = link.replace("http://" + window.location.hostname, "");
 
-        var p = getQueryStringParameterByName("_", link);//jquery parameter
+        var p = jsHelper.getQueryStringParameterByName("_", link);//jquery parameter
         if (p.length > 0) {
             p = "_=" + p;
             link = link
@@ -202,6 +191,17 @@
             setPanelContent(panel, link, tabStrip, pageContent);
     }
 
+    function correctLinkForTab(link) {
+        if (link.indexOf('istab=1') == -1) {
+            if (link.indexOf('?') == -1)
+                link = link + "?";
+            else
+                link = link + "&";
+            link = link + 'istab=1';
+        }
+        return link;
+    }
+
     function setPanelContent(panel, link, tabStrip, pageContent) {
         if (pageContent) {
             panel.html('');
@@ -216,19 +216,21 @@
 
         var iframe = $("iframe", panel);
 
-        if (link.indexOf('istab=1') == -1) {
-            if (link.indexOf('?') == -1)
-                link = link + "?";
-            else
-                link = link + "&";
-            link = link + 'istab=1';
-        }
+        link = correctLinkForTab(link);
 
         iframe.attr('src', link);
 
         iframe.load(function () {
-            var contentWindowPath = tabStripMain.clearLink(this.contentWindow.location.pathname + this.contentWindow.location.search).toLowerCase();
-            if ((window.location.pathname + window.location.search).toLowerCase() != contentWindowPath)
+            //todo: same origin policy check!
+            var iframeLink = (this.contentWindow.location.pathname + this.contentWindow.location.search).toLowerCase();
+            if (iframeLink.indexOf("/savedsuccessfully") > 0 && iframeLink.indexOf("forcetopassedurl=1") > 0) {
+                layoutHelper.windowLayout.ShowSuccessMessage('اطلاعات با موفقیت ذخیره شد', 'پیغام سیستم');
+                this.contentWindow.location = correctLinkForTab(decodeURI(jsHelper.getQueryStringParameterByName('url', iframeLink)));
+                return false;
+            }
+
+            var contentWindowPath = decodeURI(tabStripMain.clearLink(iframeLink).toLowerCase());
+            if (decodeURI(window.location.pathname + window.location.search).toLowerCase() != contentWindowPath)
                 window.location.hash = contentWindowPath;
             else
                 window.location.hash = "";
@@ -278,12 +280,21 @@
                 if (correctedLink != null && correctedLink.indexOf('enforcelayout=1') != -1) {
                     window.location = tabStripMain.clearLink(correctedLink).replace('enforcelayout=1', '');
                     return { cancel: true };
-                } else if (correctedLink != null && (correctedLink.indexOf("/savedsuccessfully") > 0 || correctedLink.indexOf('successfullysaved') > 0)) {
-                    layoutHelper.windowLayout.ShowSuccessMessage('اطلاعات با موفقیت ذخیره شد', 'پیغام سیستم');
+                } else if (correctedLink != null) {
+                    if (correctedLink.indexOf("/savedsuccessfully") > 0 && correctedLink.indexOf("forcetopassedurl=1") > 0) {
+                        layoutHelper.windowLayout.ShowSuccessMessage('اطلاعات با موفقیت ذخیره شد', 'پیغام سیستم');
+                        loadThroughAjax(decodeURI(jsHelper.getQueryStringParameterByName('url', correctedLink)), panel, null);
+                        return { cancel: true };
+                    }
+                    else if ((correctedLink.indexOf("/savedsuccessfully") > 0 && correctedLink.indexOf("forcetopassedurl=1") == -1) || correctedLink.indexOf('successfullysaved') > 0) {
+                        layoutHelper.windowLayout.ShowSuccessMessage('اطلاعات با موفقیت ذخیره شد', 'پیغام سیستم');
+                        return { cancel: true };
+                    }
                 }
-                var contentWindowPath = tabStripMain.clearLink(window.location.pathname + window.location.search).toLowerCase();
-                if (tabStripMain.clearLink(window.location.pathname + window.location.search).toLowerCase() != tabStripMain.clearLink(correctedLink))
-                    window.location.hash = tabStripMain.clearLink(correctedLink).toLowerCase();
+                var windowPath = decodeURI(tabStripMain.clearLink(window.location.pathname + window.location.search).toLowerCase());
+                var newLink = decodeURI(tabStripMain.clearLink(correctedLink).toLowerCase());
+                if (windowPath != newLink)
+                    window.location.hash = newLink;
                 else
                     window.location.hash = "";
 
