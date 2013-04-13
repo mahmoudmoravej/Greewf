@@ -307,7 +307,7 @@
                 if (handlePageCloserSubmitButtons(form, widgetLayout, widget)) return { cancel: true }; //no submit for submit page closer ,they are just for validation purpose
                 return { cancel: false };
             },
-            innerFormBeforeSend: function () {
+            innerFormBeforeSend: function (innerFormLink) {
                 var newContentPointer;
                 if (layoutCore.options.showPageFormErrorsInExternalWindow)
                     newContentPointer = widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout), true);

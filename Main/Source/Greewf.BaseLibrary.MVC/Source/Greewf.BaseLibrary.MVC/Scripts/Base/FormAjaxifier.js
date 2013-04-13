@@ -52,8 +52,12 @@
         if (options.getAddedAjaxWindowContentContainerStyle)
             containerStyle = options.getAddedAjaxWindowContentContainerStyle();
 
-        if (html instanceof jQuery)
-            options.contentReady($('<div id="addedAjaxWindowContentContainer" style="' + containerStyle + '" link="' + options.link + '"></div>').append(html), isErrorContent);
+        if (html instanceof jQuery) {
+            var x = $('<div id="addedAjaxWindowContentContainer" style="display:none;' + containerStyle + '" link="' + options.link + '"></div>').appendTo(document.body);
+            x.append(html);
+            options.contentReady(x, isErrorContent);
+            x.show();
+        }
         else
             options.contentReady('<div id="addedAjaxWindowContentContainer" style="' + containerStyle + '" link="' + options.link + '">' + html + '</div>', isErrorContent);
 
@@ -127,7 +131,7 @@
                     data: appendSubmitButtonValue($(this).serialize(), this),
                     beforeSend: function () {
                         if (options.innerFormBeforeSend)
-                            newContentPointer = options.innerFormBeforeSend();
+                            newContentPointer = options.innerFormBeforeSend(link);
                     },
                     success: function (html, status, xhr) {
                         insertAjaxContent($.extend({}, options, { link: link }), html, false);

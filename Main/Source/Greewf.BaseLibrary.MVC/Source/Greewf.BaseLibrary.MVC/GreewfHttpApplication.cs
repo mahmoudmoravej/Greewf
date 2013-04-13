@@ -181,6 +181,13 @@ namespace Greewf.BaseLibrary.MVC
                 layoutFlagSet = true;
             }
 
+            if (Request.QueryString.AllKeys.Contains("istab"))
+            {
+                querystring += "&istab=1";
+                layoutFlagSet = true;
+            }
+
+
             if (Request.QueryString.AllKeys.Contains("includeUrlInContent"))
                 querystring += "&includeUrlInContent=1";
             if (error is SystemAccessException)

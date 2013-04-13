@@ -139,17 +139,13 @@
         var tabStrip = $(options.tabstripId);
         var pos = tabStrip.tabs('length');
         title = pageContent ? title : 'در حال دریافت...';
-        var panelId = '';
         var panel = null;
 
         //make the tab ready (make it or replace it)
         if (replaceActiveTab) {//replace tab
             panelId = currentTabId;
-            $('li>a[href="#' + panelId + '"]', tabStrip).text(title);
             panel = $('>#' + panelId, tabStrip);
-            $(arrTabs).each(function (i, o) {
-                if (currentTabId == o.id) { o.link = link; };
-            });
+            correctActiveTabInfo(title, link, tabStrip);
             tabStrip.tabs('select', currentTabId);
             $('>*', panel).remove();
         }
@@ -167,6 +163,15 @@
 
     }
 
+    function correctActiveTabInfo(title, link, tabStrip) {
+        panelId = currentTabId;
+        $('li>a[href="#' + panelId + '"]', tabStrip).text(title);
+        panel = $('>#' + panelId, tabStrip);
+        $(arrTabs).each(function (i, o) {
+            if (currentTabId == o.id) { o.link = link; };
+        });
+    }
+
     tabStripMain.addByLinkForSPA = function (link, title, pageContent) {
 
         var url = link.replace(/\//g, "_");
@@ -176,7 +181,7 @@
         panel = $('#spaContainer' + options.tabstripId.replace('#', ''), options.tabstripId);
         if (panel.length == 0) panel = $('<div style="height:100%" id="' + 'spaContainer' + options.tabstripId.replace('#', '') + '"></div>').appendTo(options.tabstripId);
         panel.attr('link', link);
-        $('>*', panel).remove();
+        //$('>*', panel).remove(); NOTE : we don't need to remove it! we replace it by html() method in next calls. removing causes page flick which is not good !
         var g = $('<div style="position:absolute;width:100%;height:100%;left:0;right:0;bottom:0;top:0;z-index:999999999"></div>').appendTo(document.body).focus();//it is just to make the shown menu to be hide (because of mouse over!--indeed telerik bug...it should hide the menu after the click...isn't it?)
         makePanelReady(panel, link, null, pageContent);
         window.setTimeout(function () { g.remove() });
@@ -187,6 +192,8 @@
 
         if (options.isAJAX) //we should load the link content through an ajax call(if the pageContent is ready we should ajaxify it). NOTE : it is practical in SPA mode. in none SPA mode , we are prone to have lots of errors (because of javascript interference)
             loadThroughAjax(link, panel, pageContent);
+        else if (pageContent && tabStrip)//first page of tab (which not load in Iframe anyway so we should handle it through ajax(ajaxifying its content))
+            loadThroughAjax(link, panel, pageContent, tabStrip);
         else
             setPanelContent(panel, link, tabStrip, pageContent);
     }
@@ -202,10 +209,16 @@
         return link;
     }
 
-    function setPanelContent(panel, link, tabStrip, pageContent) {
+    function setPanelContent(panel, link, tabStrip, pageContent, hideOldContent/*just for ajax mode! so when pageContent is present*/) {
         if (pageContent) {
-            panel.html('');
-            panel.append(pageContent);
+            if (!hideOldContent) {
+                panel.html(pageContent);
+            } else//hide old content
+            {
+                $('>*', panel).css('display', 'none');
+                var newContentPointer = { oldTitle: null/*TODO*/, newElement: $(pageContent).prependTo(panel) };
+                return newContentPointer;
+            }
             return;
         }
 
@@ -248,10 +261,15 @@
             window.document.title = this.contentWindow.document.title;
         });
 
+    }
+
+    function retrieveOldContent(newContentPointer, panel) {
+        if (newContentPointer) newContentPointer.newElement.remove();
+        $('>*', panel).css('display', '');
 
     }
 
-    function loadThroughAjax(link, panel, pageContent) {
+    function loadThroughAjax(link, panel, pageContent, tabStrip) {
         if (link.indexOf('istab=1') == -1) {
             if (link.indexOf('?') == -1)
                 link = link + "?";
@@ -259,6 +277,8 @@
                 link = link + "&";
             link = link + 'istab=1';
         }
+
+        var firstCallProgress = null;
 
 
         layoutHelper.formAjaxifier.load({
@@ -270,9 +290,12 @@
                 return 'height:100%';
             },
             beforeSend: function () {
-                setPanelContent(panel, link, null, ajaxProgressHtml());
+                firstCallProgress = window.setTimeout(function () {
+                    setPanelContent(panel, link, null, ajaxProgressHtml());
+                }, 600);
             },
             contentReady: function (content, isErrorContent) {
+                if (firstCallProgress) window.clearTimeout(firstCallProgress);
                 setPanelContent(panel, link, null, content);
             },
             widgetLinkCorrected: function (correctedLink, content) {
@@ -301,8 +324,8 @@
                 var pageContentTitle = $('#currentPageTitle', panel);
                 if (pageContentTitle.length > 0)
                     window.document.title = pageContentTitle.text();
-                // else
-                //     window.document.title = '';
+                if (tabStrip)
+                    correctActiveTabInfo(window.document.title, newLink, tabStrip);
             },
             loadCompleted: function (isErrorContent) {
             },
@@ -312,17 +335,16 @@
             },
             innerFormBeforeSubmit: function (form) {
             },
-            innerFormBeforeSend: function () {
-                //var newContentPointer;
-                //if (layoutCore.options.showPageFormErrorsInExternalWindow)
-                //    newContentPointer = widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout), true);
-                //else
-                //    widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout));
-                //changeWidgetTitle(widgetLayout, widgetTitle, 'در حال دریافت...'); //we do it here because we may need to access the current title in "setContent" function
-                //return newContentPointer;
+            innerFormBeforeSend: function (innerFormLink) {
+                var newContentPointer;
+                if (layoutCore.options.showPageFormErrorsInExternalWindow)
+                    newContentPointer = setPanelContent(panel, innerFormLink, null, ajaxProgressHtml(), true);
+                else
+                    setPanelContent(panel, innerFormLink, null, ajaxProgressHtml());
+                return newContentPointer;
             },
             retrieveOldContent: function (newContentPointer) {
-                //widgetLayout.retrieveOldContent(widget, newContentPointer);
+                retrieveOldContent(newContentPointer, panel);
             }
         });
 
