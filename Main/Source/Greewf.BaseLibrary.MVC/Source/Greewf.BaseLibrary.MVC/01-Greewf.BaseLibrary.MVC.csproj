@@ -192,6 +192,7 @@
     <Compile Include="Security\OldVersion\PermissionLimiterBase.cs" />
     <Compile Include="Security\PermissionLimiterBase.cs" />
     <Compile Include="TelerikExtentions\ExcelOutputAttribute.cs" />
+    <Compile Include="TelerikExtentions\Helper.cs" />
     <Compile Include="Validators\Localized\FkRequiredAttribute.cs" />
     <Compile Include="Validators\Localized\RangeAttribute.cs" />
     <Compile Include="Validators\Localized\DigitsOnlyAttribute.cs" />
