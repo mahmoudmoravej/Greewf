@@ -155,7 +155,7 @@ namespace Greewf.BaseLibrary.MVC
             return ProfileInfo.ToString();
         }
 
-        public bool IsTabularLayout
+        public virtual bool IsTabularLayout
         {
             get
             {
@@ -167,7 +167,7 @@ namespace Greewf.BaseLibrary.MVC
             }
         }
 
-        public string Theme
+        public virtual string Theme
         {
             get
             {
@@ -181,7 +181,7 @@ namespace Greewf.BaseLibrary.MVC
 
 
 
-        public bool IsSPA
+        public virtual bool IsSPA
         {
             get
             {
@@ -193,7 +193,7 @@ namespace Greewf.BaseLibrary.MVC
             }
         }
 
-        public bool IsOpenWindowOk
+        public virtual bool IsOpenWindowOk
         {
             get
             {
@@ -205,7 +205,7 @@ namespace Greewf.BaseLibrary.MVC
             }
         }
 
-        public bool IsTopPaneExapnded
+        public virtual bool IsTopPaneExapnded
         {
             get
             {
@@ -217,11 +217,11 @@ namespace Greewf.BaseLibrary.MVC
             }
         }
 
-        public string BodyFontSize
+        public virtual string BodyFontSize
         {
             get
             {
-                return !HttpContext.Current.Request.Cookies.AllKeys.Contains("Body-Font-Size") ? "8pt" : HttpContext.Current.Request.Cookies["Body-Font-Size"].Value.ToString();
+                return !HttpContext.Current.Request.Cookies.AllKeys.Contains("Body-Font-Size") ? "11pt" : HttpContext.Current.Request.Cookies["Body-Font-Size"].Value.ToString();
             }
             set
             {
@@ -229,11 +229,11 @@ namespace Greewf.BaseLibrary.MVC
             }
         }
 
-        public string BodyFontName
+        public virtual string BodyFontName
         {
             get
             {
-                return !HttpContext.Current.Request.Cookies.AllKeys.Contains("Body-Font-Name") ? "Tahoma" : HttpContext.Current.Request.Cookies["Body-Font-Name"].Value.ToString();
+                return !HttpContext.Current.Request.Cookies.AllKeys.Contains("Body-Font-Name") ? "B Nazanin" : HttpContext.Current.Request.Cookies["Body-Font-Name"].Value.ToString();
             }
             set
             {

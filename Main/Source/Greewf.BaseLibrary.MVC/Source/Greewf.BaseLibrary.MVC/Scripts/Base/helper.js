@@ -409,7 +409,35 @@ telerikHelper = new function () {
 
     }
 
+    this.handleExcelExporter = function (gridId, buttonId) {
+        var gridId = $('#' + gridId);
+        var buttonId = $('#' + buttonId);
 
+        $(buttonId).click(function () {
+            var grid = $(gridId).data('tGrid');
+            var $exportLink = $(buttonId);
+            var href = grid.ajax.selectUrl.toLocaleLowerCase();
+            href = href.indexOf('?') > -1 ? href : href + '?';
+            var orderReg = /[\\?&]orderby=([^&#]*)/;
+            var filterReg = /[\\?&]filter=([^&#]*)/;
+            var exportReg = /[\\?&]exporttoexcel=([^&#]*)/;
+            href = orderReg.test(href) ? href.replace(orderReg, 'orderBy=' + (grid.orderBy || '~')) : href + '&orderBy=' + (grid.orderBy || '~');
+            href = filterReg.test(href) ? href.replace(filterReg, 'filter=' + (grid.filterBy || '~')) : href + '&filter=' + (grid.filterBy || '~');
+            href = exportReg.test(href) ? href : href + '&exportToExcel=1';
+
+            var cols = new Array();
+            $($(gridId).data('tGrid').columns).each(function (i, o) {
+                if (!o.hidden && o.member)
+                    cols.push({ Id: o.member, Title: o.title, Type: o.type });
+            });
+
+            var form = $('<form method="post"><input type="submit"/><input type="hidden" name="layout" /></form>').attr('action', href);
+            $('input[name="layout"]', form).val(JSON.stringify(cols));
+            $('input[type="submit"]', form).click();
+            return false;
+        });
+
+    }
 };
 
 mvcHelper = new function () {
