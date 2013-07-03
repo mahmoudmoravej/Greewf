@@ -99,7 +99,7 @@
         link = layoutHelper.formAjaxifier.correctLink(link, doAjax, true, true, widgetLayout.getTypeCode());
 
         //ajax or iframe?
-        if (doAjax) {//ajax request : pure mode
+        if (doAjax) {//ajax request : pure mode            
             loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, function () {
                 $('#addedAjaxWindowContentContainer', widget.htmlTag).attr('contentLoaded', 'true');
                 var contentContainer = $('#addedAjaxWindowContentContainer', widget.htmlTag);
@@ -268,8 +268,15 @@
     }
 
     function loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, postSuccessAction) {
+        var senderOptions = {
+            sendViaPost: $(widget.sender).attr('sendViaPost'),
+            getPostDataCallback: widget.ownerWindow[$(widget.sender).attr('getPostDataCallBack')]
+        };
+
         layoutHelper.formAjaxifier.load({
             link: link,
+            getPostData: senderOptions.getPostDataCallback,
+            sendViaPost: senderOptions.sendViaPost,
             content: null,
             widgetHtmlTag: widget.htmlTag,
             widgetType: widgetLayout.getTypeCode(),

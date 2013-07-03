@@ -7,7 +7,7 @@
 5- editor-focus, emphasize,
 
 link style :
-<a class="t-button t-grid-edit t-button-icon at-rowEdit" href='...' title='...' (inline='xxx' | newwindow='xxx'|justwindow='xxx'|justMain='xxx' | responsiveAjax='xxx'|tooltipWindow='xxx') windowcallback='ContactGridCallBack' winWidth='50' winHeight='50' winMax='true' winNoModal='1' windowActionsNeedConfirm='true' winNoMaximaizable='x' winDisableBackHide='x' winEnableBackHide='x' ajax='1' isPageCloser='1' showEvents='click...' hideEvents='click unfocus...' autoGrowingSize='1' winAutoButtonsBar='1' discardSuccessMessage='1'> ....</a>
+<a class="t-button t-grid-edit t-button-icon at-rowEdit" href='...' title='...' (inline='xxx' | newwindow='xxx'|justwindow='xxx'|justMain='xxx' | responsiveAjax='xxx'|tooltipWindow='xxx') windowcallback='ContactGridCallBack' winWidth='50' winHeight='50' winMax='true' winNoModal='1' windowActionsNeedConfirm='true' winNoMaximaizable='x' winDisableBackHide='x' winEnableBackHide='x' ajax='1' isPageCloser='1' showEvents='click...' hideEvents='click unfocus...' autoGrowingSize='1' winAutoButtonsBar='1' discardSuccessMessage='1' sendViaPost='1' getPostDataCallBack='functionName'> ....</a>
 	classes : link,show-icon,link hover-classic,t-link
 
 	winDisableBackHide = در صورتی که می خواهید پنجره پشتی در زمان باز شدن پنجره جدید مخفی نشود
@@ -31,6 +31,8 @@ link style :
 	hideevents = رویدادهایی که باعث بسته شدن آن می شوند : فعلا فقط برای تولتیپ -- کاملا بر اساس "کیو تیپ" می باشد (http://api.jquery.com/category/events/) 
 	windowActionsNeedConfirm = اگر بخواهیم که رفرش شدن پنجره یا بسته شدن پنجره با تایید کاربر باشد
 	winMaxHeight = حداکثر طول مجاز پنجره. در حال حاضر فقط در تولتیپ پیاده سازی شده است
+	sendViaPost = مشخص می کند که آیا درخواست از روش پست ارسال شود؟ 
+	getPostDataCallBack= نام تابعی است که در هنگام ارسال اطلاعات صدا زده می شود تا بخش "دیتا" درخواست "آجاکس" توسط آن عینا پر شود. بطور مشخص برای درخواست های از نوع "گت" اگرچه این تابع فراخوانی می شود اما طبق پروتکل "اچ.تی.تی.پی" این بخش ارسال نمی شود
 functions : xxxx= {window یا tooltip}
 	layoutHelper.xxxxLayout.MaximizeToContent = function (adjustCenter)  یک ویجت پنجره یا تولتیپ را با محتوای آن هم اندازه می کند. پارامتر مشخص می کند که بعد از تغییر اندازه آنرا در مرکز پنجره کند یا خیر.
 

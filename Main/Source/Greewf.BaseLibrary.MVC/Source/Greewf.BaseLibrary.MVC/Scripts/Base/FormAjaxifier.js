@@ -32,6 +32,8 @@
         $.ajax({
             url: encodeURI(options.link),
             cache: false,
+            type: options.sendViaPost != undefined ? 'POST' : 'GET',
+            data: options.getPostData ? options.getPostData() : null,
             success: function (html) {
                 loadContent(options, html);
             },
