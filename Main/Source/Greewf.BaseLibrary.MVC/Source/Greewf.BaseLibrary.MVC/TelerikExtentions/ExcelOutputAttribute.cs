@@ -1,4 +1,5 @@
-﻿using NPOI.HSSF.UserModel;
+﻿using Greewf.BaseLibrary.MVC.Security;
+using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
@@ -24,12 +25,28 @@ namespace Greewf.BaseLibrary.MVC.TelerikExtentions
     public class ExcelOutputAttribute : ActionFilterAttribute
     {
 
+        private long? _permissionObject = null;
+        private long? _permissions = null;
+
+
+        public  ExcelOutputAttribute()
+        {
+        }
+
+        public   ExcelOutputAttribute(long permissionObject, long permissions)
+        {
+            _permissionObject = permissionObject;
+            _permissions = permissions;
+        }
 
 
         public override void OnActionExecuted(ActionExecutedContext filterContext)
         {
             if (HttpContext.Current.Request["exportToExcel"] != null)
             {
+                if (_permissionObject.HasValue && CurrentUserBase.GetActiveInstance().HasPermission(_permissionObject.Value, _permissions.Value) == false)
+                    throw new SecurityException(_permissionObject.Value);
+
                 GridModel oldModel = (GridModel)filterContext.Controller.ViewData.Model;
                 var filter = HttpContext.Current.Request["filter"];
                 var orderBy = HttpContext.Current.Request["orderBy"];

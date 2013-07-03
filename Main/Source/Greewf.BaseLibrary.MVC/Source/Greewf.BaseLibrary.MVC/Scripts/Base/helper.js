@@ -335,7 +335,7 @@ telerikHelper = new function () {
 
     this.resizeGridTo = function (gridId, size) {
         var grid = $('#' + gridId);
-        size = size - $('.t-grouping-header', grid).outerHeight() - $('.t-grid-header', grid).outerHeight() - $('.t-grid-bottom', grid).outerHeight();
+        size = size - $('.t-grid-toolbar.t-grid-top', grid).outerHeight() - $('.t-grid-toolbar.t-grid-bottom', grid).outerHeight() - $('.t-grouping-header', grid).outerHeight() - $('.t-grid-header', grid).outerHeight() - $('.t-grid-bottom', grid).outerHeight();
         $('.t-grid-content', grid).css("height", size - 3);
     }
 
