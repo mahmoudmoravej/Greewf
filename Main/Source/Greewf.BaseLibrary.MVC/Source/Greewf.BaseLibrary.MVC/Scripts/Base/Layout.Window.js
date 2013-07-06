@@ -106,7 +106,7 @@
             actions: type == 6 ? new Array() : new Array('Close'),
             html: msgHtml,
             onClose: function (s) {
-                window.clearInterval( $(this).data('alwaysOnTop'));
+                window.clearInterval($(this).data('alwaysOnTop'));
                 $(s.target).css('z-index', '').css('visibility', 'hidden');
                 var x = $('.editor-focus2', this); //it works with helper.js to return the focus to the previous item
                 if (x.data('closeHandler')) x.data('closeHandler')();

@@ -298,8 +298,8 @@
                 if (firstCallProgress) window.clearTimeout(firstCallProgress);
                 setPanelContent(panel, link, null, content);
             },
-            widgetLinkCorrected: function (correctedLink, content) {
-                correctedLink = correctedLink.toLowerCase();
+            widgetLinkCorrected: function (options, content) {
+                correctedLink = options.correctedLink.toLowerCase();
                 if (correctedLink != null && correctedLink.indexOf('enforcelayout=1') != -1) {
                     window.location = tabStripMain.clearLink(correctedLink).replace('enforcelayout=1', '');
                     return { cancel: true };

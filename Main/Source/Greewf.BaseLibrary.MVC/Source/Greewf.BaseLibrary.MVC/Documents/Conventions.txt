@@ -7,14 +7,14 @@
 5- editor-focus, emphasize,
 
 link style :
-<a class="t-button t-grid-edit t-button-icon at-rowEdit" href='...' title='...' (inline='xxx' | newwindow='xxx'|justwindow='xxx'|justMain='xxx' | responsiveAjax='xxx'|tooltipWindow='xxx') windowcallback='ContactGridCallBack' winWidth='50' winHeight='50' winMax='true' winNoModal='1' windowActionsNeedConfirm='true' winNoMaximaizable='x' winDisableBackHide='x' winEnableBackHide='x' ajax='1' isPageCloser='1' showEvents='click...' hideEvents='click unfocus...' autoGrowingSize='1' winAutoButtonsBar='1' discardSuccessMessage='1' sendViaPost='1' getPostDataCallBack='functionName'> ....</a>
+<a class="t-button t-grid-edit t-button-icon at-rowEdit" href='...' title='...' (inline='xxx' | newwindow='xxx'|justwindow='xxx'|justMain='xxx' | responsiveAjax='xxx'|tooltipWindow='xxx') windowcallback='ContactGridCallBack' winWidth='50' winHeight='50' winMax='true' winNoModal='1' windowActionsNeedConfirm='true' winNoMaximaizable='x' winDisableBackHide='x' winEnableBackHide='x' ajax='1' isPageCloser='1' showEvents='click...' hideEvents='click unfocus...' autoGrowingSize='1' winAutoButtonsBar='1' discardSuccessMessage='1' sendMethod='POST/PUT/...' getPostDataCallBack='functionName'> ....</a>
 	classes : link,show-icon,link hover-classic,t-link
 
 	winDisableBackHide = در صورتی که می خواهید پنجره پشتی در زمان باز شدن پنجره جدید مخفی نشود
 	winEnableBackHide = در صورتی که می خواهید پنجره پشتی در زمان باز شدن پنجره جدید حتما مخفی شود 
 	winNoModal= آیا نمایش به صورت مودال نباشد
 	winNoMaximaizable = ماکیزمایز پذیر نباشد!
-	windowcallback = function (url,data,isSuccessfulFlagUp){}
+	windowcallback = function (url,data,isSuccessfulFlagUp){} :: data = {link:xx, closingFetchedData: yyy, pageUrl:zzz}
 	winAutoButtonsBar = مشخص میکند که آیا دکمه های در محل مخصوص و پایین پنجره قرار بگیرند یا خیر
 	responsiveAjax = اگر اکشنی که انجام می دهد نتیجه اش یک متنی است که تنها می بایست در پنجره مربوطه نمایش داده شود. مثلا وقتی کالا به سبد خرید اضافه می شود و نتیجه این است که "کالا اضافه شد" از این موارد استفاده می شود.
 					* در هر حالتی که نتیجه  از نوع json باشد سیستم آنرا به صورت ResponsiveJsonResult هندل می کند
@@ -25,13 +25,17 @@ link style :
 	discardSuccessMessage = اینکه پیغام موفقیت را نمایش ندهد
 	isPageCloser = آیا این دکمه باعث بسته شدن صفحه می گردد؟ -- فعلا فقط در حالت آجاکسی کار میکند -- در صورتی که به ولیدیشن صفحه نیاز دارید نوع دکمه را سابمیتی انتخاب کنید
 	pageCloserDataFetcher = نام فانکشنی که داده مربوطه را به صدازننده ارسال می کند --فعلا فقط در حالت آجاکسی کار میکند
-	** : تو ویژگی بالا با هم و بر روی صفحه داخلی یک پنجره یا تولتیپ قرار می گیرند. اگر می خواهید یک دکمه در نقش "انصراف" باشد کافیست که با تابع دوم این موضوع را به صفحه اصلی پاس داده و آنجا متوجه شوید که چه چیزی در صفحه  داخلی پنجره رخ داده است
+	** : دو ویژگی بالا با هم و بر روی صفحه داخلی یک پنجره یا تولتیپ قرار می گیرند. اگر می خواهید یک دکمه در نقش "انصراف" باشد کافیست که با تابع دوم این موضوع را به صفحه اصلی پاس داده و آنجا متوجه شوید که چه چیزی در صفحه  داخلی پنجره رخ داده است
+	*** : اگر می خواهید حتی با "سابمیت" هم این تابع فراخوانی شود لازم است که این ویژگی را بر روی دکمه سابمیت مربوطه تعریف کنید. نکته خیلی مهم این است که دکمه سابمیت مربوطه باید حتما ویژگی "نام" آن حتما تنظیم شده باشد
+	*** : منظور از نام = Name
+	*** : مقدار بازگردانده شده از تابع درونی به تابع بیرونی و دریافت کننده وضعتیت پنجره از طریق پارامتر "دیتا" و زیر آیتم زیر بازگردانده می شود :
+	*** : closingFetchedData
 
 	showevents = رویدادهایی که باعث نمایش آن می شوند : فعلا فقط برای تولتیپ -- کاملا بر اساس "کیو تیپ" می باشد (http://api.jquery.com/category/events/)
 	hideevents = رویدادهایی که باعث بسته شدن آن می شوند : فعلا فقط برای تولتیپ -- کاملا بر اساس "کیو تیپ" می باشد (http://api.jquery.com/category/events/) 
 	windowActionsNeedConfirm = اگر بخواهیم که رفرش شدن پنجره یا بسته شدن پنجره با تایید کاربر باشد
 	winMaxHeight = حداکثر طول مجاز پنجره. در حال حاضر فقط در تولتیپ پیاده سازی شده است
-	sendViaPost = مشخص می کند که آیا درخواست از روش پست ارسال شود؟ 
+	sendMethod = مشخص می کند که درخواست از  چی روش ارسال شود؟ مقادیر پروتکل های اچ.تی.تی.پی مجاز هستند
 	getPostDataCallBack= نام تابعی است که در هنگام ارسال اطلاعات صدا زده می شود تا بخش "دیتا" درخواست "آجاکس" توسط آن عینا پر شود. بطور مشخص برای درخواست های از نوع "گت" اگرچه این تابع فراخوانی می شود اما طبق پروتکل "اچ.تی.تی.پی" این بخش ارسال نمی شود
 functions : xxxx= {window یا tooltip}
 	layoutHelper.xxxxLayout.MaximizeToContent = function (adjustCenter)  یک ویجت پنجره یا تولتیپ را با محتوای آن هم اندازه می کند. پارامتر مشخص می کند که بعد از تغییر اندازه آنرا در مرکز پنجره کند یا خیر.

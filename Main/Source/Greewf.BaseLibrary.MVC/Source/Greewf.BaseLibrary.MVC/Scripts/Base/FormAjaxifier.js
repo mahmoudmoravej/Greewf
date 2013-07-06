@@ -32,7 +32,7 @@
         $.ajax({
             url: encodeURI(options.link),
             cache: false,
-            type: options.sendViaPost != undefined ? 'POST' : 'GET',
+            type: options.sendMethod != undefined ? options.sendMethod.toUpperCase() : 'GET',
             data: options.getPostData ? options.getPostData() : null,
             success: function (html) {
                 loadContent(options, html);
@@ -54,6 +54,8 @@
         if (options.getAddedAjaxWindowContentContainerStyle)
             containerStyle = options.getAddedAjaxWindowContentContainerStyle();
 
+        var closingFetchedData = fetchClosingData(options);
+
         if (html instanceof jQuery) {
             var x = $('<div id="addedAjaxWindowContentContainer" style="display:none;' + containerStyle + '" link="' + options.link + '"></div>').appendTo(document.body);
             x.append(html);
@@ -70,7 +72,7 @@
         }
 
         if (options.widgetLinkCorrected) {
-            var result = options.widgetLinkCorrected(options.link, html);
+            var result = options.widgetLinkCorrected({ correctedLink: options.link, closingFetchedData: closingFetchedData }, html);
             if (result && result.cancel) return result;
         }
 
@@ -82,6 +84,16 @@
 
         return { cancel: false };
 
+    }
+
+    function fetchClosingData(options) {
+        var closeData = null;
+        if (options.submitterButton) {
+            var pageCloserDataFetcher = $(options.submitterButton).attr('pageCloserDataFetcher');
+            if (pageCloserDataFetcher && window[pageCloserDataFetcher])
+                closeData = window[pageCloserDataFetcher]();
+        }
+        return closeData;
     }
 
     function enableValidation(options) {
@@ -125,6 +137,7 @@
                 }
                 var link = layoutHelper.formAjaxifier.correctLink(this.action, true, options.widgetType == 1, true, options.widgetType);
                 var newContentPointer = null; //just when having external window show for errors to preserve current content in error conditions.
+                var currentForm = o;
 
                 $.ajax({
                     type: this.method.toLowerCase() == 'get' ? 'GET' : 'POST',
@@ -136,7 +149,7 @@
                             newContentPointer = options.innerFormBeforeSend(link);
                     },
                     success: function (html, status, xhr) {
-                        insertAjaxContent($.extend({}, options, { link: link }), html, false);
+                        insertAjaxContent($.extend({}, options, { link: link, submitterForm: currentForm, submitterButton: $(currentForm).data('submitter') }), html, false);
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         handleSubmittedFormAjaxErrorContent($.extend({}, options, { link: link }), xhr, newContentPointer);

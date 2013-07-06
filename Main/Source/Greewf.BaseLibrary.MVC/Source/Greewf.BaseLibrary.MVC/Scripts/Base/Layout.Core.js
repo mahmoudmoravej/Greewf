@@ -113,8 +113,8 @@
 
             $("iframe:first", widget.htmlTag).load(function () {//note : just one iframe is alowed
                 var sameOrigin = this.contentWindow != null && this.contentWindow.document != null; //same origin policy makes document == null for external URLs
-                if (sameOrigin)
-                    if (handleSpecialPages(widgetLayout, widget, widgetTitle, title, this.contentWindow.location, null, this.contentWindow.document.body.innerText, null, this)) return;
+                if (sameOrigin)//TODO : we should depricate it! 
+                    if (handleSpecialPages(widgetLayout, widget, widgetTitle, title, { location: this.contentWindow.location, closingFetchedData: null/*not works in IFrame mode...depricated!*/ }, null, this.contentWindow.document.body.innerText, null, this)) return;
 
                 $(this).data('contentLoaded', true);
                 $('div[isProgress]', $(this).parent()).hide();
@@ -191,8 +191,8 @@
         return $(frame).attr('isrefresh') != 'true' && frame.contentWindow.location.toString().indexOf("/SavedSuccessfully") == -1 && frame.contentWindow.location.hash.toString().indexOf('successfullysaved') == -1;
     }
 
-    function handleSpecialPages(widgetLayout, widget, widgetTitle, title, location, linkHash, data/*it may be a jquery object*/, postSuccessAction, iframeContainer) {
-        var handled = handleSpecialPagesByLink(widgetLayout, widget, widgetTitle, title, location, linkHash, postSuccessAction, iframeContainer);
+    function handleSpecialPages(widgetLayout, widget, widgetTitle, title, options, linkHash, data/*it may be a jquery object*/, postSuccessAction, iframeContainer) {
+        var handled = handleSpecialPagesByLink(widgetLayout, widget, widgetTitle, title, options, linkHash, postSuccessAction, iframeContainer);
         if (handled) return true;
         var jsonResponse = null;
         //maybe response json results
@@ -209,7 +209,8 @@
 
         if (jsonResponse) {
             var isSuccessFlagUp = layoutCore.handleResponsiveJsonResult(jsonResponse);
-            widgetLayout.CloseAndDone(location.hash != undefined ? location : null, widget, isSuccessFlagUp); //when ajax request
+            var data = fetchPageClosingData(options);
+            widgetLayout.CloseAndDone(data, widget, isSuccessFlagUp); //when ajax request
             handled = true;
         }
 
@@ -217,14 +218,14 @@
 
     }
 
-    function handleSpecialPagesByLink(widgetLayout, widget, widgetTitle, title, location, linkHash, postSuccessAction, iframeContainer) {
+    function handleSpecialPagesByLink(widgetLayout, widget, widgetTitle, title, options, linkHash, postSuccessAction, iframeContainer) {
         var handled = false;
-        var link = location;
+        var link = options.location;
         if (linkHash == null) linkHash = ''; //todo : linkhash is null in ajax mode.
 
-        if (location.hash != undefined) {//means window.loaction is passed
-            link = location.toString();
-            linkHash = location.hash.toString();
+        if (options.location.hash != undefined) {//means window.loaction is passed
+            link = options.location.toString();
+            linkHash = options.location.hash.toString();
         }
 
         link = link.toLowerCase();
@@ -236,7 +237,10 @@
             handled = true;
         }
         else if ((link.indexOf("/savedsuccessfully") > 0 && link.indexOf("forcetopassedurl=1") == -1) || linkHash.indexOf('successfullysaved') > 0) {
-            widgetLayout.CloseAndDone(location.hash != undefined ? location : null, widget, true); //when ajax request
+            //prepare close data if presents
+            var closeData = fetchPageClosingData(options);
+
+            widgetLayout.CloseAndDone(closeData, widget, true); //when ajax request
             notifySuccess(widget);
             handled = true;
         }
@@ -247,6 +251,16 @@
 
         return handled;
 
+    }
+
+    function fetchPageClosingData(options) {
+        var closeData = {};
+        $.extend(closeData, {
+            link: options.location.hash != undefined ? options.location : null,
+            closingFetchedData: options.closingFetchedData
+        });
+
+        return closeData;
     }
 
     function notifySuccess(widget) {
@@ -269,14 +283,14 @@
 
     function loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, postSuccessAction) {
         var senderOptions = {
-            sendViaPost: $(widget.sender).attr('sendViaPost'),
+            sendMethod: $(widget.sender).attr('sendMethod'),
             getPostDataCallback: widget.ownerWindow[$(widget.sender).attr('getPostDataCallBack')]
         };
 
         layoutHelper.formAjaxifier.load({
             link: link,
             getPostData: senderOptions.getPostDataCallback,
-            sendViaPost: senderOptions.sendViaPost,
+            sendMethod: senderOptions.sendMethod,
             content: null,
             widgetHtmlTag: widget.htmlTag,
             widgetType: widgetLayout.getTypeCode(),
@@ -286,8 +300,8 @@
             contentReady: function (content, isErrorContent) {
                 widgetLayout.setContent(widget, content);
             },
-            widgetLinkCorrected: function (correctedLink, content) {
-                if (handleSpecialPages(widgetLayout, widget, widgetTitle, title, correctedLink, null, content, postSuccessAction, null)) return { cancel: true };
+            widgetLinkCorrected: function (options, content) {
+                if (handleSpecialPages(widgetLayout, widget, widgetTitle, title, { location: options.correctedLink, closingFetchedData: options.closingFetchedData }, null, content, postSuccessAction, null)) return { cancel: true };
 
                 var pageContentTitle = $('#currentPageTitle', widget.htmlTag);
                 if (widgetTitle != null)
@@ -469,18 +483,18 @@
             layoutHelper.core.OpenWidget(layoutHelper.tooltipLayout, sender, sender.href, sender.title, window);
     }
 
-    function handleResponsiveAjaxLink(link, ownerWindow) {
+    function handleResponsiveAjaxLink(sender, ownerWindow) {
         var succeeded;
         $.ajax({
             type: 'POST',
-            url: encodeURI(link.href),
+            url: encodeURI(sender.href),
             cache: false,
             beforeSend: function () {
                 var progress;
-                if (!$(link).attr('responsiveAjaxProgress'))
+                if (!$(sender).attr('responsiveAjaxProgress'))
                     progress = layoutCore.options.responsiveAjaxProgress;
                 else
-                    progress = $(link).attr('responsiveAjaxProgress').toLowerCase() != 'false';
+                    progress = $(sender).attr('responsiveAjaxProgress').toLowerCase() != 'false';
 
                 if (!progress) return;
                 window.setTimeout(function () {
@@ -491,7 +505,7 @@
             success: function (json) {
                 succeeded = 1;
                 layoutCore.handleResponsiveJsonResult(json);
-                layoutCore.handleCloseCallBack(link, null, ownerWindow, true);
+                layoutCore.handleCloseCallBack(sender, null, ownerWindow, true);
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 layoutHelper.windowLayout.ShowErrorMessage('<div style="overflow:auto;direction:ltr;max-width:400px;max-height:300px">' + xhr.responseText + '</div>', 'بروز خطا');
