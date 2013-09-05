@@ -25,6 +25,7 @@
     background-color: #FFCC00;
 }
 
-.g-context-menu .t-link {
-    color: inherit !important; /*becuase of bug in some telerik themse for menus insde the panel bar*/
+ .t-state-hover .t-group .t-link:not(.t-state-hover) {
+        color: initial!important; /*becuase of bug in some telerik themse(like forest) for menus insde the panel bar*/
 }
+

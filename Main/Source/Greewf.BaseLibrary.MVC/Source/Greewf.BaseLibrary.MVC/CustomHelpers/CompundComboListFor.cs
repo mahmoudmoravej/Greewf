@@ -7,6 +7,7 @@ using System.Text;
 using System.Web.Mvc.Html;
 using Telerik.Web.Mvc.UI;
 using AutoMapper;
+using System.Linq.Expressions;
 
 namespace Greewf.BaseLibrary.MVC.CustomHelpers
 {
@@ -17,7 +18,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
 
         public static MvcHtmlString CompoundComboListForParent<TModel, TProperty, TPropertyKey>(
           this HtmlHelper<TModel> helper,
-          System.Linq.Expressions.Expression<Func<TModel, TPropertyKey>> expressionKey,
+          Expression<Func<TModel, TPropertyKey>> expressionKey,
           IEnumerable<TProperty> allItems,
           Func<TProperty, SelectListItem> selectListItemGenerator,
           object htmlAttributes = null,
@@ -85,11 +86,11 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
 
         public static MvcHtmlString CompoundComboListForChild<TModel, TProperty, TPropertyKey, TParentProperty, TParentPropertyKey>(
             this HtmlHelper<TModel> helper,
-            System.Linq.Expressions.Expression<Func<TModel, TPropertyKey>> expressionKey,
-            System.Linq.Expressions.Expression<Func<TModel, TParentProperty>> expressionParent,
-            System.Linq.Expressions.Expression<Func<TModel, TParentPropertyKey>> expressionParentKey,
+            Expression<Func<TModel, TPropertyKey>> expressionKey,
+            Expression<Func<TModel, TParentProperty>> expressionParent,
+            Expression<Func<TModel, TParentPropertyKey>> expressionParentKey,
             IEnumerable<TProperty> allItems,
-            Func<TProperty, TParentProperty, bool> parentMatcher,
+            Func<TParentProperty, Expression<Func<TProperty, bool>>> parentMatcher,
             Func<TProperty, SelectListItem> selectListItemGenerator,
             string childsLoaderUrl,
             string childsLoaderUrlParameterName,
@@ -141,6 +142,17 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
 
             output.Append("</script>");
 
+            var q = allItems.AsQueryable();
+            if (parentValue != null)
+            {
+                var z = parentMatcher(parentValue);
+                q = q.Where(z);
+            }
+            else
+            {
+                q = new List<TProperty>().AsQueryable();
+            }
+
 
             //2nd : telerik component 
             if (isRigidList)
@@ -152,7 +164,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                         .Encode(false)
                         .ClientEvents(o => o.OnLoad(x => "function(){$(this).data('child-listeners',[]); " + func_ChildLoaded + "();}"))
                         .HtmlAttributes(htmlAttributes)
-                        .BindTo(allItems.Where(o => (parentValue != null) && parentMatcher(o, parentValue)).Select(selectListItemGenerator));
+                        .BindTo(q.ToList().AsQueryable().Select(selectListItemGenerator));
 
                 if (isParentToo)
                     telerikDropDown.ClientEvents(o => o
@@ -166,6 +178,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
             }
             else
             {
+
                 var telerikCombo =
                     helper.Telerik()
                         .ComboBox()
@@ -175,7 +188,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                         .Encode(false)
                         .ClientEvents(o => o.OnLoad(x => "function(){$(this).data('child-listeners',[]); " + func_ChildLoaded + "();}"))
                         .HtmlAttributes(htmlAttributes)
-                        .BindTo(allItems.Where(o => (parentValue != null) && parentMatcher(o, parentValue)).Select(selectListItemGenerator));
+                        .BindTo(q.ToList().AsQueryable().Select(selectListItemGenerator));
 
                 if (isParentToo)
                     telerikCombo.ClientEvents(o => o

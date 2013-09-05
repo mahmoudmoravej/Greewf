@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>MvcScaffolding</id>
+    <version>1.0.0</version>
+    <title>MvcScaffolding</title>
+    <authors>Scott Hanselman,  Steve Sanderson</authors>
+    <owners>Scott Hanselman,  Steve Sanderson</owners>
+    <licenseUrl>http://www.opensource.org/licenses/ms-pl.html</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A fast and customizable way to add controllers, views, and other items to your ASP.NET MVC application</description>
+    <summary>A fast and customizable way to add controllers, views, and other items to your ASP.NET MVC application</summary>
+    <copyright>(c) Microsoft</copyright>
+    <dependencies>
+      <dependency id="T4Scaffolding" version="1.0.0" />
+    </dependencies>
+  </metadata>
+</package>
