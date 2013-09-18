@@ -22,21 +22,41 @@ namespace Greewf.BaseLibrary.MVC.TelerikExtentions
         public string Type { get; set; }
     }
 
+
+    public class ColumnDataProvider
+    {
+        public PropertyInfo PropertyInfo { get; set; }
+        public Func<ColumnLayout, object, string> ArrayColumnDataRetreiver { get; set; }
+    }
+
+    public interface IArrayColumnsDataProviderContext
+    {
+        Dictionary<Type, Func<ColumnLayout, object, string>> GetArrayColumnsDataProviders();
+    }
+
     public class ExcelOutputAttribute : ActionFilterAttribute
     {
 
         private long? _permissionObject = null;
         private long? _permissions = null;
+        private Type _arrayColumnsDataProviderContext;
 
-
-        public  ExcelOutputAttribute()
+        public ExcelOutputAttribute()
         {
         }
 
-        public   ExcelOutputAttribute(long permissionObject, long permissions)
+        public ExcelOutputAttribute(long permissionObject, long permissions)
         {
             _permissionObject = permissionObject;
             _permissions = permissions;
+        }
+
+
+        public ExcelOutputAttribute(long permissionObject, long permissions, Type arrayColumnsDataProviderContext)
+        {
+            _permissionObject = permissionObject;
+            _permissions = permissions;
+            _arrayColumnsDataProviderContext = arrayColumnsDataProviderContext;
         }
 
 
@@ -84,7 +104,7 @@ namespace Greewf.BaseLibrary.MVC.TelerikExtentions
 
             //Create a header row
             var headerRow = sheet.CreateRow(0);
-            var propertiesDataProviders = new Dictionary<string, PropertyInfo>();
+            var propertiesDataProviders = new Dictionary<string, ColumnDataProvider>();
 
             int idx = 0;
             int columnCount = 0;
@@ -96,6 +116,25 @@ namespace Greewf.BaseLibrary.MVC.TelerikExtentions
             rowsFont.Boldweight = (short)FontBoldWeight.NORMAL;
             rowsFont.FontHeightInPoints = 12;
 
+            Dictionary<Type, Func<ColumnLayout, object, string>> arrayColumnsDataProviders = null;
+
+            if (_arrayColumnsDataProviderContext != null)
+            {
+                object context;
+                try
+                {
+                    context = Activator.CreateInstance(_arrayColumnsDataProviderContext);
+                }
+                catch (Exception exp)
+                {
+                    throw new Exception("Greewf : Error in creating '" + _arrayColumnsDataProviderContext.Name + "' Type. Details : " + exp.Message);
+                }
+                if (context is IArrayColumnsDataProviderContext == false)
+                    throw new Exception("Greewf : The passed type for 'arrayColumnsDataProviderContext' parameter of 'ExcelOutput' attribute should inherit from 'IArrayColumnsDataProviderContext'");
+
+                arrayColumnsDataProviders = (context as IArrayColumnsDataProviderContext).GetArrayColumnsDataProviders();
+            }
+
 
             foreach (var item in columnLayouts)
             {
@@ -104,12 +143,36 @@ namespace Greewf.BaseLibrary.MVC.TelerikExtentions
                 var cell = headerRow.CreateCell(idx++);
                 cell.SetCellValue(item.Title);
                 cell.CellStyle.SetFont(headerFont);
-                propertiesDataProviders.Add(item.Id, rowType.GetProperty(item.Id));
+
+                if (propertiesDataProviders.ContainsKey(item.Id + item.Title))
+                    throw new Exception("Greewf : The combination of column header('" + item.Id + "' and '" + item.Title + "') is not unique. ExcelOutput needs this combination to be unique ");
+                else
+                {
+                    var colDataProvider = new ColumnDataProvider();
+                    colDataProvider.PropertyInfo = rowType.GetProperty(item.Id);
+
+                    if (colDataProvider.PropertyInfo.PropertyType.IsArray ||
+                        (colDataProvider.PropertyInfo.PropertyType.IsGenericType && colDataProvider.PropertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
+                    {
+                        if (arrayColumnsDataProviders == null)
+                            throw new Exception("Greewf : You should pass 'ArrayColumnDataProviders' parameter for 'ExcelOutput' attribute when you have some array columns.");
+
+                        var arrayDataRetreiver = arrayColumnsDataProviders.FirstOrDefault(f => f.Key == colDataProvider.PropertyInfo.PropertyType);
+
+                        if (arrayDataRetreiver.Key == null)
+                            throw new Exception("Greewf : 'ArrayColumnDataProviders' paramater (of 'ExcelOutput' attribute)  doesn't have any relative function for array of  type : " + colDataProvider.PropertyInfo.PropertyType.ToString());
+                        else
+                            colDataProvider.ArrayColumnDataRetreiver = arrayDataRetreiver.Value;
+                    }
+
+                    propertiesDataProviders.Add(item.Id + item.Title, colDataProvider);
+                }
             }
 
 
             //(Optional) freeze the header row so it is not scrolled
             sheet.CreateFreezePane(0, 1, 0, 1);
+            var lstIgnoreColumnAutoSize = new List<int>();
 
             int rowNumber = 1;
 
@@ -121,26 +184,42 @@ namespace Greewf.BaseLibrary.MVC.TelerikExtentions
                 foreach (var item in columnLayouts)
                 {
                     if (string.IsNullOrWhiteSpace(item.Id)) continue;
-                    var propertyInfo = propertiesDataProviders[item.Id];
-                    var propertyValue = propertyInfo.GetValue(rowData, null);
+                    var colDataProvider = propertiesDataProviders[item.Id + item.Title];
+                    var propertyValue = colDataProvider.PropertyInfo.GetValue(rowData, null);
                     string value = null;
 
-                    if (propertyInfo.PropertyType.IsAssignableFrom(typeof(DateTime)))
+                    if (colDataProvider.ArrayColumnDataRetreiver != null)
+                        value = colDataProvider.ArrayColumnDataRetreiver(item, propertyValue);
+                    else if (colDataProvider.PropertyInfo.PropertyType.IsAssignableFrom(typeof(DateTime)))
                         value = Global.DisplayDateTime((DateTime?)propertyValue);
+                    else if (propertyValue is bool || propertyValue is bool?)
+                        value = (bool?)propertyValue == true ? "بلی" : (bool?)propertyValue == false ? "خیر" : "";
                     else
                         value = propertyValue == null ? "" : propertyValue.ToString();
 
+                    //NOTE : I don't know what the problem is but all the cell style are indeed ONE instance object!!!
                     var cell = row.CreateCell(idx++);
                     cell.CellStyle.SetFont(rowsFont);
                     cell.SetCellValue(value);
+
+                    if ((value ?? "").Length > 200)
+                    {
+                        sheet.SetColumnWidth(idx - 1, 150 * 256);
+                        cell.CellStyle.WrapText = true;
+                        lstIgnoreColumnAutoSize.Add(idx - 1);
+                        ff sheet.SetDefaultColumnStyle(, workbook.CreateCellStyle());
+                    }
                 }
+                
             }
 
 
             for (int i = 0; i < columnCount; i++)
             {
-                sheet.AutoSizeColumn(i);
+                if (!lstIgnoreColumnAutoSize.Contains(i))
+                    sheet.AutoSizeColumn(i);
             }
+
             sheet.PrintSetup.LeftToRight = false;
 
             //Write the workbook to a memory stream
@@ -156,6 +235,10 @@ namespace Greewf.BaseLibrary.MVC.TelerikExtentions
 
         public FileResult ExportToExcel(IQueryable data)
         {
+            //TODO !!! : not supports ARRAY COLUMNS!!!
+            //TODO !!! : not supports ARRAY COLUMNS!!!
+            //TODO !!! : not supports ARRAY COLUMNS!!!
+
             var rowType = data.GetType().GetGenericArguments()[0];
             var o = Activator.CreateInstance(rowType);
             var metadata = ModelMetadataProviders.Current.GetMetadataForType(() => o, rowType);
