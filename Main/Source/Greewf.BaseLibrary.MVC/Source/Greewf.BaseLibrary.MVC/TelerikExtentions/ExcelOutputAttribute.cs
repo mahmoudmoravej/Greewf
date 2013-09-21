@@ -1,5 +1,6 @@
 ﻿using Greewf.BaseLibrary.MVC.Security;
 using NPOI.HSSF.UserModel;
+using NPOI.HSSF.Util;
 using NPOI.SS.UserModel;
 using System;
 using System.Collections.Generic;
@@ -90,6 +91,7 @@ namespace Greewf.BaseLibrary.MVC.TelerikExtentions
         }
 
 
+
         public FileResult ExportToExcel(IQueryable data, List<ColumnLayout> columnLayouts)
         {
             var rowType = data.GetType().GetGenericArguments()[0];
@@ -107,10 +109,7 @@ namespace Greewf.BaseLibrary.MVC.TelerikExtentions
             var propertiesDataProviders = new Dictionary<string, ColumnDataProvider>();
 
             int idx = 0;
-            int columnCount = 0;
-            var headerFont = workbook.CreateFont();
-            headerFont.Boldweight = (short)FontBoldWeight.BOLD;
-            headerFont.FontHeightInPoints = 14;
+            int columnCount = 0;         
 
             var rowsFont = workbook.CreateFont();
             rowsFont.Boldweight = (short)FontBoldWeight.NORMAL;
@@ -135,14 +134,23 @@ namespace Greewf.BaseLibrary.MVC.TelerikExtentions
                 arrayColumnsDataProviders = (context as IArrayColumnsDataProviderContext).GetArrayColumnsDataProviders();
             }
 
-
+            // header style
+            var headerCellStyle = workbook.CreateCellStyle();
+            var headerFont = workbook.CreateFont();
+            headerFont.Boldweight = (short)FontBoldWeight.BOLD;
+            headerFont.FontHeightInPoints = 12;
+            headerCellStyle.SetFont(headerFont);
+            headerCellStyle.FillBackgroundColor = HSSFColor.GREY_50_PERCENT.index;
+            headerCellStyle.VerticalAlignment = VerticalAlignment.CENTER;
+            headerRow.Height = 50 * 20;
+            
             foreach (var item in columnLayouts)
             {
                 if (string.IsNullOrWhiteSpace(item.Id)) continue;
                 columnCount++;
                 var cell = headerRow.CreateCell(idx++);
                 cell.SetCellValue(item.Title);
-                cell.CellStyle.SetFont(headerFont);
+                cell.CellStyle = headerCellStyle;                
 
                 if (propertiesDataProviders.ContainsKey(item.Id + item.Title))
                     throw new Exception("Greewf : The combination of column header('" + item.Id + "' and '" + item.Title + "') is not unique. ExcelOutput needs this combination to be unique ");
@@ -174,6 +182,10 @@ namespace Greewf.BaseLibrary.MVC.TelerikExtentions
             sheet.CreateFreezePane(0, 1, 0, 1);
             var lstIgnoreColumnAutoSize = new List<int>();
 
+            // extra width cell style
+            var extraWidthCellStyle = workbook.CreateCellStyle();
+            extraWidthCellStyle.WrapText = true;
+
             int rowNumber = 1;
 
             foreach (var rowData in data)
@@ -204,13 +216,11 @@ namespace Greewf.BaseLibrary.MVC.TelerikExtentions
 
                     if ((value ?? "").Length > 200)
                     {
-                        sheet.SetColumnWidth(idx - 1, 150 * 256);
-                        cell.CellStyle.WrapText = true;
+                        cell.CellStyle = extraWidthCellStyle;
                         lstIgnoreColumnAutoSize.Add(idx - 1);
-                        ff sheet.SetDefaultColumnStyle(, workbook.CreateCellStyle());
                     }
                 }
-                
+
             }
 
 
@@ -218,6 +228,9 @@ namespace Greewf.BaseLibrary.MVC.TelerikExtentions
             {
                 if (!lstIgnoreColumnAutoSize.Contains(i))
                     sheet.AutoSizeColumn(i);
+                else
+                    sheet.SetColumnWidth(i, 150 * 256);
+
             }
 
             sheet.PrintSetup.LeftToRight = false;
