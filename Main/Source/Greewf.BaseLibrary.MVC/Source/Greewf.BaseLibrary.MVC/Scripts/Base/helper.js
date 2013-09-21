@@ -410,11 +410,15 @@ telerikHelper = new function () {
     }
 
     this.handleExcelExporter = function (gridId, buttonId) {
-        var gridId = $('#' + gridId);
-        var buttonId = $('#' + buttonId);
+        gridId = '#' + gridId;
+        buttonId = '#' + buttonId;
 
         $(buttonId).click(function () {
             var grid = $(gridId).data('tGrid');
+            if (!grid) {
+                console.warn("The passed grid does not exist! : " + gridId);
+                return;
+            }
             var $exportLink = $(buttonId);
             var href = grid.ajax.selectUrl.toLocaleLowerCase();
             href = href.indexOf('?') > -1 ? href : href + '?';
