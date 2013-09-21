@@ -140,9 +140,9 @@ namespace Greewf.BaseLibrary.MVC.TelerikExtentions
             headerFont.Boldweight = (short)FontBoldWeight.BOLD;
             headerFont.FontHeightInPoints = 12;
             headerCellStyle.SetFont(headerFont);
-            headerCellStyle.FillBackgroundColor = HSSFColor.GREY_50_PERCENT.index;
+            headerCellStyle.FillBackgroundColor = HSSFColor.DARK_BLUE.GREY_80_PERCENT.index;
             headerCellStyle.VerticalAlignment = VerticalAlignment.CENTER;
-            headerRow.Height = 50 * 20;
+            headerRow.Height = 40 * 20;
             
             foreach (var item in columnLayouts)
             {
