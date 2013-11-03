@@ -244,6 +244,12 @@
     <Content Include="Scripts\Chosen\!!NOTES!!.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Scripts\fileDownload\jquery.fileDownload -- SOURCE.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\fileDownload\jquery.fileDownload.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\jQuery Text Change Event - ZURB Playground - ZURB.com.htm" />
     <Content Include="Scripts\jquery.notice.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

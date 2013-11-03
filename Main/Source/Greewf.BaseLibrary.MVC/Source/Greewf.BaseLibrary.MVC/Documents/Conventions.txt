@@ -7,7 +7,7 @@
 5- editor-focus, emphasize,
 
 link style :
-<a class="t-button t-grid-edit t-button-icon at-rowEdit" href='...' title='...' (inline='xxx' | newwindow='xxx'|justwindow='xxx'|justMain='xxx' | responsiveAjax='xxx'|tooltipWindow='xxx') windowcallback='ContactGridCallBack' winWidth='50' winHeight='50' winMax='true' winNoModal='1' windowActionsNeedConfirm='true' winNoMaximaizable='x' winDisableBackHide='x' winEnableBackHide='x' ajax='1' isPageCloser='1' showEvents='click...' hideEvents='click unfocus...' autoGrowingSize='1' winAutoButtonsBar='1' discardSuccessMessage='1' sendMethod='POST/PUT/...' getPostDataCallBack='functionName'> ....</a>
+<a class="t-button t-grid-edit t-button-icon at-rowEdit" href='...' title='...' supportFile='xxx' (inline='xxx' | newwindow='xxx'|justwindow='xxx'|justMain='xxx' | responsiveAjax='xxx'|tooltipWindow='xxx') windowcallback='ContactGridCallBack' winWidth='50' winHeight='50' winMax='true' winNoModal='1' windowActionsNeedConfirm='true' winNoMaximaizable='x' winDisableBackHide='x' winEnableBackHide='x' ajax='1' isPageCloser='1' showEvents='click...' hideEvents='click unfocus...' autoGrowingSize='1' winAutoButtonsBar='1' discardSuccessMessage='1' sendMethod='POST/PUT/...' getPostDataCallBack='functionName'> ....</a>
 	classes : link,show-icon,link hover-classic,t-link
 
 	winDisableBackHide = در صورتی که می خواهید پنجره پشتی در زمان باز شدن پنجره جدید مخفی نشود
@@ -37,9 +37,31 @@ link style :
 	winMaxHeight = حداکثر طول مجاز پنجره. در حال حاضر فقط در تولتیپ پیاده سازی شده است
 	sendMethod = مشخص می کند که درخواست از  چی روش ارسال شود؟ مقادیر پروتکل های اچ.تی.تی.پی مجاز هستند
 	getPostDataCallBack= نام تابعی است که در هنگام ارسال اطلاعات صدا زده می شود تا بخش "دیتا" درخواست "آجاکس" توسط آن عینا پر شود. بطور مشخص برای درخواست های از نوع "گت" اگرچه این تابع فراخوانی می شود اما طبق پروتکل "اچ.تی.تی.پی" این بخش ارسال نمی شود
+	supportFile = برای توضیحات به پایین صفحه مراجعه کنید
 functions : xxxx= {window یا tooltip}
 	layoutHelper.xxxxLayout.MaximizeToContent = function (adjustCenter)  یک ویجت پنجره یا تولتیپ را با محتوای آن هم اندازه می کند. پارامتر مشخص می کند که بعد از تغییر اندازه آنرا در مرکز پنجره کند یا خیر.
 
+
+supportFile:
+	در استفاده از این ویژگی دقت کنید جراکه :
+	1- فقط با ویژگی ajax قابل استفاده است و بدون آن بی معنی است.
+	2- باعث می شود درخواست شما از طریق Iframe ارسال و دریافت شود و در واقع آجاکسی نیست 
+	3- اگرچه ارسال درخواست از طریق Ifrmae است اما شما می توانید هم از GET و هم از POST استفاده کنید. کافیست از ویژگی sendMethod برای لینک مربوطه بهره ببرید
+	4- بصورت هوشمند در صورتیکه فایل بازگردانده نشود و با توجه به محدودیت های ذکر شده محتوا را هندل می کند اما همانطور که در بند 2 گفته شد درخواست شما فق الواقع آجاکسی نیست
+	5- نکته مهم دیگر اینکه اگر پاسخ فایل نباشد گریف مجدد درخواست را بصورت اجاکسی ارسال می کند چراکه باید بتواند "هدر"های پاسخ دریافتی را برای
+	   بررسی بیشتر چک کند. لذا در مواردی که فایل بر نمی گردد همیشه دو درخواست ارسال می شود. اول از طریق "آی فریم" و دوم از طریق " آجاکس" ارسی می شود.
+	6- حتما با یکی از Widget های window و tooltip باید استفاده شود و خارج از آن بی معنی است. البته در حالت های چند صفحه ای سریع کاربرد دارد
+	7- ** توجه : این امکان را برای فایل های ثابت نمی توان استفاده کرد و لازم است که فایل از طریق کنترلری که از مبنای گریفی ارث برده باشد رد شود
+	8- تنها در حالت چند صفحه ای سریع  "پروگرس" برای فایل هایی که نه window باشند و نه Tooltip نمایش داده می شود.
+
+	مثال :
+	<a href="/bloob/boo/" ajax="1" newwindow="1" supportfile="1" sendMethod="POST">Download File...</a>
+
+	در صورتیکه یک فرم پس از "سابمیت" کردن می خواهد یک فایل را باز گرداند کافیست این ویژگی به فرم افزوده شود. بطور مثال : 
+	<form action="/bloob/boo/" method="post" supportfile="1">        
+		....
+	</form>
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class='g-window-nobuttonbar' در صورتی که می خواهید یکسری دکمه ها در پایین پنجره قرار نگیرند این کلاس را به کانتینر دکمه ها بدهید
 class='g-buttons-content'در صورتی که می خواهید بخشی به پایین پنجره منتقل شود
@@ -76,3 +98,7 @@ Question(sample) :
 										   focusToYes: false, 
 										   yesText: '....', 
 										   noText: '....' });
+
+
+
+

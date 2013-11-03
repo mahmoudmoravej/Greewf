@@ -5,6 +5,7 @@
     layoutCore.options = {
         notifySuccess: false,
         notifySuccessMessage: "تغییرات با موفقیت ذخیره شد",
+        notifySuccessDownload: "فایل با موفقیت دریافت شد",
         notifySuccessTimeout: 2000,
         ajax: false,
         responsiveAjaxProgress: true,
@@ -46,7 +47,7 @@
         if (ajaxContent.length > 0)//ajax refresh
         {
             changeWidgetTitle(widgetLayout, widgetTitle, 'در حال دریافت...');
-            loadThroughAjax(widgetLayout, widget, widgetTitle, null, $(ajaxContent).attr('link'));
+            loadFileOrHtmlThroughAjax(widgetLayout, widget, widgetTitle, null, $(ajaxContent).attr('link'));
         }
         else//iframe refresh
         {
@@ -100,7 +101,7 @@
 
         //ajax or iframe?
         if (doAjax) {//ajax request : pure mode            
-            loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, function () {
+            loadFileOrHtmlThroughAjax(widgetLayout, widget, widgetTitle, title, link, function () {
                 $('#addedAjaxWindowContentContainer', widget.htmlTag).attr('contentLoaded', 'true');
                 var contentContainer = $('#addedAjaxWindowContentContainer', widget.htmlTag);
                 correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, true, contentContainer.outerHeight(), contentContainer.outerWidth());
@@ -263,10 +264,15 @@
         return closeData;
     }
 
-    function notifySuccess(widget) {
-        if (layoutCore.options.notifySuccess && jQuery.noticeAdd && !$(widget.sender).attr('discardSuccessMessage')) {
+    function notifySuccess(widget, isFile) {
+        layoutCore.notifySuccessMessage(widget.sender,isFile);
+    }
+
+    layoutCore.notifySuccessMessage= function(sender, isFile)
+    {
+        if (layoutCore.options.notifySuccess && jQuery.noticeAdd && !$(sender).attr('discardSuccessMessage')) {
             jQuery.noticeAdd({
-                text: layoutCore.options.notifySuccessMessage,
+                text: isFile ? layoutCore.options.notifySuccessDownload : layoutCore.options.notifySuccessMessage,
                 stay: false,
                 stayTime: layoutCore.options.notifySuccessTimeout
             });
@@ -278,14 +284,41 @@
         if (iframeContainer)
             iframeContainer.contentWindow.location = link;
         else//ajax call
-            loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, postSuccessAction);
+            loadFileOrHtmlThroughAjax(widgetLayout, widget, widgetTitle, title, link, postSuccessAction);
     }
 
-    function loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, postSuccessAction) {
+    function loadFileOrHtmlThroughAjax(widgetLayout, widget, widgetTitle, title, link, postSuccessAction) {
+        var supportFile = $(widget.sender).attr('supportFile') != null;
         var senderOptions = {
             sendMethod: $(widget.sender).attr('sendMethod'),
             getPostDataCallback: widget.ownerWindow[$(widget.sender).attr('getPostDataCallBack')]
         };
+
+        if (supportFile) {
+            $.fileDownload(link, {
+                cookieName: 'fileDownloadPlugin',
+                httpMethod: senderOptions.sendMethod,
+                data: senderOptions.getPostDataCallback ? senderOptions.getPostDataCallback() : null,
+                prepareCallback: function () {
+                    widgetLayout.setContent(widget, layoutCore.progressHtml(widgetLayout));
+                },
+                successCallback: function () {
+                    widgetLayout.CloseAndDone(null, widget, true, false);
+                    notifySuccess(widget, true);
+                },
+                failCallback: function (responseHtml) {
+                    //we dont have any information about wheather it is a common html response or a http error (like access denied ones)
+                    //and we have no xhr here. so we sould resend the request through an ajax call to be able to check xhr.
+                    loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, postSuccessAction, senderOptions);
+                }
+            });
+        }
+        else
+            loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, null, senderOptions);
+    }
+
+    function loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, postSuccessAction, senderOptions) {
+        //NOTE! don't call this method directly. call the parent method('loadFileOrHtmlThroughAjax') instead.
 
         layoutHelper.formAjaxifier.load({
             link: link,
@@ -339,6 +372,10 @@
             },
             retrieveOldContent: function (newContentPointer) {
                 widgetLayout.retrieveOldContent(widget, newContentPointer);
+            },
+            innerFormSuccessDownloadFile: function () {
+                widgetLayout.CloseAndDone(null, widget, true, false);
+                notifySuccess(widget, true);
             }
         });
 

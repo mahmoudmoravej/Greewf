@@ -47,6 +47,11 @@
         return showMessage(msg, title, 6);
     }
 
+    windowLayout.HideProgressMessage = function () {
+        closeOldWin(6);
+    }
+
+
     windowLayout.progressHtml = function () {
         return '<div isProgress="1" class="bigprogress-icon t-content" style="width:99%;height:97%;position:absolute;" ></div>';
     }
@@ -138,10 +143,13 @@
 
         var w = msgBoxWindow.data('tWindow');
 
-        if (type == 6)//progress
+        if (type == 6) {//progress
             $('button', msgBoxWindow).remove();
+            w.modal = true;
+        }
         else
             createButtonsBar(msgBoxWindow);
+
 
         w.center().open();
         msgBoxWindow.data('alwaysOnTop', window.setInterval(function () { w.bringToTop(); }, 100));

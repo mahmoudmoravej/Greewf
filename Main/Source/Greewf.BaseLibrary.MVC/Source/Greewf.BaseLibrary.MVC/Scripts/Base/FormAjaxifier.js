@@ -136,27 +136,64 @@
                     if (result && result.cancel) return false;
                 }
                 var link = layoutHelper.formAjaxifier.correctLink(this.action, true, options.widgetType == 1, true, options.widgetType);
-                var newContentPointer = null; //just when having external window show for errors to preserve current content in error conditions.
-                var currentForm = o;
+                var currentForm = this;
 
-                $.ajax({
-                    type: this.method.toLowerCase() == 'get' ? 'GET' : 'POST',
-                    url: encodeURI(link),
-                    cache: false,
-                    data: appendSubmitButtonValue($(this).serialize(), this),
-                    beforeSend: function () {
-                        if (options.innerFormBeforeSend)
-                            newContentPointer = options.innerFormBeforeSend(link);
-                    },
-                    success: function (html, status, xhr) {
-                        insertAjaxContent($.extend({}, options, { link: link, submitterForm: currentForm, submitterButton: $(currentForm).data('submitter') }), html, false);
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        handleSubmittedFormAjaxErrorContent($.extend({}, options, { link: link }), xhr, newContentPointer);
-                    }
-                });
+                var supportFile = $(this).attr('supportFile') ? true : false;
+                if (supportFile)
+                    submitForFileOrHtmlResponse(currentForm, link, options);
+                else
+                    submitForHtmlResponse(currentForm, link, options);
+
                 return false;
             });
+        });
+
+    }
+
+    function submitForHtmlResponse(currentForm, link, options) {
+
+        var newContentPointer = null; //just when having external window show for errors to preserve current content in error conditions.
+
+        $.ajax({
+            type: currentForm.method.toLowerCase() == 'get' ? 'GET' : 'POST',
+            url: encodeURI(link),
+            cache: false,
+            data: appendSubmitButtonValue($(currentForm).serialize(), currentForm),
+            beforeSend: function () {
+                if (options.innerFormBeforeSend)
+                    newContentPointer = options.innerFormBeforeSend(link);
+            },
+            success: function (html, status, xhr) {
+                insertAjaxContent($.extend({}, options, { link: link, submitterForm: currentForm, submitterButton: $(currentForm).data('submitter') }), html, false);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                handleSubmittedFormAjaxErrorContent($.extend({}, options, { link: link }), xhr, newContentPointer);
+            }
+        });
+
+    }
+
+    function submitForFileOrHtmlResponse(currentForm, link, options) {
+
+        var newContentPointer = null; //just when having external window show for errors to preserve current content in error conditions.
+
+        $.fileDownload(encodeURI(link), {
+            cookieName: 'fileDownloadPlugin',
+            httpMethod: currentForm.method.toLowerCase() == 'get' ? 'GET' : 'POST',
+            data: appendSubmitButtonValue($(currentForm).serialize(), currentForm),
+            prepareCallback: function () {
+                if (options.innerFormBeforeSend)
+                    newContentPointer = options.innerFormBeforeSend(link);
+            },
+            successCallback: function () {
+                if (options.innerFormSuccessDownloadFile)
+                    options.innerFormSuccessDownloadFile();
+            },
+            failCallback: function (responseHtml) {
+                //we dont have any information about wheather it is a common html response or a http error (like access denied ones)
+                //and we have no xhr here. so we sould resend the request through an ajax call to be able to check xhr.
+                submitForHtmlResponse(currentForm, link, options);
+            }
         });
 
     }

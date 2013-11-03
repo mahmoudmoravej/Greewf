@@ -5,7 +5,7 @@
     var arrTabs = new Array();
     var telerikGridRefreshPattern = ':not(div.t-status>a.t-icon.t-refresh)'//this is because of telerik grid refresh button problem in ajax mode
     var telerikGridGroupingPattern = ':not(div.t-group-indicator>a)'//this is because of telerik grid grouping buttons(server-side initiated ones) problem in ajax mode
-    var linkPattern = 'a[href][href!^="#"][href!^="#"]:not([href^="javascript:"]):not([href*="ajax=True"]):not([inline]):not([justwindow]):not([justMain]):not([responsiveAjax]):not([tooltipWindow])' + telerikGridRefreshPattern + telerikGridGroupingPattern; //pattern which accept links to open
+    var linkPattern = 'a[href][href!^="#"][href!^="#"]:not([href^="javascript:"]):not([target^="_blank"]):not([href*="ajax=True"]):not([inline]):not([justwindow]):not([justMain]):not([responsiveAjax]):not([tooltipWindow])' + telerikGridRefreshPattern + telerikGridGroupingPattern; //pattern which accept links to open
     var currentTabId = -1;
 
     function ajaxProgressHtml() {
@@ -52,7 +52,7 @@
         });
 
         currentPageContent = $('> div:first>*', options.tabstripId);
-        if (o.currentPageUrl.length > 0) tabStripMain.addByLink(o.currentPageUrl, options.currentPageTitle, null, currentPageContent);
+        if (o.currentPageUrl.length > 0) tabStripMain.addByLink(o.currentPageUrl, options.currentPageTitle, null, currentPageContent, null);
         if (!options.isSPA)
             $tabs.tabs("remove", 0);//we should remove it after inserting(moving) content to prevent javascript functions brake
         else
@@ -64,21 +64,21 @@
         return stringToTrim.replace(/^\s+|\s+$/g, "");
     }
 
-    tabStripMain.ChangeCurrentTabLocation = function (anchor) {
-        addOrReplace($(anchor), true);
+    tabStripMain.ChangeCurrentTabLocation = function (senderAnchor) {
+        addOrReplace($(senderAnchor), true);
     }
 
-    tabStripMain.AddTab = function (anchor, beforeAddingCallBack) {
-        if ($(anchor).attr('href')[0].indexOf('#') == 0) return; //becuase anchor.href returns full url. then the pattern works fails in some bookmarking 
+    tabStripMain.AddTab = function (senderAnchor, beforeAddingCallBack) {
+        if ($(senderAnchor).attr('href')[0].indexOf('#') == 0) return; //becuase senderAnchor.href returns full url. then the pattern works fails in some bookmarking 
         if (beforeAddingCallBack) beforeAddingCallBack();
-        addOrReplace($(anchor), false);
+        addOrReplace($(senderAnchor), false);
     }
 
-    function addOrReplace(anchor, replaceActiveTab) {
-        link = anchor.attr('href').toLowerCase();
-        title = trim(anchor.text()) == '' ? anchor.attr('title') : trim(anchor.text());
+    function addOrReplace(senderAnchor, replaceActiveTab) {
+        link = senderAnchor.attr('href').toLowerCase();
+        title = trim(senderAnchor.text()) == '' ? senderAnchor.attr('title') : trim(senderAnchor.text());
 
-        tabStripMain.addByLink(link, title, replaceActiveTab);
+        tabStripMain.addByLink(link, title, replaceActiveTab, null, senderAnchor);
         return false;
 
     }
@@ -112,14 +112,14 @@
         return link;
     }
 
-    tabStripMain.addByLink = function (link, title, replaceActiveTab, pageContent) {
+    tabStripMain.addByLink = function (link, title, replaceActiveTab, pageContent, senderAnchor) {
         if (options.isSPA)
-            tabStripMain.addByLinkForSPA(link, title, pageContent);
+            tabStripMain.addByLinkForSPA(link, title, pageContent, senderAnchor);
         else
-            tabStripMain.addByLinkForTab(link, title, replaceActiveTab, pageContent);
+            tabStripMain.addByLinkForTab(link, title, replaceActiveTab, pageContent, senderAnchor);
     }
 
-    tabStripMain.addByLinkForTab = function (link, title, replaceActiveTab, pageContent) {
+    tabStripMain.addByLinkForTab = function (link, title, replaceActiveTab, pageContent, sender) {
         link = link.toLowerCase();
         var url = link.replace(/\//g, "_");
         var tabStrip = $(options.tabstripId);
@@ -159,7 +159,7 @@
 
         }
 
-        makePanelReady(panel, link, tabStrip, pageContent);
+        makePanelReady(panel, link, tabStrip, pageContent, sender);
 
     }
 
@@ -172,7 +172,7 @@
         });
     }
 
-    tabStripMain.addByLinkForSPA = function (link, title, pageContent) {
+    tabStripMain.addByLinkForSPA = function (link, title, pageContent, sender) {
 
         var url = link.replace(/\//g, "_");
         link = tabStripMain.clearLink(link);
@@ -183,17 +183,17 @@
         panel.attr('link', link);
         //$('>*', panel).remove(); NOTE : we don't need to remove it! we replace it by html() method in next calls. removing causes page flick which is not good !
         var g = $('<div style="position:absolute;width:100%;height:100%;left:0;right:0;bottom:0;top:0;z-index:999999999"></div>').appendTo(document.body).focus();//it is just to make the shown menu to be hide (because of mouse over!--indeed telerik bug...it should hide the menu after the click...isn't it?)
-        makePanelReady(panel, link, null, pageContent);
+        makePanelReady(panel, link, null, pageContent, sender);
         window.setTimeout(function () { g.remove() });
 
     }
 
-    function makePanelReady(panel, link, tabStrip, pageContent) {
+    function makePanelReady(panel, link, tabStrip, pageContent, sender) {
 
         if (options.isAJAX) //we should load the link content through an ajax call(if the pageContent is ready we should ajaxify it). NOTE : it is practical in SPA mode. in none SPA mode , we are prone to have lots of errors (because of javascript interference)
-            loadThroughAjax(link, panel, pageContent);
+            loadFileOrHtmlThroughAjax(link, panel, pageContent, null, sender);
         else if (pageContent && tabStrip)//first page of tab (which not load in Iframe anyway so we should handle it through ajax(ajaxifying its content))
-            loadThroughAjax(link, panel, pageContent, tabStrip);
+            loadFileOrHtmlThroughAjax(link, panel, pageContent, tabStrip, sender);
         else
             setPanelContent(panel, link, tabStrip, pageContent);
     }
@@ -269,7 +269,7 @@
 
     }
 
-    function loadThroughAjax(link, panel, pageContent, tabStrip) {
+    function loadFileOrHtmlThroughAjax(link, panel, pageContent, tabStrip, sender) {
         if (link.indexOf('istab=1') == -1) {
             if (link.indexOf('?') == -1)
                 link = link + "?";
@@ -277,6 +277,44 @@
                 link = link + "&";
             link = link + 'istab=1';
         }
+
+        var supportFile = $(sender).attr('supportFile') != null;
+        var senderOptions = {
+            sendMethod: $(sender).attr('sendMethod'),
+            getPostDataCallback: window[$(sender).attr('getPostDataCallBack')]
+        };
+
+        if (supportFile) {
+            $.fileDownload(link, {
+                cookieName: 'fileDownloadPlugin',
+                httpMethod: senderOptions.sendMethod ? senderOptions.sendMethod : 'GET',
+                data: senderOptions.getPostDataCallback ? senderOptions.getPostDataCallback() : null,
+                prepareCallback: function () {
+                    layoutHelper.windowLayout.ShowProgressMessage();
+                },
+                successCallback: function () {
+                    layoutCore.notifySuccessMessage(sender, true);
+                    layoutHelper.windowLayout.HideProgressMessage();
+                },
+                failCallback: function (responseHtml) {
+                    layoutHelper.windowLayout.HideProgressMessage();
+
+                    //we dont have any information about wheather it is a common html response or a http error (like access denied ones)
+                    //and we have no xhr here. so we sould resend the request through an ajax call to be able to check xhr.
+                    loadHtmlThroughAjax(link, panel, pageContent, tabStrip, sender);
+                }
+            });
+
+        }
+        else
+            loadHtmlThroughAjax(link, panel, pageContent, tabStrip, sender);
+
+
+
+    }
+
+    function loadHtmlThroughAjax(link, panel, pageContent, tabStrip, sender) {
+        //NOTE! don't call this method directly. call the parent method('loadFileOrHtmlThroughAjax') instead.
 
         var firstCallProgress = null;
 
@@ -306,7 +344,7 @@
                 } else if (correctedLink != null) {
                     if (correctedLink.indexOf("/savedsuccessfully") > 0 && correctedLink.indexOf("forcetopassedurl=1") > 0) {
                         layoutHelper.windowLayout.ShowSuccessMessage('اطلاعات با موفقیت ذخیره شد', 'پیغام سیستم');
-                        loadThroughAjax(decodeURI(jsHelper.getQueryStringParameterByName('url', correctedLink)), panel, null);
+                        loadFileOrHtmlThroughAjax(decodeURI(jsHelper.getQueryStringParameterByName('url', correctedLink)), panel, null, null, sender);//TODO: i'm not sure why tabstrip parameter is null.
                         return { cancel: true };
                     }
                     else if ((correctedLink.indexOf("/savedsuccessfully") > 0 && correctedLink.indexOf("forcetopassedurl=1") == -1) || correctedLink.indexOf('successfullysaved') > 0) {
