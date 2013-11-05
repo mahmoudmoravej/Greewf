@@ -428,6 +428,10 @@
         return 0;
     }
 
+    windowLayout.IsFooterHeightCalculatedInWidgetHeight = function () {
+        return true;//because we just reposition the footer position.it is inside the content body indeed
+    }
+
     var errorWindow = null;
     windowLayout.OpenErrorWindow = function (content) {
         alert(content);

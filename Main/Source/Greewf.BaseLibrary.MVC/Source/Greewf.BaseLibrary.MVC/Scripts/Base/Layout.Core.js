@@ -106,6 +106,7 @@
                 var contentContainer = $('#addedAjaxWindowContentContainer', widget.htmlTag);
                 correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, true, contentContainer.outerHeight(), contentContainer.outerWidth());
                 setAutoGrowingSize(sender, widgetLayout, widget, widgetTitle);
+                widgetLayout.center(widget);// if content arrives later afet widget "activation" event, we should recenter it
             });
 
         }
@@ -125,6 +126,7 @@
                 if (sameOrigin) {
                     correctWidgetSize(widgetLayout, widget, widgetTitle, winMax, winWidth, winHeight, getIframeResizingCondition(this), $(this.contentWindow.document.body).outerHeight(), $(this.contentWindow.document.body).outerWidth());
                     setAutoGrowingSize(sender, widgetLayout, widget, widgetTitle);
+                    widgetLayout.center(widget);// if content arrives later afet widget "activation" event, we should recenter it
                 }
 
 
@@ -184,7 +186,7 @@
                 setAutoGrowingSize(sender, widgetLayout, widget, widgetTitle);
             }
         }
-
+        widgetLayout.center(widget);//we need it because calling center before activation has no any effect (we should center it for first call)
     }
 
     function getIframeResizingCondition(frame) {
@@ -265,11 +267,10 @@
     }
 
     function notifySuccess(widget, isFile) {
-        layoutCore.notifySuccessMessage(widget.sender,isFile);
+        layoutCore.notifySuccessMessage(widget.sender, isFile);
     }
 
-    layoutCore.notifySuccessMessage= function(sender, isFile)
-    {
+    layoutCore.notifySuccessMessage = function (sender, isFile) {
         if (layoutCore.options.notifySuccess && jQuery.noticeAdd && !$(sender).attr('discardSuccessMessage')) {
             jQuery.noticeAdd({
                 text: isFile ? layoutCore.options.notifySuccessDownload : layoutCore.options.notifySuccessMessage,
@@ -392,7 +393,7 @@
             var changingDone = false;
             if (winHeight == undefined) {
                 var maxHeight = $(window).height() - 100;
-                var newHeight = contentHieght + widgetLayout.getTitleHeight(widgetTitle) + widgetLayout.getFooterHeight(widget);
+                var newHeight = contentHieght + widgetLayout.getTitleHeight(widgetTitle) + (widgetLayout.IsFooterHeightCalculatedInWidgetHeight() ? 0 : widgetLayout.getFooterHeight(widget));
                 if (newHeight > maxHeight) newHeight = maxHeight;
                 changingDone = changingDone || widgetLayout.setHeight(widget, newHeight, justGrow);
             }

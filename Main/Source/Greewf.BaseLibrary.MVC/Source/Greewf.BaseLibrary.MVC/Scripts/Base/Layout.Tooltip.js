@@ -193,6 +193,9 @@
         return 0;
     }
 
+    tooltipLayout.IsFooterHeightCalculatedInWidgetHeight = function () {
+        return false;//no idea at this position!
+    }
 
     $.extend({ tooltipLayout: tooltipLayout });
 })(jQuery);
