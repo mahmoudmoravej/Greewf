@@ -314,7 +314,7 @@
             });
         }
         else
-            loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, null, senderOptions);
+            loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, postSuccessAction, senderOptions);
     }
 
     function loadThroughAjax(widgetLayout, widget, widgetTitle, title, link, postSuccessAction, senderOptions) {
