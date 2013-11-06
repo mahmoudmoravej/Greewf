@@ -1,5 +1,8 @@
 ﻿jsHelper = new function () {
 
+    this.options = {
+        ajaxProgressDelay: 800
+    }
 
     this.addCommas = function (nStr) {
         if (nStr == null || nStr.length == 0) return '';
@@ -72,14 +75,14 @@
         return stringToTrim.replace(/^\s+|\s+$/g, "");
     }
 
-    this.loadAjax = function (url, dest, doPost, hideAjaxLoader, successPostBack, timeoutToShowAjaxLoader, ajaxLoaderClass) {
+    this.loadAjax = function (url, dest, doPost, hideAjaxLoader, successPostBack, timeoutToShowAjaxLoader, ajaxLoaderClass) {        
         var received = false;
         $.ajax({
             type: doPost ? "POST" : "GET",
             url: encodeURI(url),//we need this becuase of encoding bug in IE!
             cache: false,
             beforeSend: function () {
-                timeoutToShowAjaxLoader = !timeoutToShowAjaxLoader ? 0 : timeoutToShowAjaxLoader;
+                timeoutToShowAjaxLoader = !timeoutToShowAjaxLoader ? jsHelper.options.ajaxProgressDelay : timeoutToShowAjaxLoader;
                 ajaxLoaderClass = !ajaxLoaderClass ? 'bigprogress-icon t-content bigprogress-loader' : ajaxLoaderClass;
                 if (!hideAjaxLoader) { window.setTimeout(function () { if (received) return; dest.html('<div class="' + ajaxLoaderClass + '"></div>'); }, timeoutToShowAjaxLoader); };
             },
@@ -118,7 +121,7 @@
         return false;
     }
 
-    this.getQueryStringParameterByName = function(name, link) {
+    this.getQueryStringParameterByName = function (name, link) {
         name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
         var regexS = "[\\?&]" + name + "=([^&#]*)";
         var regex = new RegExp(regexS);
@@ -292,7 +295,7 @@ layoutHelper = new function () {
                     var self = $(this);
                     window[changeTimer] = setTimeout(function () {
                         $('.t-button', '#' + containerId).click();
-                    }, timeout ? timeout : 3000);
+                    }, timeout ? timeout : layoutHelper.core.options.autoSubmitDelay);
                 };
                 var f2 = function () { clearTimeout(window[changeTimer]); };
                 $('input[type^="text"]', '#' + containerId).bind('textchange', f1).keypress(f2);

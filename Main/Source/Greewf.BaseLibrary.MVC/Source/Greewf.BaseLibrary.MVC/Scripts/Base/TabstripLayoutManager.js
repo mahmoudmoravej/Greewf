@@ -330,7 +330,7 @@
             beforeSend: function () {
                 firstCallProgress = window.setTimeout(function () {
                     setPanelContent(panel, link, null, ajaxProgressHtml());
-                }, 600);
+                }, jsHelper.options.ajaxProgressDelay);
             },
             contentReady: function (content, isErrorContent) {
                 if (firstCallProgress) window.clearTimeout(firstCallProgress);

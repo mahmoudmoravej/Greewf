@@ -29,7 +29,7 @@
     }
 
     tooltipLayout.progressHtml = function () {
-        return '<div isProgress="1" class="bigprogress-icon t-content" style="min-width:48px;min-height:48px;" ></div>';
+        return layoutHelper.windowLayout.progressHtml();
     }
 
 

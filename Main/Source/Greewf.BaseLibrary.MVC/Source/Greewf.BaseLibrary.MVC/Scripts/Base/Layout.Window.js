@@ -53,7 +53,8 @@
 
 
     windowLayout.progressHtml = function () {
-        return '<div isProgress="1" class="bigprogress-icon t-content" style="width:99%;height:97%;position:absolute;" ></div>';
+        var id = "progress" + Math.floor((Math.random() * 100000000000000) + 1);
+        return '<div isProgress="1" id="' + id + '" class="bigprogress-icon t-content" style="width:99%;height:97%;position:absolute;display:none" ><script>window.setTimeout(function(){$("div#' + id + '[isProgress]").show();},' + jsHelper.options.ajaxProgressDelay + ');</script></div>';
     }
 
     getMessageIcon = function (type) {
@@ -69,7 +70,7 @@
             case 5: //question
                 return 'Question48-png';
             case 6: //progress
-                return 'bigprogress-icon';
+                return 'window-progress-icon';
             default:
                 return 'info48-png';
 

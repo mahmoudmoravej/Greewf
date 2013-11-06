@@ -9,8 +9,10 @@
         notifySuccessTimeout: 2000,
         ajax: false,
         responsiveAjaxProgress: true,
+        responsiveAjaxProgressDelay : 400,
         showPageFormErrorsInExternalWindow: true,
         handleAutoSubmit: false,
+        autoSubmitDelay : 3000,
         window: { autoCenteredGrowingSize: false, autoGrowingSize: false, autoButtonBar: true, autoBackHide: false }
     }
 
@@ -119,7 +121,7 @@
                     if (handleSpecialPages(widgetLayout, widget, widgetTitle, title, { location: this.contentWindow.location, closingFetchedData: null/*not works in IFrame mode...depricated!*/ }, null, this.contentWindow.document.body.innerText, null, this)) return;
 
                 $(this).data('contentLoaded', true);
-                $('div[isProgress]', $(this).parent()).hide();
+                $('div[isProgress]', $(this).parent()).remove();
                 $(this).css({ visibility: 'visible', width: '100%', height: '99%', position: 'static' }); //1:jquery hide/show methods makes some problem with inner content,2:making invisible makes problem in first field focusing
                 changeWidgetTitle(widgetLayout, widgetTitle, title == '' ? (this.contentWindow.document != undefined ? this.contentWindow.document.title : '') : title);
 
@@ -538,7 +540,7 @@
                 window.setTimeout(function () {
                     if (succeeded) return;
                     layoutHelper.windowLayout.ShowProgressMessage();
-                }, 400);
+                }, layoutCore.options.responsiveAjaxProgressDelay);
             },
             success: function (json) {
                 succeeded = 1;
