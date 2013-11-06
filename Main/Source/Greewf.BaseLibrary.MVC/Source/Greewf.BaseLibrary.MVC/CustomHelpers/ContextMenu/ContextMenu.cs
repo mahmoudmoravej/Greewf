@@ -13,6 +13,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
         where TModel : class
     {
 
+        private string _name;
         private Func<string> _header;
         private Func<string> _headerClient;
         private bool _adjustRight;
@@ -27,6 +28,12 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
         {
             _model = model;
             _itemsBuilder = new ContextMenuItemsBuilder<TModel>(_model);
+        }
+
+        public ContextMenu<TModel> Name(string name)
+        {
+            _name = name;
+            return this;
         }
 
         public ContextMenu<TModel> HeaderTemplate(string template)
@@ -117,7 +124,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
             bool renderClientTemplates = _renderMode == CustomHelpers.ContextMenuRenderMode.ClientTemplates;
 
             var output = new StringBuilder();
-            output.AppendFormat("<ul class='{0}' {1} {2}>", getRootStyle(), getInlineRootCss(), _openOnClick ? "g-open-onclick='true'" : "");
+            output.AppendFormat("<ul {0} class='{1}' {2} {3}>", getName(), getRootStyle(), getInlineRootCss(), _openOnClick ? "g-open-onclick='true'" : "");
             output.Append("<li class='t-item XXX-PALCEHOLDER-XXX' style='border:0px;display:block'>");
             output.AppendFormat("<span class='t-link'{0}>{1}<span class='t-icon t-arrow-down'></span></span>", getHeaderStyle(), getHeaderText(renderClientTemplates));
             output.AppendFormat("<div class='t-animation-container' style='display: none;{0}'>", _adjustRight ? "" : "left:-1px;right:auto;");
@@ -143,6 +150,13 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                 return output.Replace("XXX-PALCEHOLDER-XXX", "t-state-disabled").ToString();
         }
 
+        private string getName()
+        {
+            if (!string.IsNullOrWhiteSpace("_name"))
+                return string.Format("name='{0}' id='{0}'", _name);
+            return "";
+        }
+
         private static string getMenuText(bool renderClientTemplates, ContextMenuItemBuilder<TModel> itemBuilder)
         {
             Func<string> t, c;
@@ -163,7 +177,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
         private string getInlineRootCss()
         {
             if (!_fillToParent)
-                return "style='display:inline-block;white-space: nowrap'";
+                return "style='display:inline-block;white-space: nowrap;text-align:initial'";
             else
                 return "";
         }
