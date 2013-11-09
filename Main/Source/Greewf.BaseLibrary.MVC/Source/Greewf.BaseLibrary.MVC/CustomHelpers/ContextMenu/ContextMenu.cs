@@ -106,7 +106,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
             return this;
         }
 
-        public ContextMenu<TModel> OpenOrientation(ContextMenuArrowDirection arrowDirection)
+        public ContextMenu<TModel> ArrowDirection(ContextMenuArrowDirection arrowDirection)
         {
             _arrowDirection = arrowDirection;
             return this;
