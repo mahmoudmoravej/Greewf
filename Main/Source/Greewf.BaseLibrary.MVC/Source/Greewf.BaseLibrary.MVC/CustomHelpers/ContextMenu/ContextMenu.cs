@@ -23,6 +23,9 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
         private bool _openOnClick;
         private ContextMenuItemsBuilder<TModel> _itemsBuilder;
         private ContextMenuRenderMode _renderMode = ContextMenuRenderMode.ServerTemplates;
+        private ContextMenuOpenOrientation _openOrientation = ContextMenuOpenOrientation.Default;
+        private ContextMenuArrowDirection _arrowDirection = ContextMenuArrowDirection.Down;
+        
 
         public ContextMenu(HtmlHelper helper, TModel model)
         {
@@ -97,6 +100,18 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
             return this;
         }
 
+        public ContextMenu<TModel> OpenOrientation(ContextMenuOpenOrientation orientation)
+        {
+            _openOrientation = orientation;
+            return this;
+        }
+
+        public ContextMenu<TModel> OpenOrientation(ContextMenuArrowDirection arrowDirection)
+        {
+            _arrowDirection = arrowDirection;
+            return this;
+        }
+
         private string getRootStyle()
         {
             switch (_menuStyle)
@@ -124,9 +139,9 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
             bool renderClientTemplates = _renderMode == CustomHelpers.ContextMenuRenderMode.ClientTemplates;
 
             var output = new StringBuilder();
-            output.AppendFormat("<ul {0} class='{1}' {2} {3}>", getName(), getRootStyle(), getInlineRootCss(), _openOnClick ? "g-open-onclick='true'" : "");
+            output.AppendFormat("<ul {0} class='{1}' {2} {3} {4}>", getName(), getRootStyle(), getInlineRootCss(), _openOnClick ? "g-open-onclick='true'" : "",getOpenOrientationAttrib());
             output.Append("<li class='t-item XXX-PALCEHOLDER-XXX' style='border:0px;display:block'>");
-            output.AppendFormat("<span class='t-link'{0}>{1}<span class='t-icon t-arrow-down'></span></span>", getHeaderStyle(), getHeaderText(renderClientTemplates));
+            output.AppendFormat("<span class='t-link'{0}>{1}<span class='t-icon {2}'></span></span>", getHeaderStyle(), getHeaderText(renderClientTemplates),getArrowIconClass());
             output.AppendFormat("<div class='t-animation-container' style='display: none;{0}'>", _adjustRight ? "" : "left:-1px;right:auto;");
             output.Append("<ul class='t-group' style='display: block;'>");
 
@@ -148,6 +163,28 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
                 return output.Replace("XXX-PALCEHOLDER-XXX", "t-state-default").ToString();
             else
                 return output.Replace("XXX-PALCEHOLDER-XXX", "t-state-disabled").ToString();
+        }
+
+        private object getArrowIconClass()
+        {
+            switch (_arrowDirection)
+            {
+                case ContextMenuArrowDirection.Up:
+                    return  "t-arrow-up";
+                default:
+                    return  "t-arrow-down";
+            }            
+        }
+
+        private object getOpenOrientationAttrib()
+        {
+            switch (_openOrientation)
+            {
+                case ContextMenuOpenOrientation.Top:
+                    return "g-orientation='top'";
+                default:
+                    return "";
+            }
         }
 
         private string getName()

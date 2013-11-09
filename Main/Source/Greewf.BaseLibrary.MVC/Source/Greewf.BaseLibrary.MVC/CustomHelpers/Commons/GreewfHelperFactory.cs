@@ -21,20 +21,7 @@ namespace Greewf.BaseLibrary.MVC.CustomHelpers
 
         public IHtmlString RenderScripts()
         {
-            string output = @"
-                <script>
-                    $(document).on('mouseenter', '.g-context-menu', function () {
-                        var mnu=$(this); 
-                        if (!mnu.data('t-menu')) {
-                            mnu.parent().css('overflow', 'visible'); 
-                            var tmnu= mnu.tMenu().data('t-menu') ; 
-                            tmnu.openOnClick = mnu.attr('g-open-onclick'); 
-                            if(!tmnu.openOnClick){
-                                tmnu.open(mnu.find('>li'));
-                            } 
-                        } 
-                    });
-                </script>";
+            string output = GetContextMenuStartupScript();
             return new HtmlString(output);
         }
     }
