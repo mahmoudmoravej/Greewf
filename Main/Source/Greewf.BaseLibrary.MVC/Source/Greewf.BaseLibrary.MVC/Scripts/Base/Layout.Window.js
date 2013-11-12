@@ -119,6 +119,11 @@
                 if (s.currentTarget == msgBoxWindow[0]/*to ensure it is for current window call*/ && options.callBack && !options.callBackHandled) options.callBack(false);
                 x.attr('class', '');
                 $(s).remove();
+            },
+            onActivate: function () {
+                var content = $('.t-content', this);
+                content.css('width', '');
+                content.css('height', '');//to ensure auto content height
             }
         });
 
@@ -150,7 +155,6 @@
         }
         else
             createButtonsBar(msgBoxWindow);
-
 
         w.center().open();
         msgBoxWindow.data('alwaysOnTop', window.setInterval(function () { w.bringToTop(); }, 100));
