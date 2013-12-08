@@ -5,9 +5,10 @@ using System.Text;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using Greewf.BaseLibrary.MVC.ChangeTracker.ChangeTrackerContext;
-using System.Data.Objects;
 using System.Data;
-using System.Data.Metadata.Edm;
+using System.Data.Entity.Core.Metadata.Edm;
+using System.Data.Entity.Core;
+using System.Data.Entity.Core.Objects;
 
 namespace Greewf.BaseLibrary.MVC.ChangeTracker
 {
@@ -161,7 +162,7 @@ namespace Greewf.BaseLibrary.MVC.ChangeTracker
         private void LogEntry(ObjectStateEntry dbEntry, AuditingWidget widget, Guid? auditId = null)
         {
             // Get primary key value (If you have more than one key column, this will need to be adjusted)
-            if (dbEntry.State == System.Data.EntityState.Unchanged || dbEntry.State == System.Data.EntityState.Detached) return;
+            if (dbEntry.State == EntityState.Unchanged || dbEntry.State == EntityState.Detached) return;
 
             var entityType = dbEntry.Entity.GetType();
 
@@ -192,15 +193,15 @@ namespace Greewf.BaseLibrary.MVC.ChangeTracker
 
         private void LogRelationEntity(ObjectStateEntry dbEntry, AuditingWidget widget)
         {
-            if (dbEntry.State == System.Data.EntityState.Modified)
+            if (dbEntry.State == EntityState.Modified)
                 throw new Exception("HEY!!!! Modified!!!!!");
 
-            if (dbEntry.State != System.Data.EntityState.Deleted && dbEntry.State != System.Data.EntityState.Added) return;//TODO  : modified relation??? 
+            if (dbEntry.State != EntityState.Deleted && dbEntry.State != EntityState.Added) return;//TODO  : modified relation??? 
             string entityName = "";
 
             if (dbEntry.EntitySet.BuiltInTypeKind == BuiltInTypeKind.AssociationSet)//n-to-n relation
             {
-                var ass = dbEntry.EntitySet as System.Data.Metadata.Edm.AssociationSet;
+                var ass = dbEntry.EntitySet as System.Data.Entity.Core.Metadata.Edm.AssociationSet;
                 entityName = ass.AssociationSetEnds[0].EntitySet.Name;
                 var values = dbEntry.State == EntityState.Added ? dbEntry.CurrentValues : dbEntry.OriginalValues;
 
@@ -216,7 +217,7 @@ namespace Greewf.BaseLibrary.MVC.ChangeTracker
 
         }
 
-        private void LogRelationEntityEnd(EntityKey mainKey, EntityKey relatedKey, AssociationSetEnd relatedAssociationEnd, EntityState relationStatus, AuditingWidget widget)
+        private void LogRelationEntityEnd(EntityKey mainKey, EntityKey relatedKey, System.Data.Entity.Core.Metadata.Edm.AssociationSetEnd relatedAssociationEnd, EntityState relationStatus, AuditingWidget widget)
         {
             var ctx = (widget.TrackedContext as IObjectContextAdapter).ObjectContext;
             var relatedEntry = ctx.ObjectStateManager.GetObjectStateEntry(mainKey);
@@ -252,7 +253,7 @@ namespace Greewf.BaseLibrary.MVC.ChangeTracker
 
         private void LogEnteryDetails(ObjectStateEntry dbEntry, AuditLog auditLog, AuditingWidget widget)
         {
-            if (dbEntry.State == System.Data.EntityState.Added || dbEntry.State == System.Data.EntityState.Deleted)
+            if (dbEntry.State == EntityState.Added || dbEntry.State == EntityState.Deleted)
             {
                 bool isAdd = dbEntry.State == EntityState.Added;
                 var values = isAdd ? dbEntry.CurrentValues : dbEntry.OriginalValues;
@@ -278,7 +279,7 @@ namespace Greewf.BaseLibrary.MVC.ChangeTracker
                 }
 
             }
-            else if (dbEntry.State == System.Data.EntityState.Modified)
+            else if (dbEntry.State == EntityState.Modified)
             {
                 for (int i = 0; i < dbEntry.CurrentValues.FieldCount; i++)
                 {

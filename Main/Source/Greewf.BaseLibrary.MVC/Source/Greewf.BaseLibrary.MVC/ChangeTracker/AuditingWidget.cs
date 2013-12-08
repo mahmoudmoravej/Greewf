@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Data.Objects;
+using System.Data.Entity.Core;
+using System.Data.Entity.Core.Objects;
 using Greewf.BaseLibrary.MVC.ChangeTracker.ChangeTrackerContext;
 using System.Data.Entity;
 using System.Data;

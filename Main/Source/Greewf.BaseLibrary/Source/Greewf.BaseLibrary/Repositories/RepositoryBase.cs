@@ -64,7 +64,7 @@ namespace Greewf.BaseLibrary.Repositories
 
         public void Detach<E>(E entity) where E : class
         {
-            context.Entry<E>(entity).State = System.Data.EntityState.Detached;
+            context.Entry<E>(entity).State = EntityState.Detached;
         }
 
         public string[] Errors

@@ -66,7 +66,7 @@ namespace Greewf.BaseLibrary.MVC.ChangeTracker
             if (result != null && result.EntityKeyName !=null && result.Entity == null)//find by original value if provided : for deleted entities
             {
                 var entry = context.Entry(entity);
-                if (entry.State == System.Data.EntityState.Deleted)
+                if (entry.State == EntityState.Deleted)
                 {
                     result.EntityKey = entry.OriginalValues[result.EntityKeyName];
                     result.Entity = provider.GetRelatedEntityByKey(result.EntitySet, result.EntityKey);

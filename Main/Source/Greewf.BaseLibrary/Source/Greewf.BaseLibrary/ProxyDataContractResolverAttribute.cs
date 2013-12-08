@@ -19,7 +19,7 @@ using System.Text;
 using System.ServiceModel.Description;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
-using System.Data.Objects;
+using System.Data.Entity.Core.Objects;
 
 namespace Greewf.BaseLibrary
 {
