@@ -81,17 +81,17 @@ namespace Greewf.BaseLibrary
 
         public static DateTime? ToSystemDateTime(string persianDateTime)
         {
-            persianDateTime=persianDateTime.Trim();
+            persianDateTime = persianDateTime.Trim();
             var p = persianDateTime.Replace("-", "/").Replace(":", "/").Replace(" ", "").Split('/').ToList();
 
             if (p.Count == 1)//means database formated date-time
-            {               
+            {
                 if (persianDateTime.Length == 8)
                 {
-                    p= new List<string>();
-                    p.Add( persianDateTime.Substring(0, 4));
-                    p.Add( persianDateTime.Substring(4, 2));
-                    p.Add( persianDateTime.Substring(6, 2));                    
+                    p = new List<string>();
+                    p.Add(persianDateTime.Substring(0, 4));
+                    p.Add(persianDateTime.Substring(4, 2));
+                    p.Add(persianDateTime.Substring(6, 2));
                 }
                 else if (persianDateTime.Length == 12)
                 {
@@ -207,6 +207,29 @@ namespace Greewf.BaseLibrary
         public static string NumberToString(int no)
         {
             return Number2String.Num2Str(no.ToString());
+        }
+
+        public static string NumberToOrdinalString(int no)
+        {
+            if (no == 30)
+                return "سی ام";
+
+            string result = Number2String.Num2Str(no.ToString()).Trim() + "م";
+            if (no != 13 && no % 10 == 3)
+                result = result.Replace("سهم", "سوم");
+            
+            return result;
+        }
+
+        public static string NumberToOrdinalString2(int no)
+        {
+            switch (no)
+            {
+                case 1:
+                    return "اول";
+                default:
+                    return NumberToOrdinalString(no);
+            }
         }
 
         private class Number2String
