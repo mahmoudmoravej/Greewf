@@ -217,7 +217,7 @@ namespace Greewf.BaseLibrary
             string result = Number2String.Num2Str(no.ToString()).Trim() + "م";
             if (no != 13 && no % 10 == 3)
                 result = result.Replace("سهم", "سوم");
-            
+
             return result;
         }
 
@@ -292,8 +292,17 @@ namespace Greewf.BaseLibrary
 
         }
 
+        public static string FormatPersianNumber(object value)
+        {
+            return FormatPersianNumber(value, null);
+        }
 
-
+        public static string FormatPersianNumber(object value, string format)
+        {
+            if (value == null) return "";
+            format = string.IsNullOrWhiteSpace(format) ? "{0}" : "{0:" + format + "}";
+            return string.Format(format, value).Replace(".", Char.ConvertFromUtf32(1643));//1643= 066B;
+        }
 
 
     }
