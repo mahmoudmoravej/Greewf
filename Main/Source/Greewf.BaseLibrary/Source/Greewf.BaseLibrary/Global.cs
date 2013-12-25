@@ -290,21 +290,116 @@ namespace Greewf.BaseLibrary
 
 
 
-        }
+        }     
 
-        public static string FormatPersianNumber(object value)
+        public static object FormatPersianNumber(object value)
         {
             return FormatPersianNumber(value, null);
         }
 
-        public static string FormatPersianNumber(object value, string format)
+        private static Dictionary<char, string> digitsMap = new Dictionary<char, string>() {
+          { '.', char.ConvertFromUtf32(0x066B) },
+          { '0', char.ConvertFromUtf32(0x06F0) },
+          { '1', char.ConvertFromUtf32(0x06F1) },
+          { '2', char.ConvertFromUtf32(0x06F2) },
+          { '3', char.ConvertFromUtf32(0x06F3) },
+          { '4', char.ConvertFromUtf32(0x06F4) },
+          { '5', char.ConvertFromUtf32(0x06F5) },
+          { '6', char.ConvertFromUtf32(0x06F6) },
+          { '7', char.ConvertFromUtf32(0x06F7) },
+          { '8', char.ConvertFromUtf32(0x06F8) },
+          { '9', char.ConvertFromUtf32(0x06F9) }
+        };
+
+        private static Dictionary<char, string> digitsMap2 = new Dictionary<char, string>() {
+          { '.', "/" },
+          { '0', char.ConvertFromUtf32(0x06F0) },
+          { '1', char.ConvertFromUtf32(0x06F1) },
+          { '2', char.ConvertFromUtf32(0x06F2) },
+          { '3', char.ConvertFromUtf32(0x06F3) },
+          { '4', char.ConvertFromUtf32(0x06F4) },
+          { '5', char.ConvertFromUtf32(0x06F5) },
+          { '6', char.ConvertFromUtf32(0x06F6) },
+          { '7', char.ConvertFromUtf32(0x06F7) },
+          { '8', char.ConvertFromUtf32(0x06F8) },
+          { '9', char.ConvertFromUtf32(0x06F9) }
+        };
+
+        private static Dictionary<char, string> charMapsOld = new Dictionary<char, string>() { //used to correct lotus font
+          { 'ی', "ي" },
+          { '.', "/" },
+          { '0', char.ConvertFromUtf32(0x06F0) },
+          { '1', char.ConvertFromUtf32(0x06F1) },
+          { '2', char.ConvertFromUtf32(0x06F2) },
+          { '3', char.ConvertFromUtf32(0x06F3) },
+          { '4', char.ConvertFromUtf32(0x06F4) },
+          { '5', char.ConvertFromUtf32(0x06F5) },
+          { '6', char.ConvertFromUtf32(0x06F6) },
+          { '7', char.ConvertFromUtf32(0x06F7) },
+          { '8', char.ConvertFromUtf32(0x06F8) },
+          { '9', char.ConvertFromUtf32(0x06F9) }
+        };
+
+        public static object FormatPersianNumber(object value, string format)
         {
-            if (value == null) return "";
-            format = string.IsNullOrWhiteSpace(format) ? "{0}" : "{0:" + format + "}";
-            return string.Format(format, value).Replace(".", Char.ConvertFromUtf32(1643));//1643= 066B;
+            return FormatPersianNumber(value, format, false, null);
         }
 
+        public static object FormatPersianNumber(object value, string format, bool useOldSlashCharacter,string currentRendererFormat, params string[] exceptedRendererFormats)
+        {
 
+            if (exceptedRendererFormats != null && exceptedRendererFormats.Length > 0 && exceptedRendererFormats.Contains(currentRendererFormat))
+                return value;
+            
+            if (value == null) return "";
+            var maps = useOldSlashCharacter ? digitsMap2 : digitsMap;
+
+
+            format = string.IsNullOrWhiteSpace(format) ? "{0}" : "{0:" + format + "}";
+            return string.Format(format, value).Aggregate(
+                new StringBuilder(),
+              (sb, c) =>
+              {
+                  string r;
+                  if (maps.TryGetValue(c, out r))
+                      return sb.Append(r);
+                  else
+                      return sb.Append(c);
+              }).ToString();
+        }
+
+        public static object PersianNumberExceptExcel(object value, string format,string currentRendererFormat)
+        {
+            return FormatPersianNumber(value, format, false, currentRendererFormat, "EXCELOPENXML", "EXCEL");
+        }
+
+        public static object PersianNumberExceptExcelOldSlash(object value, string format, string currentRendererFormat)
+        {
+            return FormatPersianNumber(value, format, true, currentRendererFormat, "EXCELOPENXML", "EXCEL");
+        }
+
+        public static object OldFontCorrectorExceptExcel(object value, string currentRendererFormat)
+        {
+            return OldFontCorrector(value, currentRendererFormat, "EXCELOPENXML", "EXCEL");
+        }
+
+        public static object OldFontCorrector(object value, string currentRendererFormat, params string[] exceptedRendererFormats)
+        {
+            if (exceptedRendererFormats != null && exceptedRendererFormats.Length > 0 && exceptedRendererFormats.Contains(currentRendererFormat))
+                return value;
+
+            if (value == null) return "";
+            return value.ToString().Aggregate(
+               new StringBuilder(),
+             (sb, c) =>
+             {
+                 string r;
+                 if (charMapsOld.TryGetValue(c, out r))
+                     return sb.Append(r);
+                 else
+                     return sb.Append(c);
+             }).ToString();
+        }
     }
 
 }
