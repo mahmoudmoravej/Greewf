@@ -290,7 +290,7 @@ namespace Greewf.BaseLibrary
 
 
 
-        }     
+        }
 
         public static object FormatPersianNumber(object value)
         {
@@ -345,30 +345,44 @@ namespace Greewf.BaseLibrary
             return FormatPersianNumber(value, format, false, null);
         }
 
-        public static object FormatPersianNumber(object value, string format, bool useOldSlashCharacter,string currentRendererFormat, params string[] exceptedRendererFormats)
+        public static object FormatPersianNumber(object value, string format, bool useOldSlashCharacter, string currentRendererFormat, params string[] exceptedRendererFormats)
         {
 
             if (exceptedRendererFormats != null && exceptedRendererFormats.Length > 0 && exceptedRendererFormats.Contains(currentRendererFormat))
                 return value;
-            
+
             if (value == null) return "";
             var maps = useOldSlashCharacter ? digitsMap2 : digitsMap;
 
 
-            format = string.IsNullOrWhiteSpace(format) ? "{0}" : "{0:" + format + "}";
-            return string.Format(format, value).Aggregate(
+            format = string.IsNullOrWhiteSpace(format) ? null : "{0:" + format + "}";
+            int i = -1;
+            string str = format == null ? value.ToString() : string.Format(format, value);
+
+            return str.Aggregate(
                 new StringBuilder(),
               (sb, c) =>
               {
+                  i++;
                   string r;
                   if (maps.TryGetValue(c, out r))
-                      return sb.Append(r);
+                  {
+                      if (c == '.')
+                          if (i > 0 && i < str.Length - 1 && str[i - 1] >= '0' && str[i - 1] <= '9' && str[i + 1] >= '0' && str[i + 1] <= '9')//ممیز بین عدد است
+                              return sb.Append(r);
+                          else
+                              return sb.Append(c);
+                      else
+                          return sb.Append(r);
+
+                  }
                   else
                       return sb.Append(c);
+
               }).ToString();
         }
 
-        public static object PersianNumberExceptExcel(object value, string format,string currentRendererFormat)
+        public static object PersianNumberExceptExcel(object value, string format, string currentRendererFormat)
         {
             return FormatPersianNumber(value, format, false, currentRendererFormat, "EXCELOPENXML", "EXCEL");
         }
@@ -399,6 +413,12 @@ namespace Greewf.BaseLibrary
                  else
                      return sb.Append(c);
              }).ToString();
+        }
+
+
+        public static object HmxFontCorrectorExceptExcel(object value, string currentRendererFormat, string format = null)
+        {
+            return PersianNumberExceptExcel(value, format, currentRendererFormat);
         }
     }
 
