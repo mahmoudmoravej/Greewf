@@ -308,7 +308,8 @@ namespace Greewf.BaseLibrary
           { '6', char.ConvertFromUtf32(0x06F6) },
           { '7', char.ConvertFromUtf32(0x06F7) },
           { '8', char.ConvertFromUtf32(0x06F8) },
-          { '9', char.ConvertFromUtf32(0x06F9) }
+          { '9', char.ConvertFromUtf32(0x06F9) },
+          { '/', char.ConvertFromUtf32(0x066B) }
         };
 
         private static Dictionary<char, string> digitsMap2 = new Dictionary<char, string>() {
@@ -342,12 +343,13 @@ namespace Greewf.BaseLibrary
 
         public static object FormatPersianNumber(object value, string format)
         {
-            return FormatPersianNumber(value, format, false, null);
+            return FormatPersianNumber(value, format, false, null, null);
         }
 
-        public static object FormatPersianNumber(object value, string format, bool useOldSlashCharacter, string currentRendererFormat, params string[] exceptedRendererFormats)
+        public static object FormatPersianNumber(object value, string format, bool useOldSlashCharacter, string currentRendererFormat, bool? convertSlashBetweenDigitsToDecimalseprator, params string[] exceptedRendererFormats)
         {
 
+            convertSlashBetweenDigitsToDecimalseprator = convertSlashBetweenDigitsToDecimalseprator ?? false;
             if (exceptedRendererFormats != null && exceptedRendererFormats.Length > 0 && exceptedRendererFormats.Contains(currentRendererFormat))
                 return value;
 
@@ -372,6 +374,14 @@ namespace Greewf.BaseLibrary
                               return sb.Append(r);
                           else
                               return sb.Append(c);
+                      else if (c == '/')
+                          if (convertSlashBetweenDigitsToDecimalseprator.Value)
+                              if (i > 0 && i < str.Length - 1 && str[i - 1] >= '0' && str[i - 1] <= '9' && str[i + 1] >= '0' && str[i + 1] <= '9')//اسلش بین عدد است
+                                  return sb.Append(r);
+                              else
+                                  return sb.Append(c);
+                          else
+                              return sb.Append(c);
                       else
                           return sb.Append(r);
 
@@ -382,14 +392,14 @@ namespace Greewf.BaseLibrary
               }).ToString();
         }
 
-        public static object PersianNumberExceptExcel(object value, string format, string currentRendererFormat)
+        public static object PersianNumberExceptExcel(object value, string format, string currentRendererFormat, bool convertSlashBetweenDigitsToDecimalseprator)
         {
-            return FormatPersianNumber(value, format, false, currentRendererFormat, "EXCELOPENXML", "EXCEL");
+            return FormatPersianNumber(value, format, false, currentRendererFormat, convertSlashBetweenDigitsToDecimalseprator, "EXCELOPENXML", "EXCEL");
         }
 
         public static object PersianNumberExceptExcelOldSlash(object value, string format, string currentRendererFormat)
         {
-            return FormatPersianNumber(value, format, true, currentRendererFormat, "EXCELOPENXML", "EXCEL");
+            return FormatPersianNumber(value, format, true, currentRendererFormat, null, "EXCELOPENXML", "EXCEL");
         }
 
         public static object OldFontCorrectorExceptExcel(object value, string currentRendererFormat)
@@ -416,9 +426,9 @@ namespace Greewf.BaseLibrary
         }
 
 
-        public static object HmxFontCorrectorExceptExcel(object value, string currentRendererFormat, string format = null)
+        public static object HmxFontCorrectorExceptExcel(object value, string currentRendererFormat, string format = null, bool convertSlashBetweenDigitsToDecimalseprator = false)
         {
-            return PersianNumberExceptExcel(value, format, currentRendererFormat);
+            return PersianNumberExceptExcel(value, format, currentRendererFormat, convertSlashBetweenDigitsToDecimalseprator);
         }
     }
 
