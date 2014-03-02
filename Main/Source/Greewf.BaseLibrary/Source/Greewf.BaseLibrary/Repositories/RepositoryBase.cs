@@ -5,13 +5,14 @@ using System.Text;
 using System.Data.Entity;
 using System.Linq.Expressions;
 using Greewf.BaseLibrary.Repositories;
+using Greewf.BaseLibrary;
 
 namespace Greewf.BaseLibrary.Repositories
 {
     /// <summary>
     /// The main EntityFrmaework DbContext
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">EF Context</typeparam>
     /// <typeparam name="Y">UnitOfRepository</typeparam>
     public class RepositoryBase<T, Y>
         where T : DbContext, ISavingTracker, new()
@@ -20,7 +21,7 @@ namespace Greewf.BaseLibrary.Repositories
         protected T context = null;
         protected ContextManager<T> ContextManager { get; private set; }
         protected Y UoR { get; private set; }
-        protected IValidationDictionary ValidationDictionary { get; private set; }//we cannot return it directly from ContextManager becuase sometime it may be null
+        protected IValidationDictionary ValidationDictionary { get; private set; }//we cannot return it directly from ContextManager becuase sometimes it may be null
 
         protected RepositoryBase(ContextManager<T> contextManager, Y unitOfRepository)
         {
@@ -29,6 +30,7 @@ namespace Greewf.BaseLibrary.Repositories
             {
                 context = new T();// throw new Exception("ContextManager cannot be empty for Repository creation");
                 ValidationDictionary = new DefaultValidationDictionary();//when contextmanager is null.
+
             }
             else
             {
@@ -38,7 +40,7 @@ namespace Greewf.BaseLibrary.Repositories
 
             context.OnSavedChanges += OnChangesSaved;
             context.OnSavingChanges += OnChangesSaving;
-            
+
             UoR = unitOfRepository;
 
         }
@@ -77,4 +79,25 @@ namespace Greewf.BaseLibrary.Repositories
 
     }
 
+    public class RepositoryBase<T, Y, M> : RepositoryBase<T, Y>
+        where T : DbContext, ISavingTracker, new()
+        where Y : class , new()
+        where M : class, new()
+    {
+        //NOTE! this class is just for generic ValidationDictionart<M>. please put your extensibility codes in base class.
+
+        public RepositoryBase(ContextManager<T> contextManager, Y unitOfRepository)
+            : base(contextManager,unitOfRepository)
+        {
+        }
+
+        protected new IValidationDictionary<M> ValidationDictionary
+        {
+            get
+            {
+                return base.ValidationDictionary;
+            }
+        }
+
+    }
 }
