@@ -75,7 +75,7 @@
         return stringToTrim.replace(/^\s+|\s+$/g, "");
     }
 
-    this.loadAjax = function (url, dest, doPost, hideAjaxLoader, successPostBack, timeoutToShowAjaxLoader, ajaxLoaderClass) {        
+    this.loadAjax = function (url, dest, doPost, hideAjaxLoader, successPostBack, timeoutToShowAjaxLoader, ajaxLoaderClass) {
         var received = false;
         $.ajax({
             type: doPost ? "POST" : "GET",
@@ -372,6 +372,15 @@ telerikHelper = new function () {
             return true;
         }
         else if (jsHelper.handleSecurityError(args.XMLHttpRequest)) {
+            args.preventDefault();
+            return true;
+        }
+        else if (jsHelper.handleSecurityError(args.XMLHttpRequest)) {
+            args.preventDefault();
+            return true;
+        }
+        else if (args.XMLHttpRequest.getResponseHeader("GreewfCustomErrorPage")) {
+            $(document.body).append(args.XMLHttpRequest.responseText);
             args.preventDefault();
             return true;
         }
