@@ -1,0 +1,111 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageOptimizationFramework", "src\ImageOptimizationFramework\ImageOptimizationFramework.csproj", "{9852E8B5-1B86-4AEF-85F3-60A71D8847FC}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "WebFormsControlSample", "test\WebFormsControlSample", "{C6CEE35E-5C19-4076-BFA3-1E1AB5373047}"
+	ProjectSection(WebsiteProperties) = preProject
+		SccProjectName = "SAK"
+		SccAuxPath = "SAK"
+		SccLocalPath = "SAK"
+		SccProvider = "SAK"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		ProjectReferences = "{1DB2C622-EFDE-458C-8E47-8DEAA9B7F8BB}|ImageEx.dll;{9852E8B5-1B86-4AEF-85F3-60A71D8847FC}|ImageOptimizationFramework.dll;"
+		Debug.AspNetCompiler.VirtualPath = "/WebFormsControlSample"
+		Debug.AspNetCompiler.PhysicalPath = "test\WebFormsControlSample\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\WebFormsControlSample\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/WebFormsControlSample"
+		Release.AspNetCompiler.PhysicalPath = "test\WebFormsControlSample\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\WebFormsControlSample\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "54099"
+		SlnRelativePath = "test\WebFormsControlSample\"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageSprite", "src\ImageSprite\ImageSprite.csproj", "{1DB2C622-EFDE-458C-8E47-8DEAA9B7F8BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpriteHelper", "src\SpriteHelper\SpriteHelper.csproj", "{2B8A6DC7-5477-4590-9E56-492BFF1D9796}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MVCSample", "test\MvcSample\MVCSample.csproj", "{7FC7C2BC-858D-4DAB-BD06-9A0BC2B3F6AD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MVCSampleRazorViews", "test\MvcSampleRazorViews\MVCSampleRazorViews.csproj", "{48B83701-3AEB-4DF1-8D0B-84AAF213A928}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageOptimizationFrameworkTest", "test\ImageOptimizationFrameworkTests\ImageOptimizationFrameworkTest.csproj", "{AD186CBE-3B4E-47FE-8B3A-74AC83E06CA7}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 7
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs15
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = src\\ImageOptimizationFramework\\ImageOptimizationFramework.csproj
+		SccProjectName1 = src/ImageOptimizationFramework
+		SccLocalPath1 = src\\ImageOptimizationFramework
+		SccProjectUniqueName2 = src\\ImageSprite\\ImageSprite.csproj
+		SccProjectName2 = src/ImageSprite
+		SccLocalPath2 = src\\ImageSprite
+		SccProjectUniqueName3 = src\\SpriteHelper\\SpriteHelper.csproj
+		SccProjectName3 = src/SpriteHelper
+		SccLocalPath3 = src\\SpriteHelper
+		SccProjectUniqueName4 = test\\ImageOptimizationFrameworkTests\\ImageOptimizationFrameworkTest.csproj
+		SccProjectName4 = test/ImageOptimizationFrameworkTests
+		SccLocalPath4 = test\\ImageOptimizationFrameworkTests
+		SccProjectUniqueName5 = test\\MvcSampleRazorViews\\MVCSampleRazorViews.csproj
+		SccProjectName5 = test/MvcSampleRazorViews
+		SccLocalPath5 = test\\MvcSampleRazorViews
+		SccWebProject6 = true
+		SccProjectUniqueName6 = test\\WebFormsControlSample
+		SccProjectName6 = test/WebFormsControlSample
+		SccLocalPath6 = test\\WebFormsControlSample
+		SccProjectEnlistmentChoice6 = 2
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9852E8B5-1B86-4AEF-85F3-60A71D8847FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9852E8B5-1B86-4AEF-85F3-60A71D8847FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9852E8B5-1B86-4AEF-85F3-60A71D8847FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9852E8B5-1B86-4AEF-85F3-60A71D8847FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6CEE35E-5C19-4076-BFA3-1E1AB5373047}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6CEE35E-5C19-4076-BFA3-1E1AB5373047}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6CEE35E-5C19-4076-BFA3-1E1AB5373047}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6CEE35E-5C19-4076-BFA3-1E1AB5373047}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{1DB2C622-EFDE-458C-8E47-8DEAA9B7F8BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DB2C622-EFDE-458C-8E47-8DEAA9B7F8BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DB2C622-EFDE-458C-8E47-8DEAA9B7F8BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DB2C622-EFDE-458C-8E47-8DEAA9B7F8BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B8A6DC7-5477-4590-9E56-492BFF1D9796}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B8A6DC7-5477-4590-9E56-492BFF1D9796}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B8A6DC7-5477-4590-9E56-492BFF1D9796}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B8A6DC7-5477-4590-9E56-492BFF1D9796}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7FC7C2BC-858D-4DAB-BD06-9A0BC2B3F6AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FC7C2BC-858D-4DAB-BD06-9A0BC2B3F6AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FC7C2BC-858D-4DAB-BD06-9A0BC2B3F6AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FC7C2BC-858D-4DAB-BD06-9A0BC2B3F6AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48B83701-3AEB-4DF1-8D0B-84AAF213A928}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48B83701-3AEB-4DF1-8D0B-84AAF213A928}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48B83701-3AEB-4DF1-8D0B-84AAF213A928}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48B83701-3AEB-4DF1-8D0B-84AAF213A928}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD186CBE-3B4E-47FE-8B3A-74AC83E06CA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD186CBE-3B4E-47FE-8B3A-74AC83E06CA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD186CBE-3B4E-47FE-8B3A-74AC83E06CA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD186CBE-3B4E-47FE-8B3A-74AC83E06CA7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = ImageOptimizationFramework.vsmdi
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ImageOptimizationSettings>
+  <FileFormat>png</FileFormat>
+  <Base64Encoding>false</Base64Encoding>
+  <Quality>80</Quality>
+  <BackgroundColor>00000000</BackgroundColor>
+  <MaxSize>500</MaxSize>
+  <TileInYAxis>true</TileInYAxis>
+</ImageOptimizationSettings>
