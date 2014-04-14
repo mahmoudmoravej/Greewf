@@ -444,7 +444,7 @@ telerikHelper = new function () {
             var cols = new Array();
             $($(gridId).data('tGrid').columns).each(function (i, o) {
                 if (!o.hidden && o.member)
-                    cols.push({ Id: o.member, Title: o.title, Type: o.type });
+                    cols.push({ Id: o.member, Title: o.title, Type: o.type, Index: i });
             });
 
             var form = $('<form method="post"><input type="submit"/><input type="hidden" name="layout" /></form>').attr('action', href);

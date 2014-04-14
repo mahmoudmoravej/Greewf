@@ -21,26 +21,32 @@ namespace Greewf.BaseLibrary.MVC.TelerikExtentions
         public string Id { get; set; }
         public string Title { get; set; }
         public string Type { get; set; }
+        public int Index { get; set; }
     }
 
 
     public class ColumnDataProvider
     {
         public PropertyInfo PropertyInfo { get; set; }
-        public Func<ColumnLayout, object, string> ArrayColumnDataRetreiver { get; set; }
+        public Func<ColumnLayout, object, string> ColumnDataRetreiver { get; set; }
     }
 
-    public interface IArrayColumnsDataProviderContext
+    public interface IColumnsDataProviderContext
     {
-        Dictionary<Type, Func<ColumnLayout, object, string>> GetArrayColumnsDataProviders();
+        /// <summary>
+        /// the second parameter of function is the value of a cell with specified passed "Type".
+        /// </summary>
+        /// <returns></returns>
+        Dictionary<Type, Func<ColumnLayout, object, string>> GetColumnsDataProviders();
     }
+
 
     public class ExcelOutputAttribute : ActionFilterAttribute
     {
 
         private long? _permissionObject = null;
         private long? _permissions = null;
-        private Type _arrayColumnsDataProviderContext;
+        private Type _columnsDataProviderContext;
 
         public ExcelOutputAttribute()
         {
@@ -53,11 +59,11 @@ namespace Greewf.BaseLibrary.MVC.TelerikExtentions
         }
 
 
-        public ExcelOutputAttribute(long permissionObject, long permissions, Type arrayColumnsDataProviderContext)
+        public ExcelOutputAttribute(long permissionObject, long permissions, Type columnsDataProviderContext)
         {
             _permissionObject = permissionObject;
             _permissions = permissions;
-            _arrayColumnsDataProviderContext = arrayColumnsDataProviderContext;
+            _columnsDataProviderContext = columnsDataProviderContext;
         }
 
 
@@ -109,29 +115,29 @@ namespace Greewf.BaseLibrary.MVC.TelerikExtentions
             var propertiesDataProviders = new Dictionary<string, ColumnDataProvider>();
 
             int idx = 0;
-            int columnCount = 0;         
+            int columnCount = 0;
 
             var rowsFont = workbook.CreateFont();
             rowsFont.Boldweight = (short)FontBoldWeight.NORMAL;
             rowsFont.FontHeightInPoints = 12;
 
-            Dictionary<Type, Func<ColumnLayout, object, string>> arrayColumnsDataProviders = null;
+            Dictionary<Type, Func<ColumnLayout, object, string>> columnsDataProviders = null;
 
-            if (_arrayColumnsDataProviderContext != null)
+            if (_columnsDataProviderContext != null)
             {
                 object context;
                 try
                 {
-                    context = Activator.CreateInstance(_arrayColumnsDataProviderContext);
+                    context = Activator.CreateInstance(_columnsDataProviderContext);
                 }
                 catch (Exception exp)
                 {
-                    throw new Exception("Greewf : Error in creating '" + _arrayColumnsDataProviderContext.Name + "' Type. Details : " + exp.Message);
+                    throw new Exception("Greewf : Error in creating '" + _columnsDataProviderContext.Name + "' Type. Details : " + exp.Message);
                 }
-                if (context is IArrayColumnsDataProviderContext == false)
-                    throw new Exception("Greewf : The passed type for 'arrayColumnsDataProviderContext' parameter of 'ExcelOutput' attribute should inherit from 'IArrayColumnsDataProviderContext'");
+                if (context is IColumnsDataProviderContext == false)
+                    throw new Exception("Greewf : The passed type for 'columnsDataProviderContext' parameter of 'ExcelOutput' attribute should inherit from 'IColumnsDataProviderContext'");
 
-                arrayColumnsDataProviders = (context as IArrayColumnsDataProviderContext).GetArrayColumnsDataProviders();
+                columnsDataProviders = (context as IColumnsDataProviderContext).GetColumnsDataProviders();
             }
 
             // header style
@@ -143,14 +149,14 @@ namespace Greewf.BaseLibrary.MVC.TelerikExtentions
             headerCellStyle.FillBackgroundColor = HSSFColor.DARK_BLUE.GREY_80_PERCENT.index;
             headerCellStyle.VerticalAlignment = VerticalAlignment.CENTER;
             headerRow.Height = 40 * 20;
-            
+
             foreach (var item in columnLayouts)
             {
                 if (string.IsNullOrWhiteSpace(item.Id)) continue;
                 columnCount++;
                 var cell = headerRow.CreateCell(idx++);
                 cell.SetCellValue(item.Title);
-                cell.CellStyle = headerCellStyle;                
+                cell.CellStyle = headerCellStyle;
 
                 if (propertiesDataProviders.ContainsKey(item.Id + item.Title))
                     throw new Exception("Greewf : The combination of column header('" + item.Id + "' and '" + item.Title + "') is not unique. ExcelOutput needs this combination to be unique ");
@@ -162,15 +168,22 @@ namespace Greewf.BaseLibrary.MVC.TelerikExtentions
                     if (colDataProvider.PropertyInfo.PropertyType.IsArray ||
                         (colDataProvider.PropertyInfo.PropertyType.IsGenericType && colDataProvider.PropertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
                     {
-                        if (arrayColumnsDataProviders == null)
-                            throw new Exception("Greewf : You should pass 'ArrayColumnDataProviders' parameter for 'ExcelOutput' attribute when you have some array columns.");
+                        if (columnsDataProviders == null)
+                            throw new Exception("Greewf : You should pass 'ColumnDataProviders' parameter for 'ExcelOutput' attribute when you have some array columns.");
 
-                        var arrayDataRetreiver = arrayColumnsDataProviders.FirstOrDefault(f => f.Key == colDataProvider.PropertyInfo.PropertyType);
+                        var colDataRetreiver = columnsDataProviders.FirstOrDefault(f => f.Key == colDataProvider.PropertyInfo.PropertyType);
 
-                        if (arrayDataRetreiver.Key == null)
-                            throw new Exception("Greewf : 'ArrayColumnDataProviders' paramater (of 'ExcelOutput' attribute)  doesn't have any relative function for array of  type : " + colDataProvider.PropertyInfo.PropertyType.ToString());
+                        if (colDataRetreiver.Key == null)
+                            throw new Exception("Greewf : 'ColumnDataProviders' paramater (of 'ExcelOutput' attribute)  doesn't have any relative function for array of  type : " + colDataProvider.PropertyInfo.PropertyType.ToString());
                         else
-                            colDataProvider.ArrayColumnDataRetreiver = arrayDataRetreiver.Value;
+                            colDataProvider.ColumnDataRetreiver = colDataRetreiver.Value;
+
+                    }
+                    else if (columnsDataProviders != null)//simple column type providers if any
+                    {
+                        var provider = columnsDataProviders.FirstOrDefault(f => f.Key == colDataProvider.PropertyInfo.PropertyType);
+                        if (provider.Key != null)
+                            colDataProvider.ColumnDataRetreiver = provider.Value;
                     }
 
                     propertiesDataProviders.Add(item.Id + item.Title, colDataProvider);
@@ -200,8 +213,8 @@ namespace Greewf.BaseLibrary.MVC.TelerikExtentions
                     var propertyValue = colDataProvider.PropertyInfo.GetValue(rowData, null);
                     string value = null;
 
-                    if (colDataProvider.ArrayColumnDataRetreiver != null)
-                        value = colDataProvider.ArrayColumnDataRetreiver(item, propertyValue);
+                    if (colDataProvider.ColumnDataRetreiver != null)
+                        value = colDataProvider.ColumnDataRetreiver(item, propertyValue);
                     else if (colDataProvider.PropertyInfo.PropertyType.IsAssignableFrom(typeof(DateTime)))
                         value = Global.DisplayDateTime((DateTime?)propertyValue);
                     else if (propertyValue is bool || propertyValue is bool?)
