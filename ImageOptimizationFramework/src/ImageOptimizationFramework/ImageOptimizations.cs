@@ -562,8 +562,8 @@ namespace Microsoft.Web.Samples {
         private static void GenerateCss(int xOffset, int yOffset, int spriteNumber, string fileExtension, bool base64, Bitmap image, TextWriter cssOutput) {
             cssOutput.WriteLine("." + (string)image.Tag);
             cssOutput.WriteLine("{");
-            cssOutput.WriteLine("width:" + image.Width.ToString(CultureInfo.InvariantCulture) + "px;");
-            cssOutput.WriteLine("height:" + image.Height.ToString(CultureInfo.InvariantCulture) + "px;");
+            cssOutput.WriteLine("width:" + image.Width.ToString(CultureInfo.InvariantCulture) + "px !important;");
+            cssOutput.WriteLine("height:" + image.Height.ToString(CultureInfo.InvariantCulture) + "px !important;");
 
             if (base64) {
                 string base64Image = ConvertImageToBase64(image, GetImageFormat(fileExtension));
