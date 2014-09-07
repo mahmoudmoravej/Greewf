@@ -16,17 +16,17 @@ namespace Greewf.BaseLibrary.ReportLoaderExtentions
         HmFontsCorrection = 1,
     }
 
-    /// <summary>
-    ///  Constants : 
-    ///  GreewfIgnoreGlobalVariablesAtStart = متغیرهای عمومی مانند شماره صفحه خودکار را مستثنی می کند. فقط بدرد جایی می خورد که می خواهید گزارش وورد بدهید و شماره صفحه خودکار داردید. چراکه اگر متغیر گلوبال مربوطه توسط تابعی تغییر کند دیگر آن متغیر کار نمی کند و همیشه شماره 1 را به عنوان شماره صفحه درج می کند
-    ///  GreewfConvertSlashBetweenDigitsToDecimalSeprator = اسلش میان اعداد را به ممیز اعشار تبدیل کند . این موضوع فقط برای فونت های اچ.ام پشتیبانی می شود
-    ///  GreewfIgnoreCorrection = عملیات صحیح سازی را بر روی آن تگ بطور خاص انجام نمی دهد
-    /// </summary>
     public static class LocalReportExtentions
     {
 
 
-
+        /// <summary>
+        /// از ثابت های زیر می توانید در طراحی گزارش خود استفاده کنید و فرآیند صحیح سازی را با توجه به نیاز شخصی سازی نمایید
+        ///  Constants : 
+        ///  GreewfIgnoreGlobalVariablesAtStart = متغیرهای عمومی مانند شماره صفحه خودکار را مستثنی می کند. فقط مناسب جایی است که می خواهید گزارش "آفیس وورد" بدهید و شماره صفحه خودکار داردید. چراکه اگر متغیر گلوبال مربوطه توسط تابعی تغییر کند دیگر آن متغیر کار نمی کند و همیشه شماره 1 را به عنوان شماره صفحه درج می کند
+        ///  GreewfConvertSlashBetweenDigitsToDecimalSeprator = اسلش میان اعداد را به ممیز اعشار تبدیل کند . این موضوع فقط برای فونت های اچ.ام پشتیبانی می شود
+        ///  GreewfIgnoreCorrection = عملیات صحیح سازی را بر روی آن تگ بطور خاص انجام نمی دهد
+        /// </summary>
         public static void LoadReport(this LocalReport report, string path, ReportCorrectionMode reportCorrectionMode)
         {
 
