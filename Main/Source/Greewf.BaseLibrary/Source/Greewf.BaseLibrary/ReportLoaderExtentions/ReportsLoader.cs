@@ -9,6 +9,16 @@ using Greewf.BaseLibrary;
 namespace Greewf.BaseLibrary.ReportLoaderExtentions
 {
 
+    public class ReportSettings
+    {
+        public ReportingServiceOutputFileFormat OutputType { get; set; }
+        public bool IsInches { get; set; }
+        public double? TopMargin { get; set; }
+        public double? BottomMargin { get; set; }
+        public double? LeftMargin { get; set; }
+        public double? RightMargin { get; set; }
+    }
+
     public static class ReportsLoader
     {
         private static Dictionary<ReportingServiceOutputFileFormat, string> _dicOutputTypes = new Dictionary<ReportingServiceOutputFileFormat, string>();
@@ -48,25 +58,38 @@ namespace Greewf.BaseLibrary.ReportLoaderExtentions
         /// </param>
         public static byte[] ExportToFile(LocalReport report, ReportingServiceOutputFileFormat fileFormat)
         {
+            return ExportToFile(report, new ReportSettings() { OutputType = fileFormat });
+        }
+
+        public static byte[] ExportToFile(LocalReport report, ReportSettings settings)
+        {
 
             var defaults = report.GetDefaultPageSettings();
+
+            var marginTop = settings.TopMargin.HasValue ? (settings.TopMargin * (1 / 2.54)) : defaults.Margins.Top / 100.0;
+            var marginBottom = settings.BottomMargin.HasValue ? (settings.BottomMargin * (1 / 2.54)) : defaults.Margins.Top / 100.0;
+            var marginLeft = settings.LeftMargin.HasValue ? (settings.TopMargin * (1 / 2.54)) : defaults.Margins.Top / 100.0;
+            var marginRight = settings.RightMargin.HasValue ? (settings.RightMargin * (1 / 2.54)) : defaults.Margins.Top / 100.0;
+
             //The DeviceInfo settings should be changed based on the reportType
             //http://msdn2.microsoft.com/en-us/library/ms155397.aspx
             string deviceInfo =
              "<DeviceInfo>" +
-             "  <OutputFormat>" + fileFormat + "</OutputFormat>" +
+             "  <OutputFormat>" + settings.OutputType + "</OutputFormat>" +
              "  <PageWidth>" + (defaults.IsLandscape ? defaults.PaperSize.Height : defaults.PaperSize.Width) / 100.0 + "in</PageWidth>" +
              "  <PageHeight>" + (defaults.IsLandscape ? defaults.PaperSize.Width : defaults.PaperSize.Height) / 100.0 + "in</PageHeight>" +
-             "  <MarginTop>" + defaults.Margins.Top / 100.0 + "in</MarginTop>" +
-             "  <MarginLeft>" + defaults.Margins.Left / 100.0 + "in</MarginLeft>" +
-             "  <MarginRight>" + defaults.Margins.Right / 100.0 + "in</MarginRight>" +
-             "  <MarginBottom>" + defaults.Margins.Bottom / 100.0 + "in</MarginBottom>" +
+             "  <MarginTop>" + marginTop + "in</MarginTop>" +
+             "  <MarginLeft>" + marginLeft + "in</MarginLeft>" +
+             "  <MarginRight>" + marginRight + "in</MarginRight>" +
+             "  <MarginBottom>" + marginBottom + "in</MarginBottom>" +
              "  <PageBreaksMode>OnEachPage</PageBreaksMode>" +
              "</DeviceInfo>";
 
-            return report.Render(GetOutputFileFormat(fileFormat), deviceInfo);
+            return report.Render(GetOutputFileFormat(settings.OutputType), deviceInfo);
 
         }
+
+
 
         private static string GetOutputFileFormat(ReportingServiceOutputFileFormat fileFormat)
         {
