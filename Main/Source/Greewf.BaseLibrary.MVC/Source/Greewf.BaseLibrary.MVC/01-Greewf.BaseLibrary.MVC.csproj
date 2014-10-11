@@ -215,12 +215,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Compile Include="Security\CurrentUserBase.cs" />
-    <Compile Include="Security\NewVersion\CurrentUserBase.cs" />
-    <Compile Include="Security\NewVersion\PermissionCoordinatorBase.cs" />
-    <Compile Include="Security\NewVersion\PermissionLimiterBase.cs" />
-    <Compile Include="Security\NewVersion\SystemRole.cs" />
-    <Compile Include="Security\NewVersion\UserPermissionHelper.cs" />
-    <Compile Include="Security\OldVersion\PermissionLimiterBase.cs" />
+    <Compile Include="Security\V2\CurrentUserBase.cs" />
+    <Compile Include="Security\V2\PermissionCoordinatorBase.cs" />
+    <Compile Include="Security\V2\PermissionLimiterBase.cs" />
+    <Compile Include="Security\V2\SystemRole.cs" />
+    <Compile Include="Security\V2\UserPermissionHelper.cs" />
+    <Compile Include="Security\V1\PermissionLimiterBase.cs" />
     <Compile Include="Security\PermissionLimiterBase.cs" />
     <Compile Include="TelerikExtentions\ExcelOutputAttribute.cs" />
     <Compile Include="TelerikExtentions\Helper.cs" />
@@ -234,13 +234,13 @@
     <Compile Include="Mappers\IModelMapperController.cs" />
     <Compile Include="Mappers\IMapper.cs" />
     <Compile Include="Mappers\ViewModelMapper.cs" />
-    <Compile Include="Security\OldVersion\CurrentUserBase.cs" />
+    <Compile Include="Security\V1\CurrentUserBase.cs" />
     <Compile Include="ProfileCommonBase.cs" />
     <Compile Include="ProfileExtentions.cs" />
     <Compile Include="Security\PermissionAttribute.cs" />
-    <Compile Include="Security\OldVersion\PermissionCoordinatorBase.cs" />
+    <Compile Include="Security\V1\PermissionCoordinatorBase.cs" />
     <Compile Include="Security\SecurityException.cs" />
-    <Compile Include="Security\OldVersion\UserPermissionHelper.cs" />
+    <Compile Include="Security\V1\UserPermissionHelper.cs" />
     <Compile Include="Validators\Localized\ValidatorAttributesLocalizer.cs" />
     <Compile Include="Validators\PersianDateAttribute.cs" />
     <Compile Include="Validators\PersianDateValidationRule.cs" />
