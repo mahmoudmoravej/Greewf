@@ -7,12 +7,37 @@ using System.Threading.Tasks;
 
 namespace Greewf.BaseLibrary.Security.V3
 {
+
+    public abstract class PermissionCoordinatorBase
+    {
+        protected static PermissionCoordinatorBase _instance = null;
+        public delegate PermissionCoordinatorBase SingleInstanceCreatorDelegate();
+        public static event SingleInstanceCreatorDelegate SingleInstanceCreator;
+
+        public static PermissionCoordinatorBase GetActiveInstance()
+        {
+            if (_instance == null)
+            {
+                if (SingleInstanceCreator != null)
+                    _instance = SingleInstanceCreator();
+                else
+                    throw new Exception("You should handle PermissionCoordinatorBase's SingleInstanceCreator event(static event)");
+
+            }
+            return _instance;
+        }
+
+        public abstract Task<bool> HasPermissionAsync(int userId, IPermissionObject obj, int group, long permission);
+        public abstract bool HasPermission(int userId, IPermissionObject obj, int group, long permission);
+        public abstract bool HasAnyPermission(int userId, int group, long permission);
+    }
+
     /// <summary>
     /// 
     /// </summary>
     /// <typeparam name="G">Permission Group</typeparam>
     /// <typeparam name="OT">Permission Object Type</typeparam>
-    public abstract class PermissionCoordinatorBase<OT, G>
+    public abstract class PermissionCoordinatorBase<OT, G> : PermissionCoordinatorBase
         where G : struct
         where OT : struct
     {
@@ -32,18 +57,18 @@ namespace Greewf.BaseLibrary.Security.V3
 
         }
 
-        private static PermissionCoordinatorBase<G, OT> _instance = null;
-        public static T GetInstance<T>() where T : PermissionCoordinatorBase<G, OT>, new()
-        {
-            if (_instance == null)
-                _instance = new T();
+        //private static PermissionCoordinatorBase<G, OT> _instance = null;
+        //public static T GetInstance<T>() where T : PermissionCoordinatorBase<G, OT>, new()
+        //{
+        //    if (_instance == null)
+        //        _instance = new T();
 
-            var result = _instance as T;
-            if (result == null)
-                throw new Exception(string.Format("This method can be called only with the type that was passed to it first call. It is associated with '{0}' previously." + typeof(T).FullName));
+        //    var result = _instance as T;
+        //    if (result == null)
+        //        throw new Exception(string.Format("This method can be called only with the type that was passed to it first call. It is associated with '{0}' previously." + typeof(T).FullName));
 
-            return result;
-        }
+        //    return result;
+        //}
 
         protected abstract List<RelatedPermission<G>> LoadRelationships();
         protected abstract Dictionary<Type, G> LoadTypeGroupMaps();
@@ -91,6 +116,11 @@ namespace Greewf.BaseLibrary.Security.V3
             return dicGroupObjectTypeMaps[group];
         }
 
+        public G GetGroupOfType(Type type)
+        {
+            return dicTypeGroupMaps[type];
+        }
+
         public G[] GetObjectTypeGroups(OT objectType)
         {
             return dicGroupObjectTypeMaps.Where(o => o.Value.Equals(objectType)).Select(o => o.Key).ToArray();
@@ -101,11 +131,45 @@ namespace Greewf.BaseLibrary.Security.V3
             return dicObjectTypeParents[objectType] ?? new OT[0];
         }
 
-        public abstract  Task<bool> HasPermissionAsync<P>(int userId, OT objectType, int? objectId, P permission);
+        public abstract Task<bool> HasPermissionAsync(int userId, PermissionObject<OT>? obj, G group, long permission);
 
-        public bool HasPermission<P>(int userId, OT objectType, int? objectId, P permission)
+        public override Task<bool> HasPermissionAsync(int userId, IPermissionObject obj, int group, long permission)
         {
-            return Task.Run(async () => await HasPermissionAsync(userId, objectType, objectId, permission)).Result;
+            return HasPermissionAsync(userId, (PermissionObject<OT>)obj, (G)(object)group, permission);
         }
+
+        public Task<bool> HasPermissionAsync<P>(int userId, PermissionObject<OT>? obj, P permission)
+        {
+            int group = (int)(object)GetGroupOfType(typeof(P));
+            long p = (long)(object)permission;
+
+            return HasPermissionAsync(userId, obj, group, p);
+        }
+
+        public bool HasPermission<P>(int userId, PermissionObject<OT>? obj, P permission)
+        {
+            return Task.Run(async () => await HasPermissionAsync(userId, obj, permission)).Result;
+        }
+
+        public bool HasPermission(int userId, PermissionObject<OT>? obj, int group, long permission)
+        {
+            return Task.Run(async () => await HasPermissionAsync(userId, obj, group, permission)).Result;
+        }
+
+        public bool HasAnyPermission<P>(int userId, P permission)
+        {
+            return Task.Run(async () => await HasPermissionAsync(userId, null, permission)).Result;
+        }
+
+        public override bool HasAnyPermission(int userId, int group, long permission)
+        {
+            return Task.Run(async () => await HasPermissionAsync(userId, null, group, permission)).Result;
+        }
+
+        public override bool HasPermission(int userId, IPermissionObject obj, int group, long permission)
+        {
+            return HasPermission(userId, (PermissionObject<OT>)obj, group, permission);
+        }
+
     }
 }
