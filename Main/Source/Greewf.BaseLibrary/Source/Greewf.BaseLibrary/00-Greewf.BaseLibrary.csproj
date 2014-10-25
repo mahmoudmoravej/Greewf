@@ -91,6 +91,7 @@
     <Compile Include="Security\V3\PermissionCoordinatorBase.cs" />
     <Compile Include="Security\V3\PermissionObject.cs" />
     <Compile Include="Security\V3\RelatedPermission.cs" />
+    <Compile Include="Security\V3\SecurityException.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

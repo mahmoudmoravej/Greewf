@@ -67,9 +67,9 @@ namespace Greewf.BaseLibrary.ReportLoaderExtentions
             var defaults = report.GetDefaultPageSettings();
 
             var marginTop = settings.TopMargin.HasValue ? (settings.TopMargin * (1 / 2.54)) : defaults.Margins.Top / 100.0;
-            var marginBottom = settings.BottomMargin.HasValue ? (settings.BottomMargin * (1 / 2.54)) : defaults.Margins.Top / 100.0;
-            var marginLeft = settings.LeftMargin.HasValue ? (settings.LeftMargin * (1 / 2.54)) : defaults.Margins.Top / 100.0;
-            var marginRight = settings.RightMargin.HasValue ? (settings.RightMargin * (1 / 2.54)) : defaults.Margins.Top / 100.0;
+            var marginBottom = settings.BottomMargin.HasValue ? (settings.BottomMargin * (1 / 2.54)) : defaults.Margins.Bottom / 100.0;
+            var marginLeft = settings.LeftMargin.HasValue ? (settings.LeftMargin * (1 / 2.54)) : defaults.Margins.Left / 100.0;
+            var marginRight = settings.RightMargin.HasValue ? (settings.RightMargin * (1 / 2.54)) : defaults.Margins.Right / 100.0;
 
             //The DeviceInfo settings should be changed based on the reportType
             //http://msdn2.microsoft.com/en-us/library/ms155397.aspx

@@ -10,14 +10,14 @@ namespace Greewf.BaseLibrary.Security.V3
     public interface IPermissionObject
     {
         int GetObjectType();
-        int? GetId();        
+        int? GetId();
 
     }
 
     /// <summary>
     /// 
     /// </summary>
-    /// <typeparam name="G">Permission Group</typeparam>
+    /// <typeparam name="OT">Permission Object Type</typeparam>
     public struct PermissionObject<OT> : IPermissionObject
         where OT : struct
     {
@@ -31,9 +31,19 @@ namespace Greewf.BaseLibrary.Security.V3
             return (int)(object)Type;
         }
 
-        public new int? GetId()
+        public int? GetId()
         {
             return Id;
         }
+
+        public static PermissionObject<OT> ReadFrom(IPermissionObject source)
+        {
+            var obj = new PermissionObject<OT>();
+            obj.Id = source.GetId();
+            obj.Type = (OT)(object)source.GetObjectType();
+            return obj;
+        }
+
+        
     }
 }

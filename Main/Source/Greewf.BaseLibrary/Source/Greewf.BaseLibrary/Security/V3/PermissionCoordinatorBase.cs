@@ -168,7 +168,7 @@ namespace Greewf.BaseLibrary.Security.V3
 
         public override bool HasPermission(int userId, IPermissionObject obj, int group, long permission)
         {
-            return HasPermission(userId, (PermissionObject<OT>)obj, group, permission);
+            return HasPermission(userId, PermissionObject<OT>.ReadFrom(obj), group, permission);
         }
 
     }
