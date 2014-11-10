@@ -9,10 +9,10 @@
         notifySuccessTimeout: 2000,
         ajax: false,
         responsiveAjaxProgress: true,
-        responsiveAjaxProgressDelay : 400,
+        responsiveAjaxProgressDelay: 400,
         showPageFormErrorsInExternalWindow: true,
         handleAutoSubmit: false,
-        autoSubmitDelay : 3000,
+        autoSubmitDelay: 3000,
         window: { autoCenteredGrowingSize: false, autoGrowingSize: false, autoButtonBar: true, autoBackHide: false }
     }
 
@@ -560,22 +560,22 @@
         if (json.ResponseType == 0)//information
         {
             isSuccessFlagUp = true;
-            layoutHelper.windowLayout.ShowInformationMessage(json.Message, '');
+            layoutHelper.windowLayout.ShowInformationMessage(json.Message, 'سافات', json.Details);
         }
         else if (json.ResponseType == 1)//success
         {
             isSuccessFlagUp = true;
-            layoutHelper.windowLayout.ShowSuccessMessage(json.Message, '');
+            layoutHelper.windowLayout.ShowSuccessMessage(json.Message, 'سافات', json.Details);
         }
         else if (json.ResponseType == 2)//warning
         {
             isSuccessFlagUp = false;
-            layoutHelper.windowLayout.ShowWarningMessage(json.Message, 'هشدار');
+            layoutHelper.windowLayout.ShowWarningMessage(json.Message, 'هشدار', json.Details);
         }
         else if (json.ResponseType == 3)//failed
         {
             isSuccessFlagUp = false;
-            layoutHelper.windowLayout.ShowErrorMessage(json.Message, 'بروز خطا');
+            layoutHelper.windowLayout.ShowErrorMessage(json.Message, 'بروز خطا', json.Details);
         }
         return isSuccessFlagUp;
 

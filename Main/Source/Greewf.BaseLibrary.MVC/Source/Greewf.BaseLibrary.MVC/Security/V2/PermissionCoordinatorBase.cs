@@ -68,9 +68,8 @@ namespace Greewf.BaseLibrary.MVC.Security
             {
                 return dicPermissionEntityEnumMaps[type];
             }
-            catch (KeyNotFoundException x)
+            catch (KeyNotFoundException)
             {
-
                 throw new Exception(string.Format("The given type({0}) is not mapped in PermissionCoordinator's 'LoadPermissionRelationships' method(for 'enumMaps' parameter).", type.ToString()));
             }
         }

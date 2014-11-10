@@ -24,15 +24,17 @@ namespace Greewf.BaseLibrary.MVC.Ajax
         }
 
         internal ResponsiveJsonResult(ResponsiveJsonType type, string message)
+            : this()
         {
             Message = message;
             ResponseType = type;
-            JsonRequestBehavior = JsonRequestBehavior.AllowGet;
 
         }
-        internal ResponsiveJsonResult(ModelStateDictionary modelState)
-            : this(ResponsiveJsonType.Faield, modelState)
+
+        internal ResponsiveJsonResult(ResponsiveJsonType type, string message, string details)
+            : this(type, message)
         {
+            Details = details;
         }
 
         internal ResponsiveJsonResult(ResponsiveJsonType type, ModelStateDictionary modelState)
@@ -67,26 +69,31 @@ namespace Greewf.BaseLibrary.MVC.Ajax
 
         }
 
+        internal ResponsiveJsonResult(ResponsiveJsonType type, ModelStateDictionary modelState, string details)
+            : this(type, modelState)
+        {
+            Details = details;
+        }
+        internal ResponsiveJsonResult(ModelStateDictionary modelState)
+            : this(ResponsiveJsonType.Faield, modelState)
+        {
+        }
+
+        internal ResponsiveJsonResult(ModelStateDictionary modelState, string details)
+            : this(ResponsiveJsonType.Faield, modelState, details)
+        {
+        }
+
+
         public override void ExecuteResult(ControllerContext context)
         {
             base.ExecuteResult(context);
         }
 
-        private string _message;
-        public string Message
-        {
-            get
-            {
-                return _message;
-            }
-            set
-            {
-                _message = value;
-                Data = new { Message, ResponseType };
-            }
-        }
-
         private ResponsiveJsonType _responseType;
+        private string _message;
+        private string _details = null;
+
         public ResponsiveJsonType ResponseType
         {
             get
@@ -96,7 +103,31 @@ namespace Greewf.BaseLibrary.MVC.Ajax
             set
             {
                 _responseType = value;
-                Data = new { Message, ResponseType };
+                Data = new { Message, ResponseType, Details };
+            }
+        }
+        public string Message
+        {
+            get
+            {
+                return _message;
+            }
+            set
+            {
+                _message = value;
+                Data = new { Message, ResponseType, Details };
+            }
+        }
+        public string Details
+        {
+            get
+            {
+                return _details;
+            }
+            set
+            {
+                _details = value;
+                Data = new { Message, ResponseType, Details };
             }
         }
 

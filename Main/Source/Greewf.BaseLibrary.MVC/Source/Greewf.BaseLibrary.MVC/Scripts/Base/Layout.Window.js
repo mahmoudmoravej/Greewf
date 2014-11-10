@@ -17,34 +17,34 @@
         return debugMode;
     };
 
-    windowLayout.ShowInformationMessage = function (msg, title) {
-        return showMessage(msg, title);
+    windowLayout.ShowInformationMessage = function (msg, title, details) {
+        return showMessage(msg, title, null, null, null, details);
     }
 
-    windowLayout.ShowSuccessMessage = function (msg, title) {
-        return showMessage(msg, title, 1);
+    windowLayout.ShowSuccessMessage = function (msg, title, details) {
+        return showMessage(msg, title, 1, null, null, details);
     }
 
-    windowLayout.ShowErrorMessage = function (msg, title) {
-        return showMessage(msg, title, 4);
+    windowLayout.ShowErrorMessage = function (msg, title, details) {
+        return showMessage(msg, title, 4, null, null, details);
     }
 
-    windowLayout.ShowForbiddenMessage = function (msg, title) {
-        return showMessage(msg, title, 3);
+    windowLayout.ShowForbiddenMessage = function (msg, title, details) {
+        return showMessage(msg, title, 3, null, null, details);
     }
 
-    windowLayout.ShowWarningMessage = function (msg, title) {
-        return showMessage(msg, title, 2);
+    windowLayout.ShowWarningMessage = function (msg, title, details) {
+        return showMessage(msg, title, 2, null, null, details);
     }
 
-    windowLayout.ShowQuestionMessage = function (msg, title, options) {
-        return showMessage(msg, title, 5, null, options);
+    windowLayout.ShowQuestionMessage = function (msg, title, options, details) {
+        return showMessage(msg, title, 5, null, options, details);
     }
 
-    windowLayout.ShowProgressMessage = function (msg, title) {
+    windowLayout.ShowProgressMessage = function (msg, title, details) {
         if (!title) title = 'در حال پردازش';
         if (!msg) msg = 'لطفا چند لحظه صبر نمایید...';
-        return showMessage(msg, title, 6);
+        return showMessage(msg, title, 6, null, null, details);
     }
 
     windowLayout.HideProgressMessage = function () {
@@ -77,11 +77,11 @@
         }
     }
 
-    var messageTemplateBase = "<table style='width:300px;'><tr><td><img class='###1' src='data:image/gif;base64,R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' /></td><td style='vertical-align:middle;width:100%;white-space: nowrap;'>###2</td></tr></table>";
+    var messageTemplateBase = "<table style='width:300px;'><tr><td><img class='###1' src='data:image/gif;base64,R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==' /></td><td style='vertical-align:middle;width:100%;white-space: nowrap;'>###2</td></tr>###7</table>";
     var commonMessageTemplate = messageTemplateBase + "<div class='g-buttons-content'><button class='t-button editor-focus2' style='float:left'><span class='icon16 stop-png'></span>&nbsp;بستن</button></div>";
     var questionTemplate = messageTemplateBase + "<div class='g-buttons-content'><button class='t-button g-no ###3' style='float:left;margin-right:5px;'><span class='icon16 stop-png'></span>&nbsp;###5</button><button class='t-button ###4 g-yes' style='float:left;'><span class='icon16 apply-png'></span>&nbsp;###6</button></div>";
 
-    showMessage = function (msg, title, type, ignoreTemplate, options) {
+    showMessage = function (msg, title, type, ignoreTemplate, options, details) {
 
         var options = $.extend({ focusToYes: false, yesText: 'بلی', noText: 'خیر', callBack: null }, options, { callBackHandled: null/*internal use*/ });
         var msgHtml = "";
@@ -99,6 +99,11 @@
         }
         else //other types
             msgHtml = commonMessageTemplate.replace('###2', msg).replace('###1', getMessageIcon(type));
+
+        if (details)
+            msgHtml = msgHtml.replace('###7', '<tr><td colspan="2" style="padding:5px;font-size:smaller"><hr/><span class="t-icon alert-gif"></span> جزییات :<textarea style="font-size:inherit;height:initial;width:500px" readonly="true" rows="5">' + details + '</textarea></td></tr>');
+        else
+            msgHtml = msgHtml.replace('###7', '');
 
         var oldWin = closeOldWin(type);
         if (type != 6)//if not progress, hide all old progress

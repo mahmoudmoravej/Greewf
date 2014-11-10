@@ -76,8 +76,8 @@ namespace Greewf.BaseLibrary.MVC
             if (ispopup && setSaveSuccesfullyFlag)//when the current request is in window and it is savedsucessfully, we redirect it to home/SavedSuccessfully page automatically
                 return base.RedirectToAction(SavedSuccessfullyActionName, SavedSuccessfullyControllerName, new { url = result.ToString(this.ControllerContext) });
             else if (!ispopup && setSaveSuccesfullyFlag)//in a Single page or a tab 
-                if (!(result.RouteValues["controller"].ToString().ToLower() == SavedSuccessfullyControllerName.ToLower() || 
-                    result.RouteValues["action"].ToString().ToLower() == SavedSuccessfullyActionName.ToLower() ))//and the request is different from SavedSuccessfullyActionName
+                if (!(result.RouteValues["controller"].ToString().ToLower() == SavedSuccessfullyControllerName.ToLower() ||
+                    result.RouteValues["action"].ToString().ToLower() == SavedSuccessfullyActionName.ToLower()))//and the request is different from SavedSuccessfullyActionName
                     return base.RedirectToAction(SavedSuccessfullyActionName, SavedSuccessfullyControllerName, new { url = result.ToString(this.ControllerContext), forceToPassedUrl = 1 });
 
             return result;
@@ -216,6 +216,21 @@ namespace Greewf.BaseLibrary.MVC
         /// <summary>
         /// توجه : اگر نمیخواهید چیزی لاگ شود modelToLog را null بفرستید
         /// </summary>
+        /// <param name="responseType"></param>
+        /// <param name="message"></param>
+        /// <param name="modelToLog">مدلی که می خواهید لاگ شود. اگر نمی خواهید چیزی لاگ شود آنرا null بفرستید</param>
+        /// <returns></returns>
+        protected ActionResult ResponsiveJson(ResponsiveJsonType responseType, string message, string details, object modelToLog)
+        {
+            ViewData.Model = modelToLog;
+            var responsiveJsonResult = new ResponsiveJsonResult(responseType, message, details);
+
+            return GetAppropriateJsonResult(responsiveJsonResult);
+        }
+
+        /// <summary>
+        /// توجه : اگر نمیخواهید چیزی لاگ شود modelToLog را null بفرستید
+        /// </summary>
         /// <param name="modelState"></param>
         /// <param name="modelToLog">مدلی که می خواهید لاگ شود. اگر نمی خواهید چیزی لاگ شود آنرا null بفرستید</param>
         /// <returns></returns>
@@ -233,10 +248,38 @@ namespace Greewf.BaseLibrary.MVC
         /// <param name="modelState"></param>
         /// <param name="modelToLog">مدلی که می خواهید لاگ شود. اگر نمی خواهید چیزی لاگ شود آنرا null بفرستید</param>
         /// <returns></returns>
+        protected ActionResult ResponsiveJson(ModelStateDictionary modelState, string details, object modelToLog)
+        {
+            ViewData.Model = modelToLog;
+            var responsiveJsonResult = new ResponsiveJsonResult(modelState, details);
+
+            return GetAppropriateJsonResult(responsiveJsonResult);
+        }
+
+        /// <summary>
+        /// توجه : اگر نمیخواهید چیزی لاگ شود modelToLog را null بفرستید
+        /// </summary>
+        /// <param name="modelState"></param>
+        /// <param name="modelToLog">مدلی که می خواهید لاگ شود. اگر نمی خواهید چیزی لاگ شود آنرا null بفرستید</param>
+        /// <returns></returns>
         protected ActionResult ResponsiveJson(ResponsiveJsonType responseType, ModelStateDictionary modelState, object modelToLog)
         {
             ViewData.Model = modelToLog;
             var responsiveJsonResult = new ResponsiveJsonResult(responseType, modelState);
+
+            return GetAppropriateJsonResult(responsiveJsonResult);
+        }
+
+        /// <summary>
+        /// توجه : اگر نمیخواهید چیزی لاگ شود modelToLog را null بفرستید
+        /// </summary>
+        /// <param name="modelState"></param>
+        /// <param name="modelToLog">مدلی که می خواهید لاگ شود. اگر نمی خواهید چیزی لاگ شود آنرا null بفرستید</param>
+        /// <returns></returns>
+        protected ActionResult ResponsiveJson(ResponsiveJsonType responseType, ModelStateDictionary modelState, string details, object modelToLog)
+        {
+            ViewData.Model = modelToLog;
+            var responsiveJsonResult = new ResponsiveJsonResult(responseType, modelState, details);
 
             return GetAppropriateJsonResult(responsiveJsonResult);
         }
