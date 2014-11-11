@@ -430,6 +430,11 @@ namespace Greewf.BaseLibrary
         {
             return PersianNumberExceptExcel(value, format, currentRendererFormat, convertSlashBetweenDigitsToDecimalseprator);
         }
+
+        public static string CorrectPersian(string text)
+        {
+            return text.Replace("ي", "ی").Replace("ك", "ک");
+        }
     }
 
 }
