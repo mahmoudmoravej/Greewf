@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Greewf.BaseLibrary.ReportLoaderExtentions
+namespace Greewf.BaseLibrary.ReportLoaderExtensions
 {
 
     public enum ReportCorrectionMode
@@ -16,7 +16,7 @@ namespace Greewf.BaseLibrary.ReportLoaderExtentions
         HmFontsCorrection = 1,
     }
 
-    public static class LocalReportExtentions
+    public static class LocalReportExtensions
     {
 
 

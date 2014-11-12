@@ -1,0 +1,2 @@
+﻿All of the files in FastQueryBuilder folder come from "Telerik.Web.Mvc" (Telerik 2012 Q2 MVC) source code
+Just some customization are done inside them with "Moravej" tag.

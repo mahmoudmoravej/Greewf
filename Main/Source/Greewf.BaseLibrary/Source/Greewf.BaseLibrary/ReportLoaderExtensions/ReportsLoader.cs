@@ -6,7 +6,7 @@ using Microsoft.Reporting.WebForms;
 using Greewf.BaseLibrary;
 
 
-namespace Greewf.BaseLibrary.ReportLoaderExtentions
+namespace Greewf.BaseLibrary.ReportLoaderExtensions
 {
 
     public class ReportSettings

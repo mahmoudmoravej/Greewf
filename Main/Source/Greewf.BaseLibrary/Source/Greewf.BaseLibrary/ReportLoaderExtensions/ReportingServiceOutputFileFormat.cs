@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Greewf.BaseLibrary.ReportLoaderExtentions
+namespace Greewf.BaseLibrary.ReportLoaderExtensions
 {
     public enum ReportingServiceOutputFileFormat
     {
