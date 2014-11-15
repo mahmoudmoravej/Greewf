@@ -42,14 +42,34 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
             report.LoadReportDefinition(stream);
         }
 
+        public static void  LoadReport(this LocalReport report, Stream definition, ReportCorrectionMode reportCorrectionMode)
+        {
+            LoadReport(report, definition, "", reportCorrectionMode);
+        }
+
+        public static void LoadReport(this LocalReport report, Stream definition, string subReportSearchPath , ReportCorrectionMode reportCorrectionMode)
+        {
+            var xDoc = new XDocument();
+            xDoc = XDocument.Load(definition);
+
+            var stream = LoadReportDefinition(xDoc, subReportSearchPath, report.LoadSubreportDefinition);
+            report.LoadReportDefinition(stream);
+        }
+
         private static MemoryStream LoadReportDefinition(string reportPath, string reportFileName, Action<string, Stream> subReportLoader)
+        {
+            var xDoc = new XDocument();
+            xDoc = XDocument.Load(Path.Combine(reportPath, reportFileName));
+
+            return LoadReportDefinition(xDoc, reportPath, subReportLoader);
+        }
+
+        private static MemoryStream LoadReportDefinition( XDocument xDoc, string subReportPath , Action<string, Stream> subReportLoader)
         {
             bool ignoreGlobalVariables = true;
             string convertSlashBetweenDigitsToDecimalSepratorParameter = "true";
-
-            var xDoc = new XDocument();
-            var stream = new MemoryStream();
-            xDoc = XDocument.Load(Path.Combine(reportPath, reportFileName));
+            
+            var stream = new MemoryStream();            
 
             XNamespace ns = xDoc.Root.Name.Namespace;
             XNamespace rdNs = xDoc.Root.Attributes().Where(o => o.Name.LocalName == "rd").First().Value;
@@ -58,7 +78,7 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
             foreach (var subReport in xDoc.Descendants(ns + "Subreport").Descendants(ns + "ReportName"))
             {
                 string subReportFileName = subReport.Value + ".rdlc";
-                subReportLoader(subReport.Value, LoadReportDefinition(reportPath, subReportFileName, subReportLoader));
+                subReportLoader(subReport.Value, LoadReportDefinition(subReportPath, subReportFileName, subReportLoader));
             }
 
             //2nd : handle greewf switches
