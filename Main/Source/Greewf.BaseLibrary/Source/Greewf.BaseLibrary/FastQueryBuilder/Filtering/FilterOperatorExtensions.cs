@@ -56,6 +56,9 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
                 case FilterOperator.IsContainedIn:
                     return GenerateIsContainedIn(left, right, liftMemberAccess);
 
+                case FilterOperator.IsInList:
+                    return GenerateIsInList(left, right, liftMemberAccess);
+
             }
 
             throw new InvalidOperationException();
@@ -162,7 +165,8 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
 
         private static Expression GenerateCaseInsensitiveStringMethodCall(MethodInfo methodInfo, Expression left, Expression right, bool liftMemberAccess)
 		{
-            var leftToLower = GenerateToLowerCall(left, liftMemberAccess);
+
+             var leftToLower = GenerateToLowerCall(left, liftMemberAccess);
             var rightToLower = GenerateToLowerCall(right, liftMemberAccess);
 
             if (methodInfo.IsStatic)
@@ -172,6 +176,11 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
 
             return Expression.Call(leftToLower, methodInfo, rightToLower);
 		}
+
+        private static Expression GenerateIsInList(Expression left, Expression right, bool liftMemberAccess)//added by moravej
+        {
+            return Expression.Call(typeof(System.Linq.Enumerable), "Contains", new[] { left.Type }, right, left);
+        }
 
         private static Expression GenerateToLowerCall(Expression stringExpression, bool liftMemberAccess)
         {

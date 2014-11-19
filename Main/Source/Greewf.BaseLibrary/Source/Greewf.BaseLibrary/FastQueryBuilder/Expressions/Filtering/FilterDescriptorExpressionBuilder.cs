@@ -10,6 +10,8 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
     using System.Linq.Expressions;
 
     using Extensions;
+    using System.Collections;
+    using System.Collections.Generic;
 
     internal class FilterDescriptorExpressionBuilder : FilterExpressionBuilder
     {
@@ -47,14 +49,14 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
                     isConversionSuccessful = false;
                 }
             }
-            else if (memberExpression.Type.IsEnumType() || valueExpression.Type.IsEnumType())
+            else if (!valueExpression.Type.IsArray && (memberExpression.Type.IsEnumType() || valueExpression.Type.IsEnumType())) //edited by moravej to support arrays
             {
                 if (!TryPromoteNullableEnums(ref memberExpression, ref valueExpression))
                 {
                     isConversionSuccessful = false;
                 }
             }
-            else if (memberType.IsNullableType() && (memberExpression.Type != valueExpression.Type))
+            else if (!valueExpression.Type.IsArray && (memberType.IsNullableType() && (memberExpression.Type != valueExpression.Type))) //edited by moravej to support arrays
             {
                 if (!TryConvertNullableValue(memberExpression, ref valueExpression))
                 {
@@ -91,8 +93,8 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
 
             var memberAccessBuilder =
                             ExpressionBuilderFactory.MemberAccess(this.ParameterExpression.Type, memberType, this.FilterDescriptor.Member);
-            memberAccessBuilder.Options.CopyFrom(this.Options); 
-            
+            memberAccessBuilder.Options.CopyFrom(this.Options);
+
             memberAccessBuilder.ParameterExpression = this.ParameterExpression;
 
             Expression memberAccessExpression = memberAccessBuilder.CreateMemberAccessExpression();
@@ -114,7 +116,7 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
             return Expression.Constant(value);
         }
 
-        private static Expression CreateValueExpression(Type targetType, object value, CultureInfo culture)
+        private static Expression CreateValueExpression(Type targetType, object value, CultureInfo culture)//edited by moravej
         {
             if (((targetType != typeof(string)) && (!targetType.IsValueType || targetType.IsNullableType())) &&
                 (string.Compare(value as string, "null", StringComparison.OrdinalIgnoreCase) == 0))
@@ -124,20 +126,54 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
             if (value != null)
             {
                 Type nonNullableTargetType = targetType.GetNonNullableType();
-                if (value.GetType() != nonNullableTargetType)
+                var valueType = value.GetType();//added by moravej
+                if (valueType != nonNullableTargetType)
                 {
                     if (nonNullableTargetType.IsEnum)
                     {
-                        value = Enum.Parse(nonNullableTargetType, value.ToString(), true);
+                        if (valueType.IsArray)//by moravej
+                            value = CreateArrayValue(targetType, nonNullableTargetType, value, true, false, null);
+                        else
+                            value = Enum.Parse(nonNullableTargetType, value.ToString(), true);
+
+
                     }
-                    else if (value is IConvertible)
+                    else if (value is IConvertible || (valueType.IsArray && valueType.GetElementType().IsAssignableFrom(typeof(IConvertible))))
                     {
-                        value = Convert.ChangeType(value, nonNullableTargetType, culture);
+                        if (valueType.IsArray)//by moravej
+                            value = CreateArrayValue(targetType, nonNullableTargetType, value, false, true, culture);
+                        else
+                            value = Convert.ChangeType(value, nonNullableTargetType, culture);
                     }
+
                 }
             }
 
             return CreateConstantExpression(value);
+        }
+
+        private static Array CreateArrayValue(Type targetType, Type nonNullableTargetType, object value, bool isEnumType, bool isIConvertible, CultureInfo culture)
+        {
+            var result = Array.CreateInstance(targetType, ((Array)value).Length);//we use targetType instead of nonNullableTargetType because nullable list can check not nullable value , but the viceversa is not correct
+            int idx = 0;
+            bool isNullableType = targetType != nonNullableTargetType;
+
+
+            foreach (var itemValue in (IEnumerable)value)
+            {
+                if (!isNullableType && itemValue == null)
+                    throw new Exception("ExtJsGridAction : You passed a null value for a list item, but the target field does not support null values. ");
+                
+                else if (itemValue == null)
+                    result.SetValue(null, idx++);
+                
+                else if (isEnumType)
+                    result.SetValue(Enum.Parse(nonNullableTargetType, itemValue.ToString(), true), idx++);
+                
+                else if (isIConvertible)
+                    result.SetValue(Convert.ChangeType(itemValue, nonNullableTargetType, culture), idx++);
+            }
+            return result;
         }
 
         private static Expression PromoteExpression(Expression expr, Type type, bool exact)

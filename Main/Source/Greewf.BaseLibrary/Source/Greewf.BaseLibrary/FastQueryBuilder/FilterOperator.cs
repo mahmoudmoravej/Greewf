@@ -52,6 +52,10 @@ namespace Greewf.BaseLibrary.FastQueryBuilder
         /// <summary>
         /// Left operand must not contain the right one.
         /// </summary>
-        DoesNotContain
+        DoesNotContain,
+        /// <summary>
+        /// Inside a list items (Added By Moravej)
+        /// </summary>
+        IsInList,
     }
 }
