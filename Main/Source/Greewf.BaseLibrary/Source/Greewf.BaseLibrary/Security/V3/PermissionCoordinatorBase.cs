@@ -135,7 +135,7 @@ namespace Greewf.BaseLibrary.Security.V3
 
         public override Task<bool> HasPermissionAsync(int userId, IPermissionObject obj, int group, long permission)
         {
-            return HasPermissionAsync(userId, (PermissionObject<OT>)obj, (G)(object)group, permission);
+            return HasPermissionAsync(userId, (PermissionObject<OT>?)obj, (G)(object)group, permission);
         }
 
         public Task<bool> HasPermissionAsync<P>(int userId, PermissionObject<OT>? obj, P permission)
@@ -170,6 +170,14 @@ namespace Greewf.BaseLibrary.Security.V3
         {
             return HasPermission(userId, PermissionObject<OT>.ReadFrom(obj), group, permission);
         }
+
+        public int?[] GetAllowedObjectIds<P>(int userId, OT objectType, P permission)
+        {
+            var group = GetGroupOfType(typeof(P));
+            return GetAllowedObjectIds(userId, objectType, (int)(object)group, (long)(object)permission);
+        }
+
+        protected abstract int?[] GetAllowedObjectIds(int userId, OT objectType, int group, long permission);
 
     }
 }
