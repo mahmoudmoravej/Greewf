@@ -30,6 +30,7 @@ namespace Greewf.BaseLibrary.Security.V3
         public abstract Task<bool> HasPermissionAsync(int userId, IPermissionObject obj, int group, long permission);
         public abstract bool HasPermission(int userId, IPermissionObject obj, int group, long permission);
         public abstract bool HasAnyPermission(int userId, int group, long permission);
+        public abstract string GetAppropriateExceptionMessage(SecurityException exception);
     }
 
     /// <summary>
@@ -121,9 +122,15 @@ namespace Greewf.BaseLibrary.Security.V3
             return dicTypeGroupMaps[type];
         }
 
-        public G[] GetObjectTypeGroups(OT objectType)
+        public G[] GetObjectTypeGroups(OT objectType, bool directGroupsOnly = false)
         {
+            if (directGroupsOnly)
             return dicGroupObjectTypeMaps.Where(o => o.Value.Equals(objectType)).Select(o => o.Key).ToArray();
+            else
+            {
+                var allowedObjectTypes =  dicObjectTypeParents.Where(o => o.Value.Contains(objectType)).Select(o => o.Key).ToArray();
+                return dicGroupObjectTypeMaps.Where(o => allowedObjectTypes.Contains(o.Value)).Select(o => o.Key).ToArray();
+            }
         }
 
         public OT[] GetObjectTypeParents(OT objectType)
