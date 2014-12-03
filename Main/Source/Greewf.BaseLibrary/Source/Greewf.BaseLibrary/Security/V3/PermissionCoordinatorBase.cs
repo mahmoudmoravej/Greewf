@@ -125,10 +125,10 @@ namespace Greewf.BaseLibrary.Security.V3
         public G[] GetObjectTypeGroups(OT objectType, bool directGroupsOnly = false)
         {
             if (directGroupsOnly)
-            return dicGroupObjectTypeMaps.Where(o => o.Value.Equals(objectType)).Select(o => o.Key).ToArray();
+                return dicGroupObjectTypeMaps.Where(o => o.Value.Equals(objectType)).Select(o => o.Key).ToArray();
             else
             {
-                var allowedObjectTypes =  dicObjectTypeParents.Where(o => o.Value.Contains(objectType)).Select(o => o.Key).ToArray();
+                var allowedObjectTypes = dicObjectTypeParents.Where(o => o.Value.Contains(objectType)).Select(o => o.Key).ToArray().Union(new OT[] { objectType });
                 return dicGroupObjectTypeMaps.Where(o => allowedObjectTypes.Contains(o.Value)).Select(o => o.Key).ToArray();
             }
         }
