@@ -73,12 +73,24 @@ namespace Greewf.BaseLibrary.MVC.HttpModules
 
         public static bool IsCorrectionNeeded(string text)
         {
-            return text.Contains("ي") || text.Contains("ك");
+            return
+                text.Contains("ي") ||
+                text.Contains("ك") ||
+                text.Contains("\\u064a") ||//ي
+                text.Contains("\\u0643") || //ك
+                text.Contains("%5Cu064a") ||//ي
+                text.Contains("%5Cu0643");  //ك
         }
 
         public static string CorrectPersian(string text)
         {
-            return text.Replace("ي", "ی").Replace("ك", "ک");
+            return text
+                .Replace("ي", "ی")
+                .Replace("ك", "ک")
+                .Replace("\\u064a", "\\u06cc") //ي to ی     //in body
+                .Replace("\\u0643", "\\u06a9") //ك to ک     //in body
+                .Replace("%5Cu064a", "%5Cu06cc")//ي to ی    //in uri
+                .Replace("%5Cu0643", "%5Cu06a9"); //ك to ک  //in uri
         }
 
         public void Dispose() { }
