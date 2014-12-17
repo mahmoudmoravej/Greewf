@@ -135,7 +135,7 @@ namespace Greewf.BaseLibrary.ExcelOutput
                     //    cell.SetCellValue(value);
                     //}
                     if (colDataProvider.ColumnDataRetreiver != null)
-                        colDataProvider.ColumnDataRetreiver(item, row, ref propertyValue);
+                        colDataProvider.ColumnDataRetreiver(item, rowData, ref propertyValue);
 
 
                     if (propertyValue is DateTime || propertyValue is DateTime?)
