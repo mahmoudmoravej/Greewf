@@ -11,12 +11,19 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
 
     public class ReportSettings
     {
+        public ReportSettings()
+        {
+            HumanReadablePdf = true;
+        }
+
         public ReportingServiceOutputFileFormat OutputType { get; set; }
         public bool IsInches { get; set; }
         public double? TopMargin { get; set; }
         public double? BottomMargin { get; set; }
         public double? LeftMargin { get; set; }
         public double? RightMargin { get; set; }
+
+        public bool HumanReadablePdf { get; set; }//base on PDF : http://msdn.microsoft.com/en-us/library/ms154682(v=sql.120).aspx
     }
 
     public static class ReportsLoader
@@ -83,6 +90,7 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
              "  <MarginRight>" + marginRight + "in</MarginRight>" +
              "  <MarginBottom>" + marginBottom + "in</MarginBottom>" +
              "  <PageBreaksMode>OnEachPage</PageBreaksMode>" +
+             "  <HumanReadablePDF>" + settings.HumanReadablePdf.ToString() + "</HumanReadablePDF>" +
              "</DeviceInfo>";
 
             return report.Render(GetOutputFileFormat(settings.OutputType), deviceInfo);
