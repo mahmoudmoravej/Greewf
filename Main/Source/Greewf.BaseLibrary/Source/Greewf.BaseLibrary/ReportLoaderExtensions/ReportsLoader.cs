@@ -14,6 +14,7 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
         public ReportSettings()
         {
             HumanReadablePdf = true;
+            EmbedFontsInPdf = true;
         }
 
         public ReportingServiceOutputFileFormat OutputType { get; set; }
@@ -23,7 +24,9 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
         public double? LeftMargin { get; set; }
         public double? RightMargin { get; set; }
 
-        public bool HumanReadablePdf { get; set; }//base on PDF : http://msdn.microsoft.com/en-us/library/ms154682(v=sql.120).aspx
+        public bool HumanReadablePdf { get; set; }//based on PDF : http://msdn.microsoft.com/en-us/library/ms154682(v=sql.120).aspx
+
+        public bool EmbedFontsInPdf { get; set; }//based on PDF : http://msdn.microsoft.com/en-us/library/ms154682(v=sql.120).aspx (bottom of page) and http://blogs.msdn.com/b/mariae/archive/2010/04/12/how-to-disable-this-font-embedding-in-reporting-services-2005-service-pack-3.aspx
     }
 
     public static class ReportsLoader
@@ -79,7 +82,8 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
             var marginRight = settings.RightMargin.HasValue ? (settings.RightMargin * (1 / 2.54)) : defaults.Margins.Right / 100.0;
 
             //The DeviceInfo settings should be changed based on the reportType
-            //http://msdn2.microsoft.com/en-us/library/ms155397.aspx
+            // http://msdn2.microsoft.com/en-us/library/ms155397.aspx
+            // http://msdn.microsoft.com/en-us/library/hh231593.aspx
             string deviceInfo =
              "<DeviceInfo>" +
              "  <OutputFormat>" + settings.OutputType + "</OutputFormat>" +
@@ -90,8 +94,12 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
              "  <MarginRight>" + marginRight + "in</MarginRight>" +
              "  <MarginBottom>" + marginBottom + "in</MarginBottom>" +
              "  <PageBreaksMode>OnEachPage</PageBreaksMode>" +
-             "  <HumanReadablePDF>" + settings.HumanReadablePdf.ToString() + "</HumanReadablePDF>" +
-             "</DeviceInfo>";
+             "  <HumanReadablePDF>" + settings.HumanReadablePdf.ToString() + "</HumanReadablePDF>";
+
+            if (!settings.EmbedFontsInPdf)
+                deviceInfo += "  <EmbedFonts>None</EmbedFonts>";
+
+            deviceInfo += "</DeviceInfo>";
 
             return report.Render(GetOutputFileFormat(settings.OutputType), deviceInfo);
 
