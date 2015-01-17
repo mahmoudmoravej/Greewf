@@ -97,7 +97,9 @@
     <Compile Include="ExcelOutput\IExcelColumnsDataProviderContext.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="DataSetLinqOperators.cs" />
-    <Compile Include="IValidationDictionary.cs" />
+    <Compile Include="Validation\DefaultValidationDictionary.cs" />
+    <Compile Include="Validation\IWarningDictionary.cs" />
+    <Compile Include="Validation\IValidationDictionary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProxyDataContractResolverAttribute.cs" />
     <Compile Include="ReportLoaderExtensions\ReportingServiceOutputFileFormat.cs" />
