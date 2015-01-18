@@ -13,31 +13,13 @@ namespace Greewf.BaseLibrary
     public interface IWarningDictionary<in M>
     {
         void AddWarning(string key, string warningMessage);
+        void AddWarning(string key, string warningMessage, string code);
         bool HasWarnings();
         string[] Warnings { get; }
         void ClearWarnings();
 
     }
 
-    public static class WarningExtentions
-    {
-        public static string GetName<m, p>(Expression<Func<m, p>> exp)
-        {
-            MemberExpression body = exp.Body as MemberExpression;
-
-            if (body == null)
-            {
-                UnaryExpression ubody = (UnaryExpression)exp.Body;
-                body = ubody.Operand as MemberExpression;
-            }
-
-            return body.Member.Name;
-        }
-
-        public static void AddWarning<M, P>(this IWarningDictionary<M> v, Expression<Func<M, P>> exp, string errorMessage)
-        {
-            (v as IWarningDictionary).AddWarning(GetName(exp), errorMessage);
-        }
-    }
+ 
 
 }

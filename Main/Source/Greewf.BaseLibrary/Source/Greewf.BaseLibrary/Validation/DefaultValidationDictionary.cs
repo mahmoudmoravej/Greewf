@@ -10,12 +10,17 @@ namespace Greewf.BaseLibrary
     public class DefaultValidationDictionary : IValidationDictionary
     {
 
-        List<KeyValuePair<string, string>> _lstErrors = new List<KeyValuePair<string, string>>();
-        List<KeyValuePair<string, string>> _lstWarnings = new List<KeyValuePair<string, string>>();
+        List<KeyValuePair<string, ExtendedModelError>> _lstErrors = new List<KeyValuePair<string, ExtendedModelError>>();
+        List<KeyValuePair<string, ExtendedModelError>> _lstWarnings = new List<KeyValuePair<string, ExtendedModelError>>();
 
         public void AddError(string key, string errorMessage)
         {
-            _lstErrors.Add(new KeyValuePair<string, string>(key, errorMessage));
+            _lstErrors.Add(new KeyValuePair<string, ExtendedModelError>(key, new ExtendedModelError(errorMessage)));
+        }
+
+        public void AddError(string key, string errorMessage, string code)
+        {
+            _lstErrors.Add(new KeyValuePair<string, ExtendedModelError>(key, new ExtendedModelError(errorMessage, code)));
         }
 
         public bool IsValid
@@ -30,7 +35,7 @@ namespace Greewf.BaseLibrary
         {
             get
             {
-                return _lstErrors.Select(o => o.Value).ToArray<string>();
+                return _lstErrors.Select(o => o.Value.ErrorMessage).ToArray<string>();
 
             }
         }
@@ -38,7 +43,12 @@ namespace Greewf.BaseLibrary
 
         public void AddWarning(string key, string warningMessage)
         {
-            _lstWarnings.Add(new KeyValuePair<string, string>(key, warningMessage));
+            _lstWarnings.Add(new KeyValuePair<string, ExtendedModelError>(key, new ExtendedModelError(warningMessage)));
+        }
+
+        public void AddWarning(string key, string warningMessage, string code)
+        {
+            _lstWarnings.Add(new KeyValuePair<string, ExtendedModelError>(key, new ExtendedModelError(warningMessage, code)));
         }
 
         public bool HasWarnings()
@@ -50,7 +60,7 @@ namespace Greewf.BaseLibrary
         {
             get
             {
-                return _lstWarnings.Select(o => o.Value).ToArray<string>();
+                return _lstWarnings.Select(o => o.Value.ErrorMessage).ToArray<string>();
 
             }
         }
@@ -66,5 +76,8 @@ namespace Greewf.BaseLibrary
             _lstErrors.Clear();
             _lstWarnings.Clear();
         }
+
+
+
     }
 }

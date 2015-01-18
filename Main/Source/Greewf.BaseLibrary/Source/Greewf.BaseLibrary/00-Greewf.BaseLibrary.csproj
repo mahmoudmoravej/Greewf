@@ -83,6 +83,7 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -98,6 +99,7 @@
     <Compile Include="Global.cs" />
     <Compile Include="DataSetLinqOperators.cs" />
     <Compile Include="Validation\DefaultValidationDictionary.cs" />
+    <Compile Include="Validation\ExtendedModelError.cs" />
     <Compile Include="Validation\IWarningDictionary.cs" />
     <Compile Include="Validation\IValidationDictionary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -221,6 +223,9 @@
     <Compile Include="FastQueryBuilder\Resources\TextResource.Designer.cs" />
     <Compile Include="FastQueryBuilder\Signature.cs" />
     <Compile Include="FastQueryBuilder\Sorting\SortDescriptorCollectionExpressionBuilder.cs" />
+    <Compile Include="Validation\ModelErrorExtentions.cs" />
+    <Compile Include="Validation\ValidationExtentions.cs" />
+    <Compile Include="Validation\WarningExtentions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
