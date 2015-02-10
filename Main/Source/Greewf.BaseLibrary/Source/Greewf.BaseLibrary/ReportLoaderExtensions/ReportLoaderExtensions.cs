@@ -141,14 +141,11 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
                 }
 
                 //correct X and Y : like what we have in ChartSeriesHierarchy > ChartData > ChartSeriesCollection > ChartSeries > ChartDataPoints > ChartDataPoint > ChartDataPointValues > X (in xml definition)
-                foreach (var label in chart.Descendants(ns + "ChartSeriesHierarchy").Descendants(ns + "X"))
+                foreach (var label in chart.Descendants(ns + "ChartDataPointValues").Descendants(ns + "X"))
                 {
                     CorrectValueNode(label, null, ignoreGlobalVariables, convertSlashBetweenDigitsToDecimalSepratorParameter);
                 }
-                foreach (var label in chart.Descendants(ns + "ChartSeriesHierarchy").Descendants(ns + "Y"))//I'm not sure about this!
-                {
-                    CorrectValueNode(label, null, ignoreGlobalVariables, convertSlashBetweenDigitsToDecimalSepratorParameter);
-                }
+
 
             }
         }
