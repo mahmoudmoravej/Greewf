@@ -140,7 +140,7 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
                     CorrectValueNode(label, null, ignoreGlobalVariables, convertSlashBetweenDigitsToDecimalSepratorParameter);
                 }
 
-                //correct X and Y : like what we have in ChartSeriesHierarchy > ChartData > ChartSeriesCollection > ChartSeries > ChartDataPoints > ChartDataPoint > ChartDataPointValues > X (in xml definition)
+                //correct X : like what we have in ChartSeriesHierarchy > ChartData > ChartSeriesCollection > ChartSeries > ChartDataPoints > ChartDataPoint > ChartDataPointValues > X (in xml definition)
                 foreach (var label in chart.Descendants(ns + "ChartDataPointValues").Descendants(ns + "X"))
                 {
                     CorrectValueNode(label, null, ignoreGlobalVariables, convertSlashBetweenDigitsToDecimalSepratorParameter);
