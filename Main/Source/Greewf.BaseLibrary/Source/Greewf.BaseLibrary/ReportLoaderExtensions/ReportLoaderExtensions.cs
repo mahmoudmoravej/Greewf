@@ -42,12 +42,12 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
             report.LoadReportDefinition(stream);
         }
 
-        public static void  LoadReport(this LocalReport report, Stream definition, ReportCorrectionMode reportCorrectionMode)
+        public static void LoadReport(this LocalReport report, Stream definition, ReportCorrectionMode reportCorrectionMode)
         {
             LoadReport(report, definition, "", reportCorrectionMode);
         }
 
-        public static void LoadReport(this LocalReport report, Stream definition, string subReportSearchPath , ReportCorrectionMode reportCorrectionMode)
+        public static void LoadReport(this LocalReport report, Stream definition, string subReportSearchPath, ReportCorrectionMode reportCorrectionMode)
         {
             var xDoc = new XDocument();
             xDoc = XDocument.Load(definition);
@@ -64,12 +64,12 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
             return LoadReportDefinition(xDoc, reportPath, subReportLoader);
         }
 
-        private static MemoryStream LoadReportDefinition( XDocument xDoc, string subReportPath , Action<string, Stream> subReportLoader)
+        private static MemoryStream LoadReportDefinition(XDocument xDoc, string subReportPath, Action<string, Stream> subReportLoader)
         {
             bool ignoreGlobalVariables = true;
             string convertSlashBetweenDigitsToDecimalSepratorParameter = "true";
-            
-            var stream = new MemoryStream();            
+
+            var stream = new MemoryStream();
 
             XNamespace ns = xDoc.Root.Name.Namespace;
             XNamespace rdNs = xDoc.Root.Attributes().Where(o => o.Name.LocalName == "rd").First().Value;
@@ -94,42 +94,8 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
 
 
             //3rd : process rdlc definition file
-            foreach (var textRun in xDoc.Descendants(ns + "TextRun"))
-            {
-
-                var textRunStyle = textRun.Descendants(ns + "Style").FirstOrDefault();
-                if (textRunStyle != null && textRunStyle.Descendants(ns + "FontFamily").Any(o => o.Value.StartsWith("hm ", true, null)))
-                {
-
-                    if (IgnoreThisNodeCorrection(textRun)) continue;
-
-                    var textRunValue = textRun.Element(ns + "Value");
-
-                    if (textRunValue.Value.TrimStart(' ').StartsWith("="))
-                    {
-                        if (ignoreGlobalVariables && textRunValue.Value.TrimStart(' ', '=').StartsWith("globals!", true, null))
-                            textRunValue.Value = textRunValue.Value;
-
-                        else
-                        {
-                            var textRunFormat = textRunStyle.Descendants(ns + "Format").FirstOrDefault();
-                            string format = "nothing";
-                            if (textRunFormat != null) format = "\"" + textRunFormat.Value + "\"";
-
-                            textRunValue.Value =
-                                "=Greewf.BaseLibrary.Global.HmxFontCorrectorExceptExcel(" +
-                                textRunValue.Value.TrimStart(' ', '=') +
-                                ",Globals!RenderFormat.Name," + format + "," + convertSlashBetweenDigitsToDecimalSepratorParameter + ")";
-                        }
-                    }
-                    else if (!string.IsNullOrWhiteSpace(textRunValue.Value)) //constant string except white spaces
-                    {
-                        var newValue = textRunValue.Value.Replace("\"", "\"\"").Replace("\r\n", "\" + vbCrlf + \"");
-                        textRunValue.Value = "=Greewf.BaseLibrary.Global.HmxFontCorrectorExceptExcel(\"" + newValue + "\",Globals!RenderFormat.Name,nothing," + convertSlashBetweenDigitsToDecimalSepratorParameter + ")";
-                    }
-                }
-
-            }
+            ProcessTextRuns(xDoc, ignoreGlobalVariables, convertSlashBetweenDigitsToDecimalSepratorParameter, ns);
+            ProcessCharts(xDoc, ignoreGlobalVariables, convertSlashBetweenDigitsToDecimalSepratorParameter, ns);
 
             //4th: return processed file
             xDoc.Save(stream);
@@ -138,14 +104,88 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
             return stream;
         }
 
-        private static bool IgnoreThisNodeCorrection(XElement textRun)
+        private static void ProcessTextRuns(XDocument xDoc, bool ignoreGlobalVariables, string convertSlashBetweenDigitsToDecimalSepratorParameter, XNamespace ns)
         {
-            XNamespace ns = textRun.Name.Namespace;            
-            var parentTextBox = textRun.Ancestors(ns + "Textbox").FirstOrDefault();
-
-            if (parentTextBox != null)
+            foreach (var textRun in xDoc.Descendants(ns + "TextRun"))
             {
-                var node = parentTextBox.Descendants(ns + "CustomProperty").Where(o => o.Descendants(ns + "Name").First().Value == "GreewfIgnoreCorrection").LastOrDefault();
+
+                var textRunStyle = textRun.Descendants(ns + "Style").FirstOrDefault();
+                if (textRunStyle != null && textRunStyle.Descendants(ns + "FontFamily").Any(o => o.Value.StartsWith("hm ", true, null)))
+                {
+                    var parentTextBox = textRun.Ancestors(ns + "Textbox").FirstOrDefault();
+                    if (IgnoreThisNodeCorrection(parentTextBox)) continue;
+
+                    var textRunValue = textRun.Element(ns + "Value");
+                    var textRunFormat = textRunStyle.Descendants(ns + "Format").FirstOrDefault();
+
+                    CorrectValueNode(textRunValue, textRunFormat, ignoreGlobalVariables, convertSlashBetweenDigitsToDecimalSepratorParameter);
+                }
+
+            }
+        }
+
+        private static void ProcessCharts(XDocument xDoc, bool ignoreGlobalVariables, string convertSlashBetweenDigitsToDecimalSepratorParameter, XNamespace ns)
+        {
+            //we assume if a grid has a hm font, we should correct all labels inside it
+            foreach (var chart in
+                xDoc.Descendants(ns + "Chart")
+                .Where(o => o.Descendants(ns + "FontFamily").Any(b => b.Value.StartsWith("hm ", true, null))))
+            {
+
+                if (IgnoreThisNodeCorrection(chart)) continue;
+
+                //correct labels : like what we have in ChartCategoryHierarchy > ChartMembers > ChartMember > Label (in xml definition)
+                foreach (var label in chart.Descendants(ns + "Label"))
+                {
+                    CorrectValueNode(label, null, ignoreGlobalVariables, convertSlashBetweenDigitsToDecimalSepratorParameter);
+                }
+
+                //correct X and Y : like what we have in ChartSeriesHierarchy > ChartData > ChartSeriesCollection > ChartSeries > ChartDataPoints > ChartDataPoint > ChartDataPointValues > X (in xml definition)
+                foreach (var label in chart.Descendants(ns + "ChartSeriesHierarchy").Descendants(ns + "X"))
+                {
+                    CorrectValueNode(label, null, ignoreGlobalVariables, convertSlashBetweenDigitsToDecimalSepratorParameter);
+                }
+                foreach (var label in chart.Descendants(ns + "ChartSeriesHierarchy").Descendants(ns + "Y"))//I'm not sure about this!
+                {
+                    CorrectValueNode(label, null, ignoreGlobalVariables, convertSlashBetweenDigitsToDecimalSepratorParameter);
+                }
+
+            }
+        }
+
+        private static void CorrectValueNode(XElement valueNode, XElement formatNode, bool ignoreGlobalVariables, string convertSlashBetweenDigitsToDecimalSepratorParameter)
+        {
+            if (valueNode.Value.TrimStart(' ').StartsWith("="))
+            {
+                if (ignoreGlobalVariables && valueNode.Value.TrimStart(' ', '=').StartsWith("globals!", true, null))
+                    valueNode.Value = valueNode.Value;
+
+                else
+                {
+
+                    string format = "nothing";
+                    if (formatNode != null) format = "\"" + formatNode.Value + "\"";
+
+                    valueNode.Value =
+                        "=Greewf.BaseLibrary.Global.HmxFontCorrectorExceptExcel(" +
+                        valueNode.Value.TrimStart(' ', '=') +
+                        ",Globals!RenderFormat.Name," + format + "," + convertSlashBetweenDigitsToDecimalSepratorParameter + ")";
+                }
+            }
+            else if (!string.IsNullOrWhiteSpace(valueNode.Value)) //constant string except white spaces
+            {
+                var newValue = valueNode.Value.Replace("\"", "\"\"").Replace("\r\n", "\" + vbCrlf + \"");
+                valueNode.Value = "=Greewf.BaseLibrary.Global.HmxFontCorrectorExceptExcel(\"" + newValue + "\",Globals!RenderFormat.Name,nothing," + convertSlashBetweenDigitsToDecimalSepratorParameter + ")";
+            }
+        }
+
+        private static bool IgnoreThisNodeCorrection(XElement node)
+        {
+            XNamespace ns = node.Name.Namespace;
+
+            if (node != null)
+            {
+                node = node.Descendants(ns + "CustomProperty").Where(o => o.Descendants(ns + "Name").First().Value == "GreewfIgnoreCorrection").LastOrDefault();
                 if (node != null && (node.Descendants(ns + "Value").First().Value ?? "").ToLower() == "true")
                     return true;
             }
