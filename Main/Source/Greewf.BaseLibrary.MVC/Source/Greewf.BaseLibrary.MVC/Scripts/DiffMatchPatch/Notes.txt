@@ -1,0 +1,11 @@
+﻿
+1-  It is Released on :	Nov 19, 2012
+	web site : https://code.google.com/p/google-diff-match-patch/
+
+2-	NOTE! : The compressed version is not good for bundling. So we compressed the uncompressed.js version with http://jscompress.com/ file and 
+	put it in diff_match_patch.min.js file. also put a semi-collon at the end of file if not any.
+
+
+3-	Api Documents :  (https://code.google.com/p/google-diff-match-patch/wiki/API)
+
+

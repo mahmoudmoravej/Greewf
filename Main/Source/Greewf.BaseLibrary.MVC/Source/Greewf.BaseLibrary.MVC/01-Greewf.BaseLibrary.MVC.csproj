@@ -43,13 +43,15 @@
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\EntityFramework.6.0.1\lib\net40\EntityFramework.dll</HintPath>
+      <HintPath>..\..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework.SqlServer">
-      <HintPath>..\..\..\packages\EntityFramework.6.0.1\lib\net40\EntityFramework.SqlServer.dll</HintPath>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>..\..\..\packages\NPOI.2.0.6\lib\net40\ICSharpCode.SharpZipLib.dll</HintPath>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\NPOI.2.1.3.1\lib\net40\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.ReportViewer.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.ReportViewer.WebForms, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -57,18 +59,21 @@
       <Private>True</Private>
       <HintPath>..\..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="NPOI, Version=2.0.6.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+    <Reference Include="NPOI, Version=2.1.3.1, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\NPOI.2.0.6\lib\net40\NPOI.dll</HintPath>
+      <HintPath>..\..\..\packages\NPOI.2.1.3.1\lib\net40\NPOI.dll</HintPath>
     </Reference>
-    <Reference Include="NPOI.OOXML">
-      <HintPath>..\..\..\packages\NPOI.2.0.6\lib\net40\NPOI.OOXML.dll</HintPath>
+    <Reference Include="NPOI.OOXML, Version=2.1.3.1, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\NPOI.2.1.3.1\lib\net40\NPOI.OOXML.dll</HintPath>
     </Reference>
-    <Reference Include="NPOI.OpenXml4Net">
-      <HintPath>..\..\..\packages\NPOI.2.0.6\lib\net40\NPOI.OpenXml4Net.dll</HintPath>
+    <Reference Include="NPOI.OpenXml4Net, Version=2.1.3.1, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\NPOI.2.1.3.1\lib\net40\NPOI.OpenXml4Net.dll</HintPath>
     </Reference>
-    <Reference Include="NPOI.OpenXmlFormats">
-      <HintPath>..\..\..\packages\NPOI.2.0.6\lib\net40\NPOI.OpenXmlFormats.dll</HintPath>
+    <Reference Include="NPOI.OpenXmlFormats, Version=2.1.3.1, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\NPOI.2.1.3.1\lib\net40\NPOI.OpenXmlFormats.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -164,6 +169,7 @@
     <Compile Include="CustomHelpers\ContextMenu\ContextMenu.cs" />
     <Compile Include="CustomHelpers\ImagePickerFor.cs" />
     <Compile Include="CustomHelpers\PersianDatePickerFor.cs" />
+    <Compile Include="CustomHelpers\DiffMatchPatch.cs" />
     <Compile Include="CustomHelpers\ValidationFor.cs" />
     <Compile Include="CustomHelpers\PartialFor.cs" />
     <Compile Include="CustomHelpers\ValidationSummary.cs" />
@@ -257,6 +263,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReportsLoaderBase.cs" />
     <Content Include="Scripts\Chosen\!!NOTES!!.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\DiffMatchPatch\diff_match_patch.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\DiffMatchPatch\diff_match_patch_uncompressed.js" />
+    <Content Include="Scripts\DiffMatchPatch\Api Help.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\DiffMatchPatch\Notes.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\fileDownload\jquery.fileDownload -- SOURCE.js">
@@ -386,6 +402,7 @@
       <LastGenOutput>LogContext.cs</LastGenOutput>
     </None>
     <None Include="packages.config" />
+    <None Include="Scripts\DiffMatchPatch\diff_match_patch_20121119.source.zip" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Greewf.BaseLibrary\Source\Greewf.BaseLibrary\00-Greewf.BaseLibrary.csproj">

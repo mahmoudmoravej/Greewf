@@ -132,6 +132,75 @@
             return decodeURIComponent(results[1].replace(/\+/g, " "));
     }
 
+    this.showDiffs = function (oldValue, newValue) {
+        var dmp = new diff_match_patch(),
+            diffs = dmp.diff_main(oldValue, newValue);
+
+        return dmp.diff_prettyHtml(diffs);
+    }
+
+    //http://stackoverflow.com/questions/3700326/decode-amp-back-to-in-javascript
+    var htmlEnDeCode = (function () {
+        var charToEntityRegex,
+            entityToCharRegex,
+            charToEntity,
+            entityToChar;
+
+        function resetCharacterEntities() {
+            charToEntity = {};
+            entityToChar = {};
+            // add the default set
+            addCharacterEntities({
+                '&amp;': '&',
+                '&gt;': '>',
+                '&lt;': '<',
+                '&quot;': '"',
+                '&#39;': "'"
+            });
+        }
+
+        function addCharacterEntities(newEntities) {
+            var charKeys = [],
+                entityKeys = [],
+                key, echar;
+            for (key in newEntities) {
+                echar = newEntities[key];
+                entityToChar[key] = echar;
+                charToEntity[echar] = key;
+                charKeys.push(echar);
+                entityKeys.push(key);
+            }
+            charToEntityRegex = new RegExp('(' + charKeys.join('|') + ')', 'g');
+            entityToCharRegex = new RegExp('(' + entityKeys.join('|') + '|&#[0-9]{1,5};' + ')', 'g');
+        }
+
+        function htmlEncode(value) {
+            var htmlEncodeReplaceFn = function (match, capture) {
+                return charToEntity[capture];
+            };
+
+            return (!value) ? value : String(value).replace(charToEntityRegex, htmlEncodeReplaceFn);
+        }
+
+        function htmlDecode(value) {
+            var htmlDecodeReplaceFn = function (match, capture) {
+                return (capture in entityToChar) ? entityToChar[capture] : String.fromCharCode(parseInt(capture.substr(2), 10));
+            };
+
+            return (!value) ? value : String(value).replace(entityToCharRegex, htmlDecodeReplaceFn);
+        }
+
+        resetCharacterEntities();
+
+        return {
+            htmlEncode: htmlEncode,
+            htmlDecode: htmlDecode
+        };
+    })();
+
+    this.htmlDecode = function (value) {
+        return htmlEnDeCode.htmlDecode(value);
+    }
 
 };
 
