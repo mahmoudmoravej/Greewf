@@ -7,6 +7,8 @@ using System.Security.Principal;
 using Greewf.BaseLibrary.MVC.Security;
 using Greewf.BaseLibrary.MVC.Logging;
 using System.Web;
+using System.Threading;
+using System.Net;
 /// ref1 : http://msdn.microsoft.com/en-us/library/eb0zx8fc.aspx
 /// ref2 : http://blog.ie-soft.de/post/2007/12/globalasax-events.aspx
 /// ref3 :http://msdn.microsoft.com/en-us/library/1d3t3c61.aspx
@@ -25,6 +27,36 @@ namespace Greewf.BaseLibrary.MVC
         private const string COOKIESESSIONKEY = ".ASPXAUTHLASTCOOKIE_";
         private readonly bool _doCustomError = bool.Parse(System.Configuration.ConfigurationManager.AppSettings["CustomError"] ?? "false");
         private readonly CustomErrorDetailsMode _customErrorDetailsMode = (CustomErrorDetailsMode)Enum.Parse(typeof(CustomErrorDetailsMode), System.Configuration.ConfigurationManager.AppSettings["CustomErrorDetailsMode"] ?? "None");
+
+        public GreewfHttpApplication()
+        {
+            KeepAliveInterval = 60000;//60seconds
+        }
+
+        #region KeepAlive
+
+        private static Thread keepAliveThread;
+        protected static string KeepAliveUrl { get; set; }
+        protected static int KeepAliveInterval { get; set; }
+
+        private static void KeepAlive()
+        {
+            while (true)
+            {
+                WebRequest req = WebRequest.Create(KeepAliveUrl);
+                req.GetResponse();
+                try
+                {
+                    Thread.Sleep(KeepAliveInterval);
+                }
+                catch (ThreadAbortException)
+                {
+                    break;
+                }
+            }
+        }
+
+        #endregion
 
         protected abstract T RegularExceptionLogPointId { get; }
 
@@ -203,6 +235,13 @@ namespace Greewf.BaseLibrary.MVC
         protected virtual void Application_Start()
         {
             CheckAndDoCustomMappings();
+            if (KeepAliveUrl != null) keepAliveThread = new Thread(KeepAlive);
+            if (keepAliveThread != null) keepAliveThread.Start();
+        }
+
+        protected virtual void Application_End()
+        {
+            if (keepAliveThread != null) keepAliveThread.Abort();
         }
 
 
