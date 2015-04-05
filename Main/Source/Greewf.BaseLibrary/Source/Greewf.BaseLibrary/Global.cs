@@ -470,13 +470,13 @@ namespace Greewf.BaseLibrary
 
         public static string ShowDiffsAsHtml(string oldText, string newText)
         {
-            var dmp = new DiffMatchPatch.diff_match_patch();            
-            var diffs = dmp.diff_main(oldText, newText);
+            var dmp = new DiffMatchPatch.diff_match_patch();
+            var diffs = dmp.diff_main(oldText ?? "", newText ?? "");
 
             return dmp.diff_prettyHtml(diffs);
 
         }
-    }   
+    }
 
 }
 
