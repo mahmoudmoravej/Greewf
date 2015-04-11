@@ -99,7 +99,7 @@ namespace Greewf.BaseLibrary
                     p.Add(persianDateTime.Substring(0, 4));
                     p.Add(persianDateTime.Substring(4, 2));
                     p.Add(persianDateTime.Substring(6, 2));
-                    p.Add(persianDateTime.Substring(8, 1));
+                    p.Add(persianDateTime.Substring(8, 2));
                     p.Add(persianDateTime.Substring(10, 2));
                 }
             }
