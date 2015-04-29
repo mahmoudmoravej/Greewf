@@ -31,6 +31,8 @@ namespace Greewf.BaseLibrary.Security.V3
         public abstract bool HasPermission(int userId, IPermissionObject obj, int group, long permission);
         public abstract bool HasAnyPermission(int userId, int group, long permission);
         public abstract string GetAppropriateExceptionMessage(SecurityException exception);
+
+
     }
 
     /// <summary>
@@ -185,6 +187,16 @@ namespace Greewf.BaseLibrary.Security.V3
         }
 
         protected abstract int?[] GetAllowedObjectIds(int userId, OT objectType, int group, long permission);
+
+        public int[] GetAllowedUserIds<P>(PermissionObject<OT> obj, P permission)
+        {
+            var group = GetGroupOfType(typeof(P));
+            return GetAllowedUserIds(obj, (int)(object)group, (long)(object)permission);
+        }
+
+        protected abstract int[] GetAllowedUserIds(PermissionObject<OT> obj, int group, long permission);
+
+
 
     }
 }
