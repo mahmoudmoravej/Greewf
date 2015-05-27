@@ -14,6 +14,8 @@ namespace Greewf.BaseLibrary.Security.V3
         public int UserId { get; private set; }
         public IPermissionObject PermissionObject { get; private set; }
 
+        public int MyProperty { get; set; }
+
         public SecurityException(int group, long permissions, int userId, IPermissionObject permissionObject = null)
         {
             this.PermissionGroup = group;
