@@ -12,18 +12,23 @@ namespace Greewf.BaseLibrary.Security.V3
         public int PermissionGroup { get; private set; }
         public long Permissions { get; private set; }
         public int UserId { get; private set; }
-        public SecurityException(int group, long permissions, int userId)
+        public IPermissionObject PermissionObject { get; private set; }
+
+        public SecurityException(int group, long permissions, int userId, IPermissionObject permissionObject = null)
         {
             this.PermissionGroup = group;
             this.Permissions = permissions;
             this.UserId = userId;
+            this.PermissionObject = permissionObject;
         }
 
-        public SecurityException(int group, long permissions, string[] messages)
+
+        public SecurityException(int group, long permissions, string[] messages, IPermissionObject permissionObject = null)
         {
             this.PermissionGroup = group;
             this.Permissions = permissions;
-            ErrorMessages = messages;
+            this.ErrorMessages = messages;
+            this.PermissionObject = permissionObject;
         }
 
         public SecurityException(string message)
