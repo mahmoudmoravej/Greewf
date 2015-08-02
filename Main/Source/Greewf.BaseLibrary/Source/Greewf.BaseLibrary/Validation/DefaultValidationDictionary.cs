@@ -12,6 +12,9 @@ namespace Greewf.BaseLibrary
 
         List<KeyValuePair<string, ExtendedModelError>> _lstErrors = new List<KeyValuePair<string, ExtendedModelError>>();
         List<KeyValuePair<string, ExtendedModelError>> _lstWarnings = new List<KeyValuePair<string, ExtendedModelError>>();
+        List<KeyValuePair<string, ExtendedModelError>> _lstQuestions = new List<KeyValuePair<string, ExtendedModelError>>();
+
+        #region Errors
 
         public void AddError(string key, string errorMessage)
         {
@@ -23,14 +26,6 @@ namespace Greewf.BaseLibrary
             _lstErrors.Add(new KeyValuePair<string, ExtendedModelError>(key, new ExtendedModelError(errorMessage, code)));
         }
 
-        public bool IsValid
-        {
-            get
-            {
-                return _lstErrors.Count == 0;
-            }
-        }
-
         public string[] Errors
         {
             get
@@ -39,7 +34,9 @@ namespace Greewf.BaseLibrary
 
             }
         }
+        #endregion
 
+        #region Warnings
 
         public void AddWarning(string key, string warningMessage)
         {
@@ -69,12 +66,57 @@ namespace Greewf.BaseLibrary
         {
             _lstWarnings.Clear();
         }
+        
+        #endregion
 
+        #region Questions
+
+        public void AddQuestion(string key, string questionMessage)
+        {
+            _lstQuestions.Add(new KeyValuePair<string, ExtendedModelError>(key, new ExtendedModelError(questionMessage)));
+        }
+
+        public void AddQuestion(string key, string questionMessage, string code)
+        {
+            _lstQuestions.Add(new KeyValuePair<string, ExtendedModelError>(key, new ExtendedModelError(questionMessage, code)));
+        }
+
+        public bool HasQuestions()
+        {
+            return _lstQuestions.Count > 0;
+        }
+
+        public string[] Questions
+        {
+            get
+            {
+                return _lstQuestions.Select(o => o.Value.ErrorMessage).ToArray<string>();
+
+            }
+        }
+
+        public void ClearQuestions()
+        {
+            _lstQuestions.Clear();
+        }
+        
+        #endregion
+
+
+
+        public bool IsValid
+        {
+            get
+            {
+                return _lstErrors.Count == 0;
+            }
+        }
 
         public void Clear()
         {
             _lstErrors.Clear();
             _lstWarnings.Clear();
+            _lstQuestions.Clear();
         }
 
 

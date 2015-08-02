@@ -10,7 +10,7 @@ namespace Greewf.BaseLibrary
     {
     }
 
-    public interface IValidationDictionary<in M> : IWarningDictionary<Object>
+    public interface IValidationDictionary<in M> : IWarningDictionary<Object>, IQuestionDictionary<Object>
     {
         void AddError(string key, string errorMessage);
         void AddError(string key, string errorMessage, string code);

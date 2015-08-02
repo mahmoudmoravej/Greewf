@@ -109,6 +109,7 @@
     <Compile Include="DiffMatchPatch\DiffMatchPatch.cs" />
     <Compile Include="Validation\DefaultValidationDictionary.cs" />
     <Compile Include="Validation\ExtendedModelError.cs" />
+    <Compile Include="Validation\IQuestionDictionary.cs" />
     <Compile Include="Validation\IWarningDictionary.cs" />
     <Compile Include="Validation\IValidationDictionary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -234,6 +235,7 @@
     <Compile Include="FastQueryBuilder\Sorting\SortDescriptorCollectionExpressionBuilder.cs" />
     <Compile Include="Validation\ModelErrorExtentions.cs" />
     <Compile Include="Validation\ValidationExtentions.cs" />
+    <Compile Include="Validation\QuestionExtentions.cs" />
     <Compile Include="Validation\WarningExtentions.cs" />
   </ItemGroup>
   <ItemGroup>
