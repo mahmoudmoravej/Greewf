@@ -66,7 +66,7 @@ namespace Greewf.BaseLibrary
         {
             _lstWarnings.Clear();
         }
-        
+
         #endregion
 
         #region Questions
@@ -99,7 +99,7 @@ namespace Greewf.BaseLibrary
         {
             _lstQuestions.Clear();
         }
-        
+
         #endregion
 
 
@@ -108,7 +108,7 @@ namespace Greewf.BaseLibrary
         {
             get
             {
-                return _lstErrors.Count == 0;
+                return _lstErrors.Count == 0 && _lstQuestions.Count == 0;
             }
         }
 
