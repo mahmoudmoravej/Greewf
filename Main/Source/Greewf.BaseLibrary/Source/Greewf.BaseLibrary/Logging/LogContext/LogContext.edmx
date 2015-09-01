@@ -41,11 +41,11 @@
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="LogModel" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2009/11/edm" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
+      <Schema Namespace="Greewf.BaseLibrary.Logging" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2009/11/edm" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
         <EntityContainer Name="LogContext" annotation:LazyLoadingEnabled="true" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
-          <EntitySet Name="Logs" EntityType="LogModel.Log" />
-          <EntitySet Name="LogDetails" EntityType="LogModel.LogDetail" />
-          <AssociationSet Name="LogLogDetails" Association="LogModel.LogLogDetails">
+          <EntitySet Name="Logs" EntityType="Greewf.BaseLibrary.Logging.Log" />
+          <EntitySet Name="LogDetails" EntityType="Greewf.BaseLibrary.Logging.LogDetail" />
+          <AssociationSet Name="LogLogDetails" Association="Greewf.BaseLibrary.Logging.LogLogDetails">
             <End Role="Log" EntitySet="Logs" />
             <End Role="LogDetails" EntitySet="LogDetails" />
           </AssociationSet>
@@ -68,7 +68,7 @@
           <Property Name="Querystring" Type="String" MaxLength="200" Unicode="true" FixedLength="false" />
           <Property Type="Boolean" Name="IsMobile" />
           <Property Type="String" Name="UserAgent" MaxLength="150" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="LogDetails" Relationship="LogModel.LogLogDetails" FromRole="Log" ToRole="LogDetails" />
+          <NavigationProperty Name="LogDetails" Relationship="Greewf.BaseLibrary.Logging.LogLogDetails" FromRole="Log" ToRole="LogDetails" />
         </EntityType>
         <EntityType Name="LogDetail">
           <Key>
@@ -81,8 +81,8 @@
           <Property Type="String" Name="Value" MaxLength="2000" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="LogLogDetails">
-          <End Type="LogModel.Log" Role="Log" Multiplicity="1" />
-          <End Type="LogModel.LogDetail" Role="LogDetails" Multiplicity="*" />
+          <End Type="Greewf.BaseLibrary.Logging.Log" Role="Log" Multiplicity="1" />
+          <End Type="Greewf.BaseLibrary.Logging.LogDetail" Role="LogDetails" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Log">
               <PropertyRef Name="Id" />
@@ -98,7 +98,7 @@
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="LogModelStoreContainer" CdmEntityContainer="LogContext">
-          <EntitySetMapping Name="Logs"><EntityTypeMapping TypeName="LogModel.Log"><MappingFragment StoreEntitySet="Logs">
+          <EntitySetMapping Name="Logs"><EntityTypeMapping TypeName="Greewf.BaseLibrary.Logging.Log"><MappingFragment StoreEntitySet="Logs">
             <ScalarProperty Name="UserAgent" ColumnName="UserAgent" />
                 <ScalarProperty Name="IsMobile" ColumnName="IsMobile" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
@@ -115,7 +115,7 @@
             <ScalarProperty Name="Querystring" ColumnName="Querystring" />
           </MappingFragment></EntityTypeMapping></EntitySetMapping>
           <EntitySetMapping Name="LogDetails">
-            <EntityTypeMapping TypeName="LogModel.LogDetail">
+            <EntityTypeMapping TypeName="Greewf.BaseLibrary.Logging.LogDetail">
               <MappingFragment StoreEntitySet="LogDetails">
                 <ScalarProperty Name="Value" ColumnName="Value" />
                 <ScalarProperty Name="KeyTitle" ColumnName="KeyTitle" />
@@ -147,9 +147,9 @@
     <!-- Diagram content (shape and connector positions) -->
     <Diagrams>
       <Diagram Name="LogContext">
-        <EntityTypeShape EntityType="LogModel.Log" Width="1.5" PointX="3.75" PointY="0.75" Height="3.9033007812499996" IsExpanded="true" />
-        <EntityTypeShape EntityType="LogModel.LogDetail" Width="1.5" PointX="7" PointY="1.5" Height="1.9802864583333326" />
-        <AssociationConnector Association="LogModel.LogLogDetails">
+        <EntityTypeShape EntityType="Greewf.BaseLibrary.Logging.Log" Width="1.5" PointX="3.75" PointY="0.75" Height="3.9033007812499996" IsExpanded="true" />
+        <EntityTypeShape EntityType="Greewf.BaseLibrary.Logging.LogDetail" Width="1.5" PointX="7" PointY="1.5" Height="1.9802864583333326" />
+        <AssociationConnector Association="Greewf.BaseLibrary.Logging.LogLogDetails">
           <ConnectorPoint PointX="5.25" PointY="2.4901432291666663" />
           <ConnectorPoint PointX="7" PointY="2.4901432291666663" />
         </AssociationConnector>

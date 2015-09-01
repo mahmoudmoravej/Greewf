@@ -108,7 +108,6 @@
     <Compile Include="Global.cs" />
     <Compile Include="DataSetLinqOperators.cs" />
     <Compile Include="DiffMatchPatch\DiffMatchPatch.cs" />
-    <Compile Include="Logging\DefaultLogger.cs" />
     <Compile Include="Logging\LogContext\Log.cs">
       <DependentUpon>LogContext.tt</DependentUpon>
     </Compile>
@@ -131,7 +130,8 @@
     <Compile Include="Logging\LogContext\LogDetail.cs">
       <DependentUpon>LogContext.tt</DependentUpon>
     </Compile>
-    <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\Default.cs" />
+    <Compile Include="Logging\LoggerBase.cs" />
     <Compile Include="Logging\LogProfileReader.cs" />
     <Compile Include="Validation\DefaultValidationDictionary.cs" />
     <Compile Include="Validation\ExtendedModelError.cs" />

@@ -7,6 +7,7 @@ using System.Web;
 using System.Threading;
 using System.Net;
 using Greewf.BaseLibrary.Logging;
+using Greewf.BaseLibrary.MVC.Logging;
 /// ref1 : http://msdn.microsoft.com/en-us/library/eb0zx8fc.aspx
 /// ref2 : http://blog.ie-soft.de/post/2007/12/globalasax-events.aspx
 /// ref3 :http://msdn.microsoft.com/en-us/library/1d3t3c61.aspx
@@ -103,7 +104,7 @@ namespace Greewf.BaseLibrary.MVC
                 long logId = 0;
                 try
                 {
-                    logId = Logger.Current.Log(RegularExceptionLogPointId, error);
+                    logId = HttpWebLogger.Current.Log(RegularExceptionLogPointId, error);
                 }
                 catch { }
 
@@ -114,7 +115,7 @@ namespace Greewf.BaseLibrary.MVC
 
         private void HandleSecurityExceptions(Exception error)
         {
-            Logger.Current.Log(SecurityExceptionLogPointId, (error as SecurityException).ErrorMessages);
+            HttpWebLogger.Current.Log(SecurityExceptionLogPointId, (error as SecurityException).ErrorMessages);
             string querystring = PrepareQuerystring(error);
 
             querystring = querystring.Trim('&');

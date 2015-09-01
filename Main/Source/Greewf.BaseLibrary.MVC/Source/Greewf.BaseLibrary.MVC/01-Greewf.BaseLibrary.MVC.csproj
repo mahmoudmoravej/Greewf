@@ -184,8 +184,10 @@
     <Compile Include="GridViewModelBase.cs" />
     <Compile Include="HttpModules\PersianCharacterCorrecterModule.cs" />
     <Compile Include="IGreewfHomeController.cs" />
+    <Compile Include="Logging\DefaultLogger.cs" />
+    <Compile Include="Logging\HttpWebLogger.cs" />
     <Compile Include="Logging\LogAttribute.cs" />
-    <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\LoggerExtensions.cs" />
     <Compile Include="OfflineTools\HashStamp.cs" />
     <Compile Include="RedirectToRouteSuccessResult.cs" />
     <Content Include="Documents\AreaRules.txt">

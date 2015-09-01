@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Greewf.BaseLibrary.Logging.LogContext;
+using Greewf.BaseLibrary.Logging;
 using System.Web;
 
-namespace Greewf.BaseLibrary.Logging
+namespace Greewf.BaseLibrary.MVC.Logging
 {
 
-    public class DefaultLogger : Logger
+    public class DefaultLogger : HttpWebLogger
     {
         public override string Username
         {

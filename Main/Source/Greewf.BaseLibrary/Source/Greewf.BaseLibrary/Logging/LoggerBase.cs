@@ -2,34 +2,56 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Greewf.BaseLibrary.Logging.LogContext;
 using System.Web;
 using System.Collections;
 
 namespace Greewf.BaseLibrary.Logging
 {
-    public abstract class Logger
+
+    public abstract class LoggerBase
     {
-        private static Logger current = new DefaultLogger();
-        public static Logger Current
-        {
-            get
-            {
-                return current;
-            }
-            set
-            {
-                if (value == null)
-                    current = new DefaultLogger();
-                else
-                    current = value;
-            }
-        }
 
         public abstract string Username { get; }
         public abstract string UserFullName { get; }
 
-        private LogContext.LogContext context;
+        protected abstract void ReadRequestToLog(ref Log log);
+
+
+        /// <summary>
+        /// it is provided to handle exception. this function should never throw an exception
+        /// </summary>
+        /// <returns></returns>
+        protected virtual string ReadUsername()
+        {
+            try
+            {
+                return Username;
+            }
+            catch (Exception x)
+            {
+                return "Exception: " + x.ToString();
+            }
+
+        }
+
+        /// <summary>
+        /// it is provided to handle exception. this function should never throw an exception
+        /// </summary>
+        /// <returns></returns>
+        protected virtual string ReadUserFullName()
+        {
+            try
+            {
+                return UserFullName;
+            }
+            catch (Exception x)
+            {
+                return "Exception: " + x.ToString();
+            }
+
+        }
+
+        private LogContext context;
 
         private string logConnectionString;
         public string LogConnectionString
@@ -43,7 +65,7 @@ namespace Greewf.BaseLibrary.Logging
                 logConnectionString = value;
                 lock (logConnectionString)
                 {
-                    context = new LogContext.LogContext(logConnectionString);
+                    context = new LogContext(logConnectionString);
                 }
             }
         }
@@ -64,38 +86,21 @@ namespace Greewf.BaseLibrary.Logging
         {
             if (LogProfileReader.Current.IsLogDisabled(logId, logEnumType)) return -1;
             var log = new Log();
-            var request = HttpContext.Current.Request;
 
-            log.DateTime = DateTime.Now;
-            log.Browser = TakeMax(request.Browser.Browser + request.Browser.Version, 50);
-            log.IsMobile = request.Browser.IsMobileDevice;
-            log.UserAgent = TakeMax(request.UserAgent, 150);
+            ReadRequestToLog(ref log);
+
+            log.Browser = TakeMax(log.Browser, 50);
+            log.UserAgent = TakeMax(log.UserAgent, 150);
+            log.MachineName = TakeMax(log.MachineName, 50);
+            log.RequestUrl = TakeMax(log.RequestUrl, 150);
+            log.Querystring = TakeMax(log.Querystring, 200);
+
             log.Code = TakeMax(Enum.GetName(logEnumType, logId), 50);
             log.Text = (model is Exception ? TakeMax(model.ToString(), 4000) : null);//TODO : for future use!
-            log.Ip = request.UserHostAddress;
-            log.MachineName = TakeMax(request.UserHostName, 50);
-            log.RequestUrl = TakeMax(request.Url.GetLeftPart(UriPartial.Path), 150);
-            log.Querystring = TakeMax(request.QueryString.ToString(), 200);
+            log.DateTime = DateTime.Now;
 
-            try//becuase of some reasons(like too early exception in HttpApplication) we may get exception on calling Username & UserFullName properties
-            {
-                log.Username = TakeMax(Username, 50);
-            }
-            catch
-            {
-                if (HttpContext.Current.User != null && HttpContext.Current.User.Identity != null && HttpContext.Current.User.Identity.IsAuthenticated)
-                    log.Username = HttpContext.Current.User.Identity.Name;
-            }
-
-            try
-            {
-                log.UserFullname = TakeMax(UserFullName, 50);
-            }
-            catch
-            {
-                log.UserFullname = "[!!Not Available Because of Exception!!]";
-            }
-
+            log.Username = TakeMax(ReadUsername(), 50);
+            log.UserFullname = TakeMax(ReadUserFullName(), 50);
 
             if (model != null)
             {
@@ -110,7 +115,7 @@ namespace Greewf.BaseLibrary.Logging
 
         }
 
-        private void AddLogDetails(LogContext.Log log, object model, Dictionary<string, string> modelDisplayNames = null, string[] exludeModelProperties = null)
+        private void AddLogDetails(Log log, object model, Dictionary<string, string> modelDisplayNames = null, string[] exludeModelProperties = null)
         {
             if (model is IDictionary)
                 AddDictionaryDetails(log, model as IDictionary);
@@ -121,7 +126,7 @@ namespace Greewf.BaseLibrary.Logging
 
         }
 
-        private void AddObjectDetails(LogContext.Log log, object model, Dictionary<string, string> modelDisplayNames = null, string[] exludeModelProperties = null)
+        private void AddObjectDetails(Log log, object model, Dictionary<string, string> modelDisplayNames = null, string[] exludeModelProperties = null)
         {
             foreach (var item in model.GetType().GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.GetProperty))
             {
@@ -148,14 +153,14 @@ namespace Greewf.BaseLibrary.Logging
                 log.LogDetails.Add(logDetail);
             }
         }
-        private void AddArrayDetails(LogContext.Log log, IEnumerable arr)
+        private void AddArrayDetails(Log log, IEnumerable arr)
         {
             int idx = 0;
             foreach (var item in arr)
                 log.LogDetails.Add(new LogDetail { Key = (++idx).ToString(), Value = item.ToString() });
         }
 
-        private void AddDictionaryDetails(LogContext.Log log, IDictionary arr)
+        private void AddDictionaryDetails(Log log, IDictionary arr)
         {
             foreach (var key in arr.Keys)
                 log.LogDetails.Add(new LogDetail { Key = (key ?? new object()).ToString(), Value = (arr[key] ?? new object()).ToString() });
@@ -163,6 +168,7 @@ namespace Greewf.BaseLibrary.Logging
 
         private string TakeMax(string str, int max)
         {
+            if (string.IsNullOrEmpty(str)) return str;
             return str.Substring(0, str.Length > max ? max : str.Length);
         }
 

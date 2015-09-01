@@ -324,7 +324,7 @@ namespace Greewf.BaseLibrary.MVC
 
         protected void Log<T>(T logId, object model, string[] exludeModelProperties = null) where T : struct
         {
-            Logger.Current.Log(logId, model, exludeModelProperties);
+            HttpWebLogger.Current.Log(logId, model, exludeModelProperties);
         }
 
         public ContextManagerBase ContextManagerBase
