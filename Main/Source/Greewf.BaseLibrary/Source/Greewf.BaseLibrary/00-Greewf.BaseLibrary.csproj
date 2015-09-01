@@ -130,7 +130,7 @@
     <Compile Include="Logging\LogContext\LogDetail.cs">
       <DependentUpon>LogContext.tt</DependentUpon>
     </Compile>
-    <Compile Include="Logging\Default.cs" />
+    <Compile Include="Logging\DefaultLogger.cs" />
     <Compile Include="Logging\LoggerBase.cs" />
     <Compile Include="Logging\LogProfileReader.cs" />
     <Compile Include="Validation\DefaultValidationDictionary.cs" />

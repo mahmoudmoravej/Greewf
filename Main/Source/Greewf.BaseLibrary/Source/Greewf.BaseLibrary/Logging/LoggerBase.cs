@@ -96,7 +96,7 @@ namespace Greewf.BaseLibrary.Logging
             log.Querystring = TakeMax(log.Querystring, 200);
 
             log.Code = TakeMax(Enum.GetName(logEnumType, logId), 50);
-            log.Text = (model is Exception ? TakeMax(model.ToString(), 4000) : null);//TODO : for future use!
+            log.Text = TakeMax(model is Exception ? model.ToString() : log.Text, 4000);
             log.DateTime = DateTime.Now;
 
             log.Username = TakeMax(ReadUsername(), 50);
