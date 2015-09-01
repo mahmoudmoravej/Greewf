@@ -5,8 +5,9 @@ using System.Web;
 using System.Web.Mvc;
 using System.Security.Authentication;
 using System.Security;
-using Greewf.BaseLibrary.MVC.Logging.LogContext;
+using Greewf.BaseLibrary.Logging.LogContext;
 using Greewf.BaseLibrary.MVC.Ajax;
+using Greewf.BaseLibrary.Logging;
 
 
 namespace Greewf.BaseLibrary.MVC.Logging

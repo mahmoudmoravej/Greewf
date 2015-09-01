@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data.Entity;
 
-namespace Greewf.BaseLibrary.MVC.Logging.LogContext
+namespace Greewf.BaseLibrary.Logging.LogContext
 {
     public partial class LogContext : DbContext
     {

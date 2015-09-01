@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Greewf.BaseLibrary.MVC.Logging.LogContext;
+using Greewf.BaseLibrary.Logging.LogContext;
 using System.Web;
 
-namespace Greewf.BaseLibrary.MVC.Logging
+namespace Greewf.BaseLibrary.Logging
 {
 
     public class DefaultLogger : Logger

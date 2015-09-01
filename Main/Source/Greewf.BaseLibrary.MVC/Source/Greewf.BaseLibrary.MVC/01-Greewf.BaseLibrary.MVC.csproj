@@ -184,32 +184,8 @@
     <Compile Include="GridViewModelBase.cs" />
     <Compile Include="HttpModules\PersianCharacterCorrecterModule.cs" />
     <Compile Include="IGreewfHomeController.cs" />
-    <Compile Include="Logging\DefaultLogger.cs" />
-    <Compile Include="Logging\LogContext\Log.cs">
-      <DependentUpon>LogContext.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Logging\LogContext\LogContext.Extend.cs" />
     <Compile Include="Logging\LogAttribute.cs" />
-    <Compile Include="Logging\LogContext\LogContext.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LogContext.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Logging\LogContext\LogContext.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LogContext.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Logging\LogContext\LogContext.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LogContext.edmx</DependentUpon>
-    </Compile>
-    <Compile Include="Logging\LogContext\LogDetail.cs">
-      <DependentUpon>LogContext.tt</DependentUpon>
-    </Compile>
     <Compile Include="Logging\Logger.cs" />
-    <Compile Include="Logging\LogProfileReader.cs" />
     <Compile Include="OfflineTools\HashStamp.cs" />
     <Compile Include="RedirectToRouteSuccessResult.cs" />
     <Content Include="Documents\AreaRules.txt">
@@ -388,18 +364,6 @@
     <None Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ChangeTrackerContext1.cs</LastGenOutput>
-    </None>
-    <None Include="Logging\LogContext\LogContext.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>LogContext.Context.cs</LastGenOutput>
-    </None>
-    <EntityDeploy Include="Logging\LogContext\LogContext.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>LogContext.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <None Include="Logging\LogContext\LogContext.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>LogContext.cs</LastGenOutput>
     </None>
     <None Include="packages.config" />
     <None Include="Scripts\DiffMatchPatch\diff_match_patch_20121119.source.zip" />

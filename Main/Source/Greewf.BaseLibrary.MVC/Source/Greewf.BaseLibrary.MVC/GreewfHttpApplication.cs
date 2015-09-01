@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Web.Security;
 using System.Security.Principal;
 using Greewf.BaseLibrary.MVC.Security;
-using Greewf.BaseLibrary.MVC.Logging;
 using System.Web;
 using System.Threading;
 using System.Net;
+using Greewf.BaseLibrary.Logging;
 /// ref1 : http://msdn.microsoft.com/en-us/library/eb0zx8fc.aspx
 /// ref2 : http://blog.ie-soft.de/post/2007/12/globalasax-events.aspx
 /// ref3 :http://msdn.microsoft.com/en-us/library/1d3t3c61.aspx

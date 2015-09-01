@@ -5,7 +5,7 @@ using System.Text;
 using System.Xml;
 using System.Web.Caching;
 
-namespace Greewf.BaseLibrary.MVC.Logging
+namespace Greewf.BaseLibrary.Logging
 {
     public abstract class LogProfileReader
     {

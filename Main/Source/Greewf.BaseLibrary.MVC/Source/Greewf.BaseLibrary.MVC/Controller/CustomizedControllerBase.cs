@@ -11,6 +11,7 @@ using Greewf.BaseLibrary.Repositories;
 using Greewf.BaseLibrary.MVC.Logging;
 using Greewf.BaseLibrary.MVC.Ajax;
 using System.Linq.Expressions;
+using Greewf.BaseLibrary.Logging;
 
 namespace Greewf.BaseLibrary.MVC
 {

@@ -85,6 +85,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -107,6 +108,31 @@
     <Compile Include="Global.cs" />
     <Compile Include="DataSetLinqOperators.cs" />
     <Compile Include="DiffMatchPatch\DiffMatchPatch.cs" />
+    <Compile Include="Logging\DefaultLogger.cs" />
+    <Compile Include="Logging\LogContext\Log.cs">
+      <DependentUpon>LogContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Logging\LogContext\LogContext.Context.cs">
+      <DependentUpon>LogContext.Context.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Logging\LogContext\LogContext.cs">
+      <DependentUpon>LogContext.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Logging\LogContext\LogContext.Designer.cs">
+      <DependentUpon>LogContext.edmx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Logging\LogContext\LogContext.Extend.cs" />
+    <Compile Include="Logging\LogContext\LogDetail.cs">
+      <DependentUpon>LogContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\LogProfileReader.cs" />
     <Compile Include="Validation\DefaultValidationDictionary.cs" />
     <Compile Include="Validation\ExtendedModelError.cs" />
     <Compile Include="Validation\IQuestionDictionary.cs" />
@@ -240,6 +266,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Logging\LogContext\LogContext.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LogContext.Context.cs</LastGenOutput>
+    </None>
+    <EntityDeploy Include="Logging\LogContext\LogContext.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>LogContext.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="Logging\LogContext\LogContext.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LogContext.cs</LastGenOutput>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -248,7 +286,9 @@
   <ItemGroup>
     <Content Include="FastQueryBuilder\Notes!.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

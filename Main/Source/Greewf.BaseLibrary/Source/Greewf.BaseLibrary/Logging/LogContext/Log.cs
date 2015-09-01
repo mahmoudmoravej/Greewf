@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Greewf.BaseLibrary.MVC.Logging.LogContext
+namespace Greewf.BaseLibrary.Logging.LogContext
 {
     using System;
     using System.Collections.Generic;
