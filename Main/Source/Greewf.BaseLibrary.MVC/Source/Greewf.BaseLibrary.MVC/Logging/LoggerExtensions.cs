@@ -5,8 +5,10 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Collections;
+using Greewf.BaseLibrary.Logging;
 
-namespace Greewf.BaseLibrary.Logging
+//NOTE : We should put it to different namespace to prevent ambiguous error with other extended functions from another namespace
+namespace Greewf.BaseLibrary.MVC.Logging
 {
     public static class LoggerExtensions
     {
@@ -46,9 +48,6 @@ namespace Greewf.BaseLibrary.Logging
             return logger.Log(logId, logEnumType, model, modelDisplayNames, exludeModelProperties);
 
         }
-
-
-
 
     }
 

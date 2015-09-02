@@ -82,12 +82,14 @@ namespace Greewf.BaseLibrary.Logging
             }
         }
 
-        public long Log(int logId, Type logEnumType, object model = null, Dictionary<string, string> modelDisplayNames = null, string[] exludeModelProperties = null)
+        public long Log(int logId, Type logEnumType, object model = null, Dictionary<string, string> modelDisplayNames = null, string[] exludeModelProperties = null, string text = null)
         {
             if (LogProfileReader.Current.IsLogDisabled(logId, logEnumType)) return -1;
             var log = new Log();
 
+            
             ReadRequestToLog(ref log);
+            if (!string.IsNullOrEmpty( text)) log.Text = text; //passed text is preferable to request text (if any)
 
             log.Browser = TakeMax(log.Browser, 50);
             log.UserAgent = TakeMax(log.UserAgent, 150);
