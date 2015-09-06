@@ -9,17 +9,23 @@ namespace Greewf.BaseLibrary.Logging
 {
     public abstract class LogProfileReader
     {
-        private static LogProfileReader current = new DefaultLogProfileReader();
+        public LogProfileReader(string logProfileFilePath, string logPointFilePath)
+        {
+            LoadFiles(logProfileFilePath, logPointFilePath);
+        }
+
+        private static LogProfileReader current;
         public static LogProfileReader Current
         {
             get
             {
+                if (current == null) Current = null;
                 return current;
             }
             set
             {
                 if (value == null)
-                    current = new DefaultLogProfileReader();
+                    current = new DefaultLogProfileReader("LogProfiles.xml", "LogPoints.xml");
                 else
                     current = value;
             }
@@ -28,37 +34,37 @@ namespace Greewf.BaseLibrary.Logging
         private HashSet<string> disabledLogs = null;
         private bool isNeedToBeReload = false;
 
-        private string logProfileFilePath;
-        public string LogProfileFilePath
+        public string LogProfileFilePath { get; private set; }
+
+
+        public string LogPointFilePath { get; private set; }
+
+        protected void LoadFiles(string logProfileFilePath, string logPointFilePath)
         {
-            get
-            {
-                return logProfileFilePath;
-            }
-            set
-            {
-                logProfileFilePath = value;
-                lock (logProfileFilePath)
+            LogProfileFilePath = logProfileFilePath;
+            LogPointFilePath = logPointFilePath;
+            lock (LogProfileFilePath)
+                lock (LogPointFilePath)
                 {
                     Reload();
-                    AddCacheDependency(logProfileFilePath);
+                    AddCacheDependency(LogProfileFilePath, "profile");
+                    AddCacheDependency(LogPointFilePath, "logPoint");
                 }
-            }
         }
 
-        private void AddCacheDependency(string logProfileFilePath)
+        private void AddCacheDependency(string filePath, string key)
         {
 
-            if (System.Web.HttpContext.Current.Cache["__logProfileCacheChange"] != null)
-                System.Web.HttpContext.Current.Cache.Remove("__logProfileCacheChange");
+            if (System.Web.HttpContext.Current.Cache["__logProfileCacheChange" + key] != null)
+                System.Web.HttpContext.Current.Cache.Remove("__logProfileCacheChange" + key);
 
             isNeedToBeReload = false;
 
-            if (!string.IsNullOrWhiteSpace(logProfileFilePath))
-                System.Web.HttpContext.Current.Cache.Add("__logProfileCacheChange", "x", new CacheDependency(logProfileFilePath), DateTime.MaxValue, TimeSpan.Zero, CacheItemPriority.High, LogProfileFileChanged);
+            if (!string.IsNullOrWhiteSpace(filePath))
+                System.Web.HttpContext.Current.Cache.Add("__logProfileCacheChange" + key, "x" + key, new CacheDependency(filePath), DateTime.MaxValue, TimeSpan.Zero, CacheItemPriority.High, DependentFilesChanged);
         }
 
-        private void LogProfileFileChanged(string key, object value, CacheItemRemovedReason reason)
+        private void DependentFilesChanged(string key, object value, CacheItemRemovedReason reason)
         {
             //System.Web.HttpContext.Current.Cache.Remove("__logProfileCacheChange");
             isNeedToBeReload = true;
@@ -71,7 +77,10 @@ namespace Greewf.BaseLibrary.Logging
 
 
                 var xmlProfiles = new XmlDocument();
-                xmlProfiles.Load(logProfileFilePath);
+                xmlProfiles.Load(LogProfileFilePath);
+
+                var xmlLogPoints = new XmlDocument();
+                xmlLogPoints.Load(LogPointFilePath);
 
                 string activeProfileId = xmlProfiles.DocumentElement.Attributes["ActiveProfileId"].Value;
 
@@ -79,6 +88,12 @@ namespace Greewf.BaseLibrary.Logging
                 if (activeProfile == null) return;
 
                 disabledLogs = new HashSet<string>();
+
+                //DropAllNoLogDefaults means we consider all logpoints in a same way (ignoring logpoint default value)
+                if (activeProfile.SelectSingleNode("DropAllNoLogDefaults") == null)
+                    foreach (XmlNode node in xmlLogPoints.SelectNodes("LogPoints/Log[@Default='NoLog']"))
+                        disabledLogs.Add(node.Attributes["Id"].Value);
+
                 foreach (XmlNode node in activeProfile.ChildNodes)
                 {
                     if (node.Name == "ExceptAll")
@@ -88,18 +103,25 @@ namespace Greewf.BaseLibrary.Logging
                     }
                     else if (node.Name == "Except")
                         disabledLogs.Add(node.Attributes["LogPoint"].Value);
+                    else if (node.Name == "Include")
+                    {
+                        string value = node.Attributes["LogPoint"].Value;
+                        //note : we parse continously. so if we see a include, we remove the previously added "except" if any
+                        disabledLogs.Remove(value);
+                    }
                 }
+
             }
             catch (Exception x)
             {
-                throw new Exception("Exception in parsing [" + logProfileFilePath + "] file. Check the syntax first to compromise log needs", x);
+                throw new Exception("Exception in parsing [" + LogProfileFilePath + "] or [" + LogPointFilePath + "] file. Check the syntax first to compromise log needs", x);
             }
 
         }
 
         public bool IsLogDisabled(string logId)
         {
-            if (isNeedToBeReload) LogProfileFilePath = LogProfileFilePath;
+            if (isNeedToBeReload) LoadFiles(LogProfileFilePath, LogPointFilePath);
             if (disabledLogs == null) return true;//null means all are disabled
             return disabledLogs.Contains(logId);
         }
@@ -110,8 +132,4 @@ namespace Greewf.BaseLibrary.Logging
         }
     }
 
-    public class DefaultLogProfileReader : LogProfileReader
-    {
-
-    }
 }

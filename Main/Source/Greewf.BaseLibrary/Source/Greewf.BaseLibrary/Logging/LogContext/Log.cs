@@ -62,6 +62,15 @@ namespace Greewf.BaseLibrary.Logging
     	
         
         public string UserAgent { get; set; }
+    	
+        
+        public string RequestBody { get; set; }
+    	
+        
+        public string RequestMethod { get; set; }
+    	
+        
+        public string RequestHeaders { get; set; }
     
         
         public virtual ICollection<LogDetail> LogDetails { get; set; }

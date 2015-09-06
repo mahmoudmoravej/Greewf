@@ -21,7 +21,7 @@ namespace Greewf.BaseLibrary.Logging
             get { return null; }
         }
 
-        protected override void ReadRequestToLog(ref Log log)
+        protected override void ReadRequestToLog(ref Log log, object extraData)
         {
             return;
         }

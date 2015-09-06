@@ -30,7 +30,7 @@ namespace Greewf.BaseLibrary.MVC.Logging
             }
         }
 
-        protected override void ReadRequestToLog(ref Log log)
+        protected override void ReadRequestToLog(ref Log log, object extraData)
         {
             var request = HttpContext.Current.Request;
 
@@ -41,6 +41,9 @@ namespace Greewf.BaseLibrary.MVC.Logging
             log.MachineName = request.UserHostName;
             log.RequestUrl = request.Url.GetLeftPart(UriPartial.Path);
             log.Querystring = request.QueryString.ToString();
+            log.RequestBody = request.Form == null ? null : request.Form.ToString();
+            log.RequestMethod = request.HttpMethod;
+            log.RequestHeaders = request.Headers == null ? null : request.Headers.ToString();
         }
 
         protected override string ReadUsername()
