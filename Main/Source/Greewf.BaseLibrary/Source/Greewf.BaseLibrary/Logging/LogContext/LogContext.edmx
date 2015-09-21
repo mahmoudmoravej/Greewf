@@ -21,17 +21,17 @@
           </Key>
           <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="DateTime" Type="datetime" Nullable="false" />
-          <Property Name="Key" Type="nvarchar" MaxLength="50" />
-          <Property Name="Code" Type="varchar" MaxLength="50" />
+          <Property Name="Key" Type="nvarchar" MaxLength="100" />
+          <Property Name="Code" Type="varchar" MaxLength="100" />
           <Property Name="Text" Type="nvarchar" MaxLength="4000" />
           <Property Name="Ip" Type="varchar" MaxLength="50" />
           <Property Name="MachineName" Type="nvarchar" MaxLength="50" />
           <Property Name="Browser" Type="varchar" MaxLength="50" />
           <Property Name="Username" Type="nvarchar" MaxLength="50" />
           <Property Name="UserFullname" Type="nvarchar" MaxLength="50" />
-          <Property Name="RequestUrl" Type="nvarchar" MaxLength="150" />
-          <Property Name="Querystring" Type="nvarchar" MaxLength="200" />
-          <Property Name="UserAgent" Type="varchar" MaxLength="150" />
+          <Property Name="RequestUrl" Type="nvarchar" MaxLength="1000" />
+          <Property Name="Querystring" Type="nvarchar(max)" />
+          <Property Name="UserAgent" Type="varchar" MaxLength="400" />
           <Property Name="IsMobile" Type="bit" />
           <Property Name="RequestMethod" Type="nvarchar" MaxLength="100" />
           <Property Name="RequestBody" Type="nvarchar(max)" />
@@ -59,18 +59,18 @@
           </Key>
           <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
           <Property Name="DateTime" Type="DateTime" Nullable="false" Precision="3" />
-          <Property Name="Key" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
-          <Property Name="Code" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Key" Type="String" MaxLength="100" Unicode="true" FixedLength="false" />
+          <Property Name="Code" Type="String" MaxLength="100" Unicode="false" FixedLength="false" />
           <Property Name="Text" Type="String" MaxLength="4000" Unicode="true" FixedLength="false" />
           <Property Name="Ip" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
           <Property Name="MachineName" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
           <Property Name="Browser" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
           <Property Name="Username" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
           <Property Name="UserFullname" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
-          <Property Name="RequestUrl" Type="String" MaxLength="150" Unicode="true" FixedLength="false" />
-          <Property Name="Querystring" Type="String" MaxLength="200" Unicode="true" FixedLength="false" />
+          <Property Name="RequestUrl" Type="String" MaxLength="1000" Unicode="true" FixedLength="false" />
+          <Property Name="Querystring" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
           <Property Type="Boolean" Name="IsMobile" />
-          <Property Type="String" Name="UserAgent" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="UserAgent" MaxLength="400" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="LogDetails" Relationship="Greewf.BaseLibrary.Logging.LogLogDetails" FromRole="Log" ToRole="LogDetails" />
           <Property Name="RequestBody" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="RequestMethod" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
