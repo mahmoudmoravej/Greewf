@@ -92,12 +92,11 @@ namespace Greewf.BaseLibrary.Logging
             if (!string.IsNullOrEmpty(text)) log.Text = text; //passed text is preferable to request text (if any)
 
             log.Browser = TakeMax(log.Browser, 50);
-            log.UserAgent = TakeMax(log.UserAgent, 150);
+            log.UserAgent = TakeMax(log.UserAgent, 400);
             log.MachineName = TakeMax(log.MachineName, 50);
-            log.RequestUrl = TakeMax(log.RequestUrl, 150);
-            log.Querystring = TakeMax(log.Querystring, 200);
+            log.RequestUrl = TakeMax(log.RequestUrl, 1000);            
 
-            log.Code = TakeMax(Enum.GetName(logEnumType, logId), 50);
+            log.Code = TakeMax(Enum.GetName(logEnumType, logId), 100);
             log.Text = TakeMax(model is Exception ? model.ToString() : log.Text, 4000);
             log.DateTime = DateTime.Now;
 
@@ -108,7 +107,7 @@ namespace Greewf.BaseLibrary.Logging
             {
                 var typ = model.GetType();
 
-                log.Key = TakeMax(typ.Name, 30);
+                log.Key = TakeMax(typ.Name, 100);
                 AddLogDetails(log, model, modelDisplayNames, exludeModelProperties);
             }
 
