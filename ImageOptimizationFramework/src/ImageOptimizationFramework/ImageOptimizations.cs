@@ -582,7 +582,7 @@ namespace Microsoft.Web.Samples {
         }
 
         private static void GenerateCssBackgroundHigh(TextWriter cssOutput, string fileExtension, string base64Image) {
-            cssOutput.WriteLine("background:url(data:image/" + fileExtension + ";base64," + base64Image + ") no-repeat 0% 0%;");
+            cssOutput.WriteLine("background:url(data:image/" + fileExtension + ";base64," + base64Image + ") no-repeat 0% 0% !important;");//added by moravej
         }
 
         private static string GetOffsetPosition(int offset) {
@@ -599,7 +599,7 @@ namespace Microsoft.Web.Samples {
             string xPosition = GetOffsetPosition(xOffset);
             string yPosition = GetOffsetPosition(yOffset);
 
-            cssOutput.WriteLine("background-image:url(sprite" + spriteNumber.ToString(CultureInfo.InvariantCulture) + "." + fileExtension + ");");
+            cssOutput.WriteLine("background-image:url(sprite" + spriteNumber.ToString(CultureInfo.InvariantCulture) + "." + fileExtension + ") !important;");//added by morave
             cssOutput.WriteLine("background-position:" + xPosition + "px " + yPosition + "px !important;");//added by moravej
         }
 
