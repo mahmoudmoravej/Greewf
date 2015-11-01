@@ -37,6 +37,12 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Greewf.key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AutoMapper, Version=1.1.0.188, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\..\..\SharedBinaries\AutoMapper.dll</HintPath>
@@ -367,6 +373,7 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ChangeTrackerContext1.cs</LastGenOutput>
     </None>
+    <None Include="Greewf.key.snk" />
     <None Include="packages.config" />
     <None Include="Scripts\DiffMatchPatch\diff_match_patch_20121119.source.zip" />
   </ItemGroup>

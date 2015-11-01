@@ -4,6 +4,12 @@ using System.Linq;
 using System.Web;
 using Microsoft.Reporting.WebForms;
 using Greewf.BaseLibrary;
+using System.IO;
+using System.Text;
+using System.Security;
+using System.Security.Permissions;
+using System.Security.Policy;
+using System.Reflection;
 
 
 namespace Greewf.BaseLibrary.ReportLoaderExtensions
@@ -36,14 +42,58 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
         static ReportsLoader()
         {
 
-
             _dicOutputTypes.Add(ReportingServiceOutputFileFormat.PDF, "PDF - آکروبات");
             _dicOutputTypes.Add(ReportingServiceOutputFileFormat.XLSX, "XLSX - اکسل 2007 و بعد از آن");
             _dicOutputTypes.Add(ReportingServiceOutputFileFormat.DOCX, "DOCX - وورد 2007 و بعد از آن");
             _dicOutputTypes.Add(ReportingServiceOutputFileFormat.XLS, "XLS - اکسل 2003");
             _dicOutputTypes.Add(ReportingServiceOutputFileFormat.DOC, "DOC - وورد 2003");
+            _dicOutputTypes.Add(ReportingServiceOutputFileFormat.TIFF, "تصویر TIFF");
+            _dicOutputTypes.Add(ReportingServiceOutputFileFormat.JPG, "تصویر JPEG");
+            _dicOutputTypes.Add(ReportingServiceOutputFileFormat.EMF, "تصویر XPS");
         }
 
+        private static string PrepareAndGetDeviceInfo(LocalReport report, ReportSettings settings)
+        {
+
+            //var customAssemblyName = "Greewf.BaseLibrary, Culture=neutral, PublicKeyToken=ebf2eb006a1f561b";
+            //var customAssembly = Assembly.Load(customAssemblyName);
+            //StrongName assemblyStrongName = CreateStrongName(customAssembly);
+            //report.AddFullTrustModuleInSandboxAppDomain(assemblyStrongName);
+
+            PermissionSet permissions = new PermissionSet(PermissionState.Unrestricted);
+
+            report.SetBasePermissionsForSandboxAppDomain(permissions);
+
+
+            var defaults = report.GetDefaultPageSettings();
+
+            var marginTop = settings.TopMargin.HasValue ? (settings.TopMargin * (1 / 2.54)) : defaults.Margins.Top / 100.0;
+            var marginBottom = settings.BottomMargin.HasValue ? (settings.BottomMargin * (1 / 2.54)) : defaults.Margins.Bottom / 100.0;
+            var marginLeft = settings.LeftMargin.HasValue ? (settings.LeftMargin * (1 / 2.54)) : defaults.Margins.Left / 100.0;
+            var marginRight = settings.RightMargin.HasValue ? (settings.RightMargin * (1 / 2.54)) : defaults.Margins.Right / 100.0;
+
+            //The DeviceInfo settings should be changed based on the reportType
+            // http://msdn2.microsoft.com/en-us/library/ms155397.aspx
+            // http://msdn.microsoft.com/en-us/library/hh231593.aspx
+            string deviceInfo =
+             "<DeviceInfo>" +
+             "  <OutputFormat>" + settings.OutputType + "</OutputFormat>" +
+             "  <PageWidth>" + (defaults.IsLandscape ? defaults.PaperSize.Height : defaults.PaperSize.Width) / 100.0 + "in</PageWidth>" +
+             "  <PageHeight>" + (defaults.IsLandscape ? defaults.PaperSize.Width : defaults.PaperSize.Height) / 100.0 + "in</PageHeight>" +
+             "  <MarginTop>" + marginTop + "in</MarginTop>" +
+             "  <MarginLeft>" + marginLeft + "in</MarginLeft>" +
+             "  <MarginRight>" + marginRight + "in</MarginRight>" +
+             "  <MarginBottom>" + marginBottom + "in</MarginBottom>" +
+             "  <PageBreaksMode>OnEachPage</PageBreaksMode>" +
+             "  <HumanReadablePDF>" + settings.HumanReadablePdf.ToString() + "</HumanReadablePDF>";
+
+            if (!settings.EmbedFontsInPdf)
+                deviceInfo += "  <EmbedFonts>None</EmbedFonts>";
+
+            deviceInfo += "</DeviceInfo>";
+
+            return deviceInfo;
+        }
 
         public static void LoadReportToAnother(LocalReport src, LocalReport dest)
         {
@@ -73,42 +123,43 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
 
         public static byte[] ExportToFile(LocalReport report, ReportSettings settings)
         {
-
-            var defaults = report.GetDefaultPageSettings();
-
-            var marginTop = settings.TopMargin.HasValue ? (settings.TopMargin * (1 / 2.54)) : defaults.Margins.Top / 100.0;
-            var marginBottom = settings.BottomMargin.HasValue ? (settings.BottomMargin * (1 / 2.54)) : defaults.Margins.Bottom / 100.0;
-            var marginLeft = settings.LeftMargin.HasValue ? (settings.LeftMargin * (1 / 2.54)) : defaults.Margins.Left / 100.0;
-            var marginRight = settings.RightMargin.HasValue ? (settings.RightMargin * (1 / 2.54)) : defaults.Margins.Right / 100.0;
-
-            //The DeviceInfo settings should be changed based on the reportType
-            // http://msdn2.microsoft.com/en-us/library/ms155397.aspx
-            // http://msdn.microsoft.com/en-us/library/hh231593.aspx
-            string deviceInfo =
-             "<DeviceInfo>" +
-             "  <OutputFormat>" + settings.OutputType + "</OutputFormat>" +
-             "  <PageWidth>" + (defaults.IsLandscape ? defaults.PaperSize.Height : defaults.PaperSize.Width) / 100.0 + "in</PageWidth>" +
-             "  <PageHeight>" + (defaults.IsLandscape ? defaults.PaperSize.Width : defaults.PaperSize.Height) / 100.0 + "in</PageHeight>" +
-             "  <MarginTop>" + marginTop + "in</MarginTop>" +
-             "  <MarginLeft>" + marginLeft + "in</MarginLeft>" +
-             "  <MarginRight>" + marginRight + "in</MarginRight>" +
-             "  <MarginBottom>" + marginBottom + "in</MarginBottom>" +
-             "  <PageBreaksMode>OnEachPage</PageBreaksMode>" +
-             "  <HumanReadablePDF>" + settings.HumanReadablePdf.ToString() + "</HumanReadablePDF>";
-
-            if (!settings.EmbedFontsInPdf)
-                deviceInfo += "  <EmbedFonts>None</EmbedFonts>";
-
-            deviceInfo += "</DeviceInfo>";
-
+            var deviceInfo = PrepareAndGetDeviceInfo(report, settings);
             return report.Render(GetOutputFileFormat(settings.OutputType), deviceInfo);
 
         }
 
+        public static StreamOutputResult ExportToStreams(LocalReport report, ReportSettings settings)
+        {
+            var deviceInfo = PrepareAndGetDeviceInfo(report, settings);
+
+            Warning[] warnings;
+            var streams = new List<Stream>();
+
+            report.Render(GetOutputFileFormat(settings.OutputType), deviceInfo, PageCountMode.Estimate,
+                (string name, string fileNameExtension, Encoding encoding, string mimeType, bool willSeek) =>
+                {
+                    Stream stream = new MemoryStream();
+                    
+
+                    streams.Add(stream);
+                    return stream;
+                },
+                out warnings);
+
+            //foreach (Stream stream in streams)
+            //    stream.Position = 0;
+
+            return new StreamOutputResult()
+            {
+                Streams = streams,
+                Warnings = warnings
+            };
+        }
 
 
         private static string GetOutputFileFormat(ReportingServiceOutputFileFormat fileFormat)
         {
+            //NOTE : get supported types by calling localReport.ListRenderingExtensions() . LocalReport does not support HTML output.
             switch (fileFormat)
             {
                 case ReportingServiceOutputFileFormat.DOC:
@@ -121,6 +172,10 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
                     return "EXCEL";
                 case ReportingServiceOutputFileFormat.XLSX:
                     return "EXCELOPENXML";
+                case ReportingServiceOutputFileFormat.TIFF:
+                case ReportingServiceOutputFileFormat.JPG:
+                case ReportingServiceOutputFileFormat.EMF:
+                    return "IMAGE";
                 default:
                     return "";
             }
@@ -140,6 +195,12 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
                     return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"; //TODO
                 case ReportingServiceOutputFileFormat.XLSX:
                     return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                case ReportingServiceOutputFileFormat.TIFF:
+                    return "image/tiff";
+                case ReportingServiceOutputFileFormat.JPG:
+                    return "image/jpeg";
+                case ReportingServiceOutputFileFormat.EMF:
+                    return "application/vnd.ms-xpsdocument";
                 default:
                     return null;
             }
@@ -166,6 +227,12 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
                     return "xls";
                 case ReportingServiceOutputFileFormat.XLSX:
                     return "xlsx";
+                case ReportingServiceOutputFileFormat.TIFF:
+                    return "tiff";
+                case ReportingServiceOutputFileFormat.JPG:
+                    return "jpg";
+                case ReportingServiceOutputFileFormat.EMF:
+                    return "xps";
                 default:
                     return "";
             }
@@ -174,6 +241,23 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
         public static string GetOutputFormatTitle(ReportingServiceOutputFileFormat format)
         {
             return _dicOutputTypes[format];
+        }
+
+        private static StrongName CreateStrongName(Assembly assembly)
+        {
+            AssemblyName assemblyName = assembly.GetName();
+            if (assemblyName == null)
+            {
+                throw new InvalidOperationException("Could not get assemmbly name");
+            }
+            byte[] publickey = assemblyName.GetPublicKey();
+            if (publickey == null || publickey.Length == 0)
+            {
+                throw new InvalidOperationException("Assembly is not strongly named");
+            }
+            StrongNamePublicKeyBlob keyblob = new StrongNamePublicKeyBlob(publickey);
+            return new StrongName(keyblob, assemblyName.Name, assemblyName.Version);
+
         }
 
 
