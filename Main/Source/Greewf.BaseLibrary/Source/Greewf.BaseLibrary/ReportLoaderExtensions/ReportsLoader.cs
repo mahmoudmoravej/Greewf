@@ -49,7 +49,7 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
             _dicOutputTypes.Add(ReportingServiceOutputFileFormat.DOC, "DOC - وورد 2003");
             _dicOutputTypes.Add(ReportingServiceOutputFileFormat.TIFF, "تصویر TIFF");
             _dicOutputTypes.Add(ReportingServiceOutputFileFormat.JPG, "تصویر JPEG");
-            _dicOutputTypes.Add(ReportingServiceOutputFileFormat.EMF, "تصویر XPS");
+            _dicOutputTypes.Add(ReportingServiceOutputFileFormat.EMF, "تصویر EMF");
         }
 
         private static string PrepareAndGetDeviceInfo(LocalReport report, ReportSettings settings)
@@ -200,7 +200,7 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
                 case ReportingServiceOutputFileFormat.JPG:
                     return "image/jpeg";
                 case ReportingServiceOutputFileFormat.EMF:
-                    return "application/vnd.ms-xpsdocument";
+                    return "application/emf";
                 default:
                     return null;
             }
@@ -232,7 +232,7 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
                 case ReportingServiceOutputFileFormat.JPG:
                     return "jpg";
                 case ReportingServiceOutputFileFormat.EMF:
-                    return "xps";
+                    return "emf";
                 default:
                     return "";
             }
