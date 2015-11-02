@@ -128,6 +128,24 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
 
         }
 
+        public static void PushToStream(LocalReport report, ReportSettings settings, Stream outputStream)
+        {
+            var deviceInfo = PrepareAndGetDeviceInfo(report, settings);
+
+            Warning[] warnings;
+
+            report.Render(GetOutputFileFormat(settings.OutputType), deviceInfo, PageCountMode.Estimate,
+                (string name, string fileNameExtension, Encoding encoding, string mimeType, bool willSeek) =>
+                {
+                    if (willSeek == true && outputStream.CanSeek == false)
+                        throw new Exception("Greewf : Current output report needs a seekable stream but you passed a not seekable stream. Change your output stream to a seekable one or change the report output type to one which doesn't need seekable stream. ");
+
+                    return outputStream;
+                },
+                out warnings);
+
+        }
+
         public static StreamOutputResult ExportToStreams(LocalReport report, ReportSettings settings)
         {
             var deviceInfo = PrepareAndGetDeviceInfo(report, settings);
@@ -146,9 +164,11 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
                 },
                 out warnings);
 
-            //foreach (Stream stream in streams)
-            //    stream.Position = 0;
+            foreach (Stream stream in streams)
+                stream.Position = 0;
 
+            //NOTE 1: only emf file returns multiple stream
+            //NOTE 2: the streams cannot concatinat simply to make a large stream.  
             return new StreamOutputResult()
             {
                 Streams = streams,
