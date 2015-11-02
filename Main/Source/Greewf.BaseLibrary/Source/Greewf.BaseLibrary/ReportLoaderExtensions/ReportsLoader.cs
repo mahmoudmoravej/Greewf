@@ -30,6 +30,10 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
         public double? LeftMargin { get; set; }
         public double? RightMargin { get; set; }
 
+        public int? StartPage { get; set; }
+
+        public int? EndPage { get; set; }
+
         public bool HumanReadablePdf { get; set; }//based on PDF : http://msdn.microsoft.com/en-us/library/ms154682(v=sql.120).aspx
 
         public bool EmbedFontsInPdf { get; set; }//based on PDF : http://msdn.microsoft.com/en-us/library/ms154682(v=sql.120).aspx (bottom of page) and http://blogs.msdn.com/b/mariae/archive/2010/04/12/how-to-disable-this-font-embedding-in-reporting-services-2005-service-pack-3.aspx
@@ -60,8 +64,8 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
             //StrongName assemblyStrongName = CreateStrongName(customAssembly);
             //report.AddFullTrustModuleInSandboxAppDomain(assemblyStrongName);
 
+            //it seems that the following lines do not need anymore becuase of code sigining. In test senario, it doesn't affect performance.
             PermissionSet permissions = new PermissionSet(PermissionState.Unrestricted);
-
             report.SetBasePermissionsForSandboxAppDomain(permissions);
 
 
@@ -71,6 +75,8 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
             var marginBottom = settings.BottomMargin.HasValue ? (settings.BottomMargin * (1 / 2.54)) : defaults.Margins.Bottom / 100.0;
             var marginLeft = settings.LeftMargin.HasValue ? (settings.LeftMargin * (1 / 2.54)) : defaults.Margins.Left / 100.0;
             var marginRight = settings.RightMargin.HasValue ? (settings.RightMargin * (1 / 2.54)) : defaults.Margins.Right / 100.0;
+
+            settings.EndPage = settings.EndPage ?? settings.StartPage;
 
             //The DeviceInfo settings should be changed based on the reportType
             // http://msdn2.microsoft.com/en-us/library/ms155397.aspx
@@ -84,6 +90,8 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
              "  <MarginLeft>" + marginLeft + "in</MarginLeft>" +
              "  <MarginRight>" + marginRight + "in</MarginRight>" +
              "  <MarginBottom>" + marginBottom + "in</MarginBottom>" +
+             "  <StartPage>" + (settings.StartPage ?? 0) + "</StartPage>" +
+             "  <EndPage>" + (settings.EndPage ?? 0) + "</EndPage>" +
              "  <PageBreaksMode>OnEachPage</PageBreaksMode>" +
              "  <HumanReadablePDF>" + settings.HumanReadablePdf.ToString() + "</HumanReadablePDF>";
 
@@ -128,6 +136,7 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
 
         }
 
+        [Obsolete("Currently this method is unusable. PDF rendering needs seekable stream and EMF rendering not works with PushStreamContent.")]
         public static void PushToStream(LocalReport report, ReportSettings settings, Stream outputStream)
         {
             var deviceInfo = PrepareAndGetDeviceInfo(report, settings);
