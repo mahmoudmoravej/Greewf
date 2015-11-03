@@ -38,7 +38,7 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
 
             var file = new FileInfo(path);
 
-            var stream = LoadReportDefinition(file.DirectoryName, file.Name, report.LoadSubreportDefinition);
+            var stream = LoadReportDefinition(file.DirectoryName, file.Name, report.LoadSubreportDefinition, reportCorrectionMode);
             report.LoadReportDefinition(stream);
         }
 
@@ -52,19 +52,19 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
             var xDoc = new XDocument();
             xDoc = XDocument.Load(definition);
 
-            var stream = LoadReportDefinition(xDoc, subReportSearchPath, report.LoadSubreportDefinition);
+            var stream = LoadReportDefinition(xDoc, subReportSearchPath, report.LoadSubreportDefinition, reportCorrectionMode);
             report.LoadReportDefinition(stream);
         }
 
-        private static MemoryStream LoadReportDefinition(string reportPath, string reportFileName, Action<string, Stream> subReportLoader)
+        private static MemoryStream LoadReportDefinition(string reportPath, string reportFileName, Action<string, Stream> subReportLoader, ReportCorrectionMode reportCorrectionMode)
         {
             var xDoc = new XDocument();
             xDoc = XDocument.Load(Path.Combine(reportPath, reportFileName));
 
-            return LoadReportDefinition(xDoc, reportPath, subReportLoader);
+            return LoadReportDefinition(xDoc, reportPath, subReportLoader, reportCorrectionMode);
         }
 
-        private static MemoryStream LoadReportDefinition(XDocument xDoc, string subReportPath, Action<string, Stream> subReportLoader)
+        private static MemoryStream LoadReportDefinition(XDocument xDoc, string subReportPath, Action<string, Stream> subReportLoader, ReportCorrectionMode reportCorrectionMode)
         {
             bool ignoreGlobalVariables = true;
             string convertSlashBetweenDigitsToDecimalSepratorParameter = "true";
@@ -78,10 +78,24 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
             foreach (var subReport in xDoc.Descendants(ns + "Subreport").Descendants(ns + "ReportName"))
             {
                 string subReportFileName = subReport.Value + ".rdlc";
-                subReportLoader(subReport.Value, LoadReportDefinition(subReportPath, subReportFileName, subReportLoader));
+                subReportLoader(subReport.Value, LoadReportDefinition(subReportPath, subReportFileName, subReportLoader, reportCorrectionMode));
             }
 
-            //2nd : handle greewf switches
+            //2nd : do correction
+            if (reportCorrectionMode == ReportCorrectionMode.HmFontsCorrection)
+                CorrectHmFonts(xDoc, ref ignoreGlobalVariables, ref convertSlashBetweenDigitsToDecimalSepratorParameter, ns);
+
+            //4th: return processed file
+            xDoc.Save(stream);
+            xDoc = null;
+            stream.Position = 0;//we should call this!! unless the report throw an exception!
+            return stream;
+        }
+
+        private static void CorrectHmFonts(XDocument xDoc, ref bool ignoreGlobalVariables, ref string convertSlashBetweenDigitsToDecimalSepratorParameter, XNamespace ns)
+        {
+
+            //1: handle greewf switches
             foreach (var prop in xDoc.Root.Elements(ns + "CustomProperties").Descendants(ns + "CustomProperty"))
             {
 
@@ -93,15 +107,9 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
             }
 
 
-            //3rd : process rdlc definition file
+            //2: process rdlc definition file
             ProcessTextRuns(xDoc, ignoreGlobalVariables, convertSlashBetweenDigitsToDecimalSepratorParameter, ns);
             ProcessCharts(xDoc, ignoreGlobalVariables, convertSlashBetweenDigitsToDecimalSepratorParameter, ns);
-
-            //4th: return processed file
-            xDoc.Save(stream);
-            xDoc = null;
-            stream.Position = 0;//we should call this!! unless the report throw an exception!
-            return stream;
         }
 
         private static void ProcessTextRuns(XDocument xDoc, bool ignoreGlobalVariables, string convertSlashBetweenDigitsToDecimalSepratorParameter, XNamespace ns)
