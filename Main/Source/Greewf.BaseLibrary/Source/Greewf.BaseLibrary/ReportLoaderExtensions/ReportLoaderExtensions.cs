@@ -160,9 +160,9 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
 
         private static void CorrectValueNode(XElement valueNode, XElement formatNode, bool ignoreGlobalVariables, string convertSlashBetweenDigitsToDecimalSepratorParameter)
         {
-            if (valueNode.Value.TrimStart(' ').StartsWith("="))
+            if (valueNode.Value.TrimStart(' ', '\n', '\r').StartsWith("="))
             {
-                if (ignoreGlobalVariables && valueNode.Value.TrimStart(' ', '=').StartsWith("globals!", true, null))
+                if (ignoreGlobalVariables && valueNode.Value.TrimStart(' ', '\n', '\r', '=').StartsWith("globals!", true, null))
                     valueNode.Value = valueNode.Value;
 
                 else
@@ -173,7 +173,7 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
 
                     valueNode.Value =
                         "=Greewf.BaseLibrary.Global.HmxFontCorrectorExceptExcel(" +
-                        valueNode.Value.TrimStart(' ', '=') +
+                        valueNode.Value.TrimStart(' ', '\n', '\r', '=') +
                         ",Globals!RenderFormat.Name," + format + "," + convertSlashBetweenDigitsToDecimalSepratorParameter + ")";
                 }
             }
