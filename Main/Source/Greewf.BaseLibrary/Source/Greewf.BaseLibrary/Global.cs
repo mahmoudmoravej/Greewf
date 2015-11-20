@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Globalization;
+using System.Net;
+using Greewf.BaseLibrary.IP;
 
 namespace Greewf.BaseLibrary
 {
@@ -476,6 +478,40 @@ namespace Greewf.BaseLibrary
             return dmp.diff_prettyHtml(diffs);
 
         }
+
+        public static bool IsIpInRange(string ip, string lowerBandIp, string upperBandIp)
+        {
+            var range = new IpAddressRange(lowerBandIp, upperBandIp);
+            return range.IsInRange(ip);
+        }
+
+        public static bool IsIpInRange(IPAddress ip, IPAddress lowerBandIp, IPAddress upperBandIp)
+        {
+            var range = new IpAddressRange(lowerBandIp, upperBandIp);
+            return range.IsInRange(ip);
+        }
+
+
+        public static bool IsInternetIp(string ip)
+        {
+            return IpAddressRange.IsInternetIp(ip);
+        }
+
+        public static bool IsInternetIp(IPAddress ip)
+        {
+            return IpAddressRange.IsInternetIp(ip);
+        }
+
+        public static bool IsLoopbackIp(string ip)
+        {
+            return IpAddressRange.IsLoopbackIp(ip);
+        }
+
+        public static bool IsLoopbackIp(IPAddress ip)
+        {
+            return IpAddressRange.IsLoopbackIp(ip);
+        }
+
     }
 
 }

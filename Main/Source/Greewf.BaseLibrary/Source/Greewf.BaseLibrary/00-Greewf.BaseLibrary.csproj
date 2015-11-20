@@ -114,6 +114,7 @@
     <Compile Include="Global.cs" />
     <Compile Include="DataSetLinqOperators.cs" />
     <Compile Include="DiffMatchPatch\DiffMatchPatch.cs" />
+    <Compile Include="IP\IpAddressRange.cs" />
     <Compile Include="Logging\DefaultLogProfileReader.cs" />
     <Compile Include="Logging\LogContext\Log.cs">
       <DependentUpon>LogContext.tt</DependentUpon>
