@@ -71,6 +71,9 @@ namespace Greewf.BaseLibrary.Logging
     	
         
         public string RequestHeaders { get; set; }
+    	
+        
+        public Nullable<bool> FromInternet { get; set; }
     
         
         public virtual ICollection<LogDetail> LogDetails { get; set; }

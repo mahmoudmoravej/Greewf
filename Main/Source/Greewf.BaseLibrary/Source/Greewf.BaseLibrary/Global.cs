@@ -492,9 +492,19 @@ namespace Greewf.BaseLibrary
         }
 
 
-        public static bool IsInternetIp(string ip)
+        public static bool? IsInternetIp(string ip, bool nullOnException = false)
         {
-            return IpAddressRange.IsInternetIp(ip);
+            try
+            {
+                return IpAddressRange.IsInternetIp(ip);
+            }
+            catch (Exception x)
+            {
+                if (nullOnException)
+                    return null;
+                else
+                    throw x;
+            }
         }
 
         public static bool IsInternetIp(IPAddress ip)

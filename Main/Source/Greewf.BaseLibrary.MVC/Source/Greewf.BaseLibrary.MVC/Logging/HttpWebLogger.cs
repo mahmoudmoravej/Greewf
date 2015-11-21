@@ -38,6 +38,7 @@ namespace Greewf.BaseLibrary.MVC.Logging
             log.IsMobile = request.Browser.IsMobileDevice;
             log.UserAgent = request.UserAgent;
             log.Ip = request.UserHostAddress;
+            log.FromInternet = Global.IsInternetIp(request.UserHostAddress, true);
             log.MachineName = request.UserHostName;
             log.RequestUrl = request.Url.GetLeftPart(UriPartial.Path);
             log.Querystring = request.QueryString.ToString();

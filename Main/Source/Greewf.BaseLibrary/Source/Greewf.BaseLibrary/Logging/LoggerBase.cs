@@ -94,7 +94,7 @@ namespace Greewf.BaseLibrary.Logging
             log.Browser = TakeMax(log.Browser, 50);
             log.UserAgent = TakeMax(log.UserAgent, 400);
             log.MachineName = TakeMax(log.MachineName, 50);
-            log.RequestUrl = TakeMax(log.RequestUrl, 1000);            
+            log.RequestUrl = TakeMax(log.RequestUrl, 1000);
 
             log.Code = TakeMax(Enum.GetName(logEnumType, logId), 100);
             log.Text = TakeMax(model is Exception ? model.ToString() : log.Text, 4000);
@@ -108,7 +108,12 @@ namespace Greewf.BaseLibrary.Logging
                 var typ = model.GetType();
 
                 log.Key = TakeMax(typ.Name, 100);
-                AddLogDetails(log, model, modelDisplayNames, exludeModelProperties);
+                var excludedValues = AddLogDetails(log, model, modelDisplayNames, exludeModelProperties);
+
+                //remove excluded values from body too
+                if (excludedValues != null && log.RequestBody != null)
+                    foreach (var exludedValue in excludedValues)
+                        log.RequestBody = log.RequestBody.Replace(exludedValue, "***!!!EXCLUDED!!!***");
             }
 
             Log(log);
@@ -116,26 +121,38 @@ namespace Greewf.BaseLibrary.Logging
 
         }
 
-        private void AddLogDetails(Log log, object model, Dictionary<string, string> modelDisplayNames = null, string[] exludeModelProperties = null)
+        private List<string> AddLogDetails(Log log, object model, Dictionary<string, string> modelDisplayNames = null, string[] exludeModelProperties = null)
         {
+            List<string> excludedValues = null;
+
             if (model is IDictionary)
                 AddDictionaryDetails(log, model as IDictionary);
             else if (model is IEnumerable)
                 AddArrayDetails(log, model as IEnumerable);
             else
-                AddObjectDetails(log, model, modelDisplayNames, exludeModelProperties);
+                AddObjectDetails(log, model, modelDisplayNames, exludeModelProperties, out excludedValues);
 
+            return excludedValues;
         }
 
-        private void AddObjectDetails(Log log, object model, Dictionary<string, string> modelDisplayNames = null, string[] exludeModelProperties = null)
+        private void AddObjectDetails(Log log, object model, Dictionary<string, string> modelDisplayNames, string[] exludeModelProperties, out List<string> excludedValues)
         {
+            excludedValues = new List<string>();
+
             foreach (var item in model.GetType().GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.GetProperty))
             {
                 if (!(item.PropertyType == typeof(String) || item.PropertyType.IsValueType)) continue;
 
                 var key = item.Name;
+                object value = item.GetValue(model, null);
+                string valueString = value == null ? null : value.ToString();
 
-                if (exludeModelProperties != null && exludeModelProperties.Contains(key)) continue;
+                if (exludeModelProperties != null && exludeModelProperties.Contains(key))
+                {
+                    if (!string.IsNullOrEmpty(valueString)) excludedValues.Add(value.ToString());
+                    continue;
+                }
+
                 var logDetail = new LogDetail();
                 logDetail.Key = TakeMax(key, 100);
 
@@ -147,9 +164,8 @@ namespace Greewf.BaseLibrary.Logging
                         logDetail.KeyTitle = TakeMax(displayName, 200);
                 }
 
-                //value
-                object value = item.GetValue(model, null);
-                logDetail.Value = value == null ? "" : TakeMax(value.ToString(), 2000);
+                //value                
+                logDetail.Value = value == null ? "" : TakeMax(valueString, 2000);
 
                 log.LogDetails.Add(logDetail);
             }

@@ -75,21 +75,21 @@ namespace Greewf.BaseLibrary.IP
         public static bool IsInternetIp(IPAddress ip)
         {
             return
-                !_loopbackRange.IsInRange(ip) &&
+                !IsLoopbackIp(ip) &&
                 !_interanet1Range.IsInRange(ip) &&
                 !_interanet2Range.IsInRange(ip) &&
                 !_interanet3Range.IsInRange(ip);
         }
 
         public static bool IsLoopbackIp(string ip)
-        {
+        {            
             var ipAddress = IPAddress.Parse(ip);
             return IsLoopbackIp(ip);
         }
 
         public static bool IsLoopbackIp(IPAddress ip)
-        {
-            return _loopbackRange.IsInRange(ip);
+        {            
+            return ip.ToString() == "::1" || _loopbackRange.IsInRange(ip);
         }
     }
 }

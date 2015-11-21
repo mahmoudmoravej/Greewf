@@ -25,6 +25,7 @@
           <Property Name="Code" Type="varchar" MaxLength="100" />
           <Property Name="Text" Type="nvarchar" MaxLength="4000" />
           <Property Name="Ip" Type="varchar" MaxLength="50" />
+          <Property Name="FromInternet" Type="bit" />
           <Property Name="MachineName" Type="nvarchar" MaxLength="50" />
           <Property Name="Browser" Type="varchar" MaxLength="50" />
           <Property Name="Username" Type="nvarchar" MaxLength="50" />
@@ -75,6 +76,7 @@
           <Property Name="RequestBody" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="RequestMethod" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="RequestHeaders" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="FromInternet" Type="Boolean" />
         </EntityType>
         <EntityType Name="LogDetail">
           <Key>
@@ -105,7 +107,8 @@
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="LogModelStoreContainer" CdmEntityContainer="LogContext">
           <EntitySetMapping Name="Logs"><EntityTypeMapping TypeName="Greewf.BaseLibrary.Logging.Log"><MappingFragment StoreEntitySet="Logs">
-            <ScalarProperty Name="RequestHeaders" ColumnName="RequestHeaders" />
+            <ScalarProperty Name="FromInternet" ColumnName="FromInternet" />
+                <ScalarProperty Name="RequestHeaders" ColumnName="RequestHeaders" />
                 <ScalarProperty Name="RequestMethod" ColumnName="RequestMethod" />
                 <ScalarProperty Name="RequestBody" ColumnName="RequestBody" />
                 <ScalarProperty Name="UserAgent" ColumnName="UserAgent" />
