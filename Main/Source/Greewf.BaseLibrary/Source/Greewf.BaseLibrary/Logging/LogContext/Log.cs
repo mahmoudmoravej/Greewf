@@ -17,7 +17,7 @@ namespace Greewf.BaseLibrary.Logging
 
     public partial class Log
     {
-        static Regex _unicodeReplacer = new Regex(@"\\[uU]([0-9A-F]{4})"); //http://stackoverflow.com/questions/183907/how-do-convert-unicode-escape-sequences-to-unicode-characters-in-a-net-string
+        static Regex _unicodeReplacer = new Regex(@"\\[uU]([0-9A-Fa-f]{4})"); //http://stackoverflow.com/questions/183907/how-do-convert-unicode-escape-sequences-to-unicode-characters-in-a-net-string
 
         public Log()
         {
