@@ -11,71 +11,87 @@ namespace Greewf.BaseLibrary.Logging
 {
     using System;
     using System.Collections.Generic;
-    
-    
+    using System.Globalization;
+    using System.Text.RegularExpressions;
+
+
     public partial class Log
     {
+        static Regex _unicodeReplacer = new Regex(@"\\[uU]([0-9A-F]{4})"); //http://stackoverflow.com/questions/183907/how-do-convert-unicode-escape-sequences-to-unicode-characters-in-a-net-string
+
         public Log()
         {
             this.LogDetails = new HashSet<LogDetail>();
         }
-    
-    	
-        
+
+
+
         public long Id { get; set; }
-    	
-        
+
+
         public System.DateTime DateTime { get; set; }
-    	
-        
+
+
         public string Key { get; set; }
-    	
-        
+
+
         public string Code { get; set; }
-    	
-        
+
+
         public string Text { get; set; }
-    	
-        
+
+
         public string Ip { get; set; }
-    	
-        
+
+
         public string MachineName { get; set; }
-    	
-        
+
+
         public string Browser { get; set; }
-    	
-        
+
+
         public string Username { get; set; }
-    	
-        
+
+
         public string UserFullname { get; set; }
-    	
-        
+
+
         public string RequestUrl { get; set; }
-    	
-        
+
+
         public string Querystring { get; set; }
-    	
-        
+
+
         public Nullable<bool> IsMobile { get; set; }
-    	
-        
+
+
         public string UserAgent { get; set; }
-    	
-        
-        public string RequestBody { get; set; }
-    	
-        
+
+
+        private string _requestBody;
+        public string RequestBody
+        {
+            get
+            {
+                return _requestBody;
+            }
+            set
+            {
+                //because in some cases it sends some string like this : 'NewPassword':'\u0633\u0644\u0627\u0645\u062a\u06cc'
+                _requestBody = _unicodeReplacer.Replace(value, match => ((char)Int32.Parse(match.Value.Substring(2), NumberStyles.HexNumber)).ToString());
+            }
+        }
+
+
         public string RequestMethod { get; set; }
-    	
-        
+
+
         public string RequestHeaders { get; set; }
-    	
-        
+
+
         public Nullable<bool> FromInternet { get; set; }
-    
-        
+
+
         public virtual ICollection<LogDetail> LogDetails { get; set; }
     }
 }

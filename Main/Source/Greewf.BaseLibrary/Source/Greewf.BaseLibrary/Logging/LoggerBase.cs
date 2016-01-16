@@ -112,8 +112,13 @@ namespace Greewf.BaseLibrary.Logging
 
                 //remove excluded values from body too
                 if (excludedValues != null && log.RequestBody != null)
+                {
+                    var body = log.RequestBody;
                     foreach (var exludedValue in excludedValues)
-                        log.RequestBody = log.RequestBody.Replace(exludedValue, "***!!!EXCLUDED!!!***");
+                        body = body.Replace(exludedValue, "***!!!EXCLUDED!!!***");
+
+                    log.RequestBody = body;
+                }
             }
 
             Log(log);
