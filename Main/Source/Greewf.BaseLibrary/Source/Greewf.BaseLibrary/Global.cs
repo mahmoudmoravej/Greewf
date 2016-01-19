@@ -10,8 +10,12 @@ namespace Greewf.BaseLibrary
 {
     public static class Global
     {
+        //inlined one-pixel transparent GIF :
+        public const string INLINEIMAGEPLACEHOLDER = "data:image/gif;base64,R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";        
+
         public const string PHONEREGX = @"\s*0([1-9]{1})([0-9]{1,6})-([0-9]{4,12})\s*$";
         public const string DIGITSREGX = @"([0-9])*";
+        public const string PERSIANCHARACTERSREGX = @"^[\u0600-\u06FF\uFB8A\u067E\u0686\u06AF\u200C\u200F ]+$";//check this http://stackoverflow.com/a/34869397/790811
 
         static PersianCalendar pcal = new PersianCalendar();
         const string DATEFORMAT = "{0:0000}/{1:00}/{2:00}";
