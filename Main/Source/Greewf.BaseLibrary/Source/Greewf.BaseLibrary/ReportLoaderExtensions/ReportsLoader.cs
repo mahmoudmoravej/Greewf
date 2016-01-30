@@ -37,6 +37,20 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
         public bool HumanReadablePdf { get; set; }//based on PDF : http://msdn.microsoft.com/en-us/library/ms154682(v=sql.120).aspx
 
         public bool EmbedFontsInPdf { get; set; }//based on PDF : http://msdn.microsoft.com/en-us/library/ms154682(v=sql.120).aspx (bottom of page) and http://blogs.msdn.com/b/mariae/archive/2010/04/12/how-to-disable-this-font-embedding-in-reporting-services-2005-service-pack-3.aspx
+
+        /// <summary>
+        /// It is too important in PDF rendering when having chart.
+        /// High values can result in larger files.
+        /// It seems setting value to 96 or higher has no any effect on lower file size!
+        /// </summary>
+        public int DpiX { get; set; }
+
+        /// <summary>
+        /// It is too important in PDF rendering when having chart.
+        /// High values can result in larger files.
+        /// It seems setting value to 96 or higher has no any effect on lower file size!
+        /// </summary>
+        public int DpiY { get; set; }
     }
 
     public static class ReportsLoader
@@ -83,6 +97,8 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
             // http://msdn.microsoft.com/en-us/library/hh231593.aspx
             string deviceInfo =
              "<DeviceInfo>" +
+             ((settings.DpiX > 0) ? "  <DpiX>" + settings.DpiX + "</DpiX>" : "") +
+             ((settings.DpiY > 0) ? "  <DpiY>" + settings.DpiY + "</DpiY>" : "") +
              "  <OutputFormat>" + settings.OutputType + "</OutputFormat>" +
              "  <PageWidth>" + (defaults.IsLandscape ? defaults.PaperSize.Height : defaults.PaperSize.Width) / 100.0 + "in</PageWidth>" +
              "  <PageHeight>" + (defaults.IsLandscape ? defaults.PaperSize.Width : defaults.PaperSize.Height) / 100.0 + "in</PageHeight>" +
@@ -166,7 +182,7 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
                 (string name, string fileNameExtension, Encoding encoding, string mimeType, bool willSeek) =>
                 {
                     Stream stream = new MemoryStream();
-                    
+
 
                     streams.Add(stream);
                     return stream;
