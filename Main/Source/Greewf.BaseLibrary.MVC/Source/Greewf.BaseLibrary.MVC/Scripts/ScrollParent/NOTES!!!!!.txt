@@ -1,0 +1,2 @@
+﻿Comes from : https://github.com/slindberg/jquery-scrollparent/blob/master/jquery.scrollparent.js
+it helps to find the nearest parent which is scrollable.

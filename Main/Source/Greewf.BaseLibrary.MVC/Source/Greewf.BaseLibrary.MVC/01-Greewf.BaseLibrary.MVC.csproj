@@ -281,8 +281,30 @@
     <Content Include="Scripts\qTip\old\jquery.qtip.css" />
     <Content Include="Scripts\qTip\old\jquery.qtip.min.css" />
     <Content Include="Scripts\qTip\old\jquery.qtip.min.js" />
+    <Content Include="Scripts\ScrollParent\NOTES!!!!!.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\ScrollParent\scrollParent.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\telerik.menu.min-Corrected jquery live problem.js" />
     <Content Include="Scripts\TelerikModified\NOTES!!!!!.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\TelerikModified\telerik.menu-- ORIGINAL --.js" />
+    <Content Include="Scripts\TelerikModified\telerik.menu.js" />
+    <Content Include="Scripts\TelerikModified\telerik.grid.resizing-- RTL MODE --.js" />
+    <Content Include="Scripts\TelerikModified\telerik.grid.resizing-- ORIGINAL --.js" />
+    <Content Include="Scripts\TelerikModified\telerik.grid.resizing.min--ORIGINAL--.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\TelerikModified\telerik.grid.resizing.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\TelerikModified\telerik.menu.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\TelerikModified\telerik.menu.min-- ORIGINAL --.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\TelerikModified\telerik.window.min-- ORIGINAL --.js">
