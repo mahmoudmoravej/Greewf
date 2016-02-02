@@ -602,6 +602,21 @@
         layoutHelper.windowLayout.ShowQuestionMessage(msg, title, options);
     }
 
+    layoutCore.getActiveDocumentBody = function () {
+        if ($.tabStripMain)
+            return $.tabStripMain.getActiveDocumentBody();
+        else
+            return window.document.body;
+    }
+
+    layoutCore.getActiveJQuery = function () {
+        //این تابع بسیار مهم است بخصوص در جایی که می خواهیم با "دیتا" جی کوئری کار کنیم
+        //چرا که بخش "دیتا" وابسته است به جی کوئری پنجره فعال
+        if ($.tabStripMain)
+            return $.tabStripMain.getActiveJQuery();
+        else
+            return window.$;
+    }
 
     $.extend({ layoutCore: layoutCore });
 })(jQuery);

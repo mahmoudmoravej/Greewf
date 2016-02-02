@@ -400,6 +400,34 @@
         });
     }
 
+    tabStripMain.getActiveTab = function () {
+        var tabStrip = $(options.tabstripId);
+        return $('>.t-state-active:not(.ui-tabs-hide)', tabStrip);
+    }
+
+    tabStripMain.getActiveIFrame = function () {
+        return $('>iframe', this.getActiveTab());
+    }
+
+    tabStripMain.getActiveDocumentBody = function () {
+        var iframe = tabStripMain.getActiveIFrame();
+        if (iframe.length > 0)
+            return iframe[0].contentWindow.document.body;
+        else
+            return document.body;
+    }
+
+    tabStripMain.getActiveJQuery = function () {
+        //این تابع بسیار مهم است بخصوص در جایی که می خواهیم با "دیتا" جی کوئری کار کنیم
+        //چرا که بخش "دیتا" وابسته است به جی کوئری پنجره فعال
+        var iframe = tabStripMain.getActiveIFrame();
+
+        if (iframe.length > 0)
+            return iframe[0].contentWindow.$;
+        else
+            return window.$;
+    }
+
     $.extend({ tabStripMain: tabStripMain });
 })(jQuery);
 
