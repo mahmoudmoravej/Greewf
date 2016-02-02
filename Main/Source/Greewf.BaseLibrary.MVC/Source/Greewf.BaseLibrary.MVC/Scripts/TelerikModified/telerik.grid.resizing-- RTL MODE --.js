@@ -129,8 +129,14 @@
                             .find('> .t-resize-handle')
                             .remove();
 
-            grid.$header.find('.t-header:visible').each(function () {
+            var cols = grid.$header.find('.t-header:visible');
+            cols.each(function (i, col) {
+
                 left += this.offsetWidth;
+                if (isRtl && i == cols.length - 1) {
+                    left = left - indicatorWidth;//to make sure it is inbound of grid
+                }
+
                 var $th = $(this);
                 $('<div class="t-resize-handle" />')
                 .css({

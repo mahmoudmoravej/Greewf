@@ -413,8 +413,12 @@ telerikHelper = new function () {
 
     this.attachSpiliterToWindowResize = function (splitterId) {
         $(window).bind('resize', function () {
-            var splitter = $('#' + splitterId).data('tSplitter');
-            if (splitter != undefined) splitter.resize();
+            setTimeout(function () {
+                var splitter = $('#' + splitterId).data('tSplitter');
+                if (splitter != undefined) {
+                    splitter.resize();
+                }
+            }, 50);
         });
         setTimeout(function () {
             var splitter = $('#' + splitterId).data('tSplitter');
