@@ -11,7 +11,7 @@ namespace Greewf.BaseLibrary
     public static class Global
     {
         //inlined one-pixel transparent GIF :
-        public const string INLINEIMAGEPLACEHOLDER = "data:image/gif;base64,R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";        
+        public const string INLINEIMAGEPLACEHOLDER = "data:image/gif;base64,R0lGODlhAQABAIABAP///wAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 
         public const string PHONEREGX = @"\s*0([1-9]{1})([0-9]{1,6})-([0-9]{4,12})\s*$";
         public const string DIGITSREGX = @"([0-9])*";
@@ -20,6 +20,7 @@ namespace Greewf.BaseLibrary
         static PersianCalendar pcal = new PersianCalendar();
         const string DATEFORMAT = "{0:0000}/{1:00}/{2:00}";
         const string DATETIMEFORMAT = "{0:0000}/{1:00}/{2:00} - {3:00}:{4:00}";
+        const string FULLDATETIMEFORMAT = "{0:0000}/{1:00}/{2:00} - {3:00}:{4:00}:{5:00}{6}";
         const string TIMEFORMAT = "{0:00}:{1:00}";
 
         public static string DisplayDate(DateTime? date)
@@ -39,6 +40,13 @@ namespace Greewf.BaseLibrary
         {
             if (date.HasValue && date.Value != DateTime.MinValue)
                 return string.Format(DATETIMEFORMAT, pcal.GetYear(date.Value), pcal.GetMonth(date.Value), pcal.GetDayOfMonth(date.Value), date.Value.Hour, date.Value.Minute);
+            return "";
+        }
+
+        public static string DisplayFullDateTime(DateTime? date, bool includeMilliSecond = false)
+        {
+            if (date.HasValue && date.Value != DateTime.MinValue)
+                return string.Format(FULLDATETIMEFORMAT, pcal.GetYear(date.Value), pcal.GetMonth(date.Value), pcal.GetDayOfMonth(date.Value), date.Value.Hour, date.Value.Minute, date.Value.Second, includeMilliSecond ? "." + date.Value.Millisecond.ToString() : "");
             return "";
         }
 
