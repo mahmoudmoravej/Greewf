@@ -9,13 +9,6 @@ using System.Xml.Linq;
 
 namespace Greewf.BaseLibrary.ReportLoaderExtensions
 {
-
-    public enum ReportCorrectionMode
-    {
-        None = 0,
-        HmFontsCorrection = 1,
-    }
-
     public static class LocalReportExtensions
     {
 

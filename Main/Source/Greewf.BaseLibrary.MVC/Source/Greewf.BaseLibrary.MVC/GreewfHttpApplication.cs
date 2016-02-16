@@ -42,13 +42,13 @@ namespace Greewf.BaseLibrary.MVC
         {
             while (true)
             {
-                WebRequest req = WebRequest.Create(KeepAliveUrl);
-                req.GetResponse();
                 try
                 {
+                    WebRequest req = WebRequest.Create(KeepAliveUrl);
+                    req.GetResponse();
                     Thread.Sleep(KeepAliveInterval);
                 }
-                catch (ThreadAbortException)
+                catch (Exception x)
                 {
                     break;
                 }
