@@ -11,11 +11,19 @@ namespace Greewf.BaseLibrary.Logging
     public abstract class LoggerBase
     {
 
+        public LoggerBase()
+        {
+            SaveCheckSum = true;
+        }
+
         public abstract string Username { get; }
         public abstract string UserFullName { get; }
 
         protected abstract void ReadRequestToLog(ref Log log, object extraData);
 
+        public bool SaveCheckSum { get; set; }
+
+        public bool SaveUtcTime { get; set; }
 
         /// <summary>
         /// it is provided to handle exception. this function should never throw an exception
@@ -77,6 +85,7 @@ namespace Greewf.BaseLibrary.Logging
 
             lock (context)
             {
+                if (SaveCheckSum) log.Checksum = GetLogChecksum(log, "pjsf02347-9@#$%@#$%Fdskflnsdf@#%083SDF");
                 context.Logs.Add(log);
                 context.SaveChanges();
             }
@@ -98,7 +107,7 @@ namespace Greewf.BaseLibrary.Logging
 
             log.Code = TakeMax(Enum.GetName(logEnumType, logId), 100);
             log.Text = TakeMax(model is Exception ? model.ToString() : log.Text, 4000);
-            log.DateTime = DateTime.Now;
+            log.DateTime = SaveUtcTime ? DateTime.UtcNow : DateTime.Now;
 
             log.Username = TakeMax(ReadUsername(), 50);
             log.UserFullname = TakeMax(ReadUserFullName(), 50);
@@ -179,13 +188,21 @@ namespace Greewf.BaseLibrary.Logging
         {
             int idx = 0;
             foreach (var item in arr)
-                log.LogDetails.Add(new LogDetail { Key = (++idx).ToString(), Value = item.ToString() });
+                log.LogDetails.Add(new LogDetail
+                {
+                    Key = TakeMax((++idx).ToString(), 100),
+                    Value = TakeMax(item == null ? "" : item.ToString(), 2000)
+                });
         }
 
         private void AddDictionaryDetails(Log log, IDictionary arr)
         {
             foreach (var key in arr.Keys)
-                log.LogDetails.Add(new LogDetail { Key = (key ?? new object()).ToString(), Value = (arr[key] ?? new object()).ToString() });
+                log.LogDetails.Add(new LogDetail
+                {
+                    Key = TakeMax((key ?? new object()).ToString(), 100),
+                    Value = TakeMax((arr[key] ?? new object()).ToString(), 2000)
+                });
         }
 
         private string TakeMax(string str, int max)
@@ -194,6 +211,80 @@ namespace Greewf.BaseLibrary.Logging
             return str.Substring(0, str.Length > max ? max : str.Length);
         }
 
+        public bool IsLogChecksumOk(long logId)
+        {
+            var log = context.Logs.Where(o => o.Id == logId).First();
+            return log.Checksum == GetLogChecksum(log, "pjsf02347-9@#$%@#$%Fdskflnsdf@#%083SDF");
+        }
+
+
+        private static int GetLogChecksum(Log log, string key)
+        {
+            unchecked // Overflow is fine, just wrap
+            {
+                int hash = (int)2166136261;
+
+                //values for null are random constant
+                hash = hash * 16777619 ^ GetTextHash(log.Browser ?? "b");
+                hash = hash * 16777619 ^ GetTextHash(log.Code ?? "cz");
+                hash = hash * 16777619 ^ GetDateHash(log.DateTime);
+                hash = hash * 16777619 ^ GetBooleanHash(log.FromInternet ?? false);
+                hash = hash * 16777619 ^ GetTextHash(log.Ip ?? "ir");
+                hash = hash * 16777619 ^ GetBooleanHash(log.IsMobile ?? true);
+                hash = hash * 16777619 ^ GetTextHash(log.Key ?? "tg");
+                hash = hash * 16777619 ^ GetTextHash(log.MachineName ?? "w");
+                hash = hash * 16777619 ^ GetTextHash(key ?? "zzket");
+                hash = hash * 16777619 ^ GetTextHash(log.Querystring ?? "ll");
+                hash = hash * 16777619 ^ GetTextHash(log.RequestBody ?? "v");
+                hash = hash * 16777619 ^ GetTextHash(log.RequestHeaders ?? "vf");
+                hash = hash * 16777619 ^ GetTextHash(log.RequestMethod ?? "54");
+                hash = hash * 16777619 ^ GetTextHash(log.RequestUrl ?? "^%");
+                hash = hash * 16777619 ^ GetTextHash(log.Text ?? "$|");
+                hash = hash * 16777619 ^ GetTextHash(log.UserAgent ?? "$|");
+                hash = hash * 16777619 ^ GetTextHash(log.UserFullname ?? "fd");
+                hash = hash * 16777619 ^ GetTextHash(log.Username ?? "V*");
+
+                if (log.LogDetails != null)
+                    foreach (var detail in log.LogDetails)
+                    {
+                        hash = hash * 16777619 ^ GetTextHash(detail.Key ?? "&y");
+                        hash = hash * 16777619 ^ GetTextHash(detail.KeyTitle ?? "4jfej");
+                        hash = hash * 16777619 ^ GetTextHash(detail.Value ?? "@vken");
+                    }
+
+                return hash;
+            }
+        }
+
+        private static int GetTextHash(string text)
+        {
+            //based on http://stackoverflow.com/a/5155015/790811
+            if (text == null) text = "";
+
+            unchecked
+            {
+                int hash = 23;
+                foreach (char c in text)
+                {
+                    hash = hash * 31 + c;
+                }
+                return hash;
+            }
+
+        }
+
+        private static int GetDateHash(DateTime date)
+        {
+            //it is safe if your column type is datetime2            
+            return GetTextHash(date.Ticks.ToString());
+
+            //return GetTextHash(date.ToString("MMddyyyyHHmmssfff"));
+        }
+
+        private static int GetBooleanHash(bool value)
+        {
+            return value ? 937097297 : 0389803085;
+        }
 
     }
 

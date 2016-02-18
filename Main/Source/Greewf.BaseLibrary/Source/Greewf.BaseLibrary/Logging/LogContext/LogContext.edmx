@@ -20,7 +20,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="DateTime" Type="datetime" Nullable="false" />
+          <Property Name="DateTime" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="Key" Type="nvarchar" MaxLength="100" />
           <Property Name="Code" Type="varchar" MaxLength="100" />
           <Property Name="Text" Type="nvarchar" MaxLength="4000" />
@@ -37,6 +37,7 @@
           <Property Name="RequestMethod" Type="nvarchar" MaxLength="100" />
           <Property Name="RequestBody" Type="nvarchar(max)" />
           <Property Name="RequestHeaders" Type="nvarchar(max)" />
+          <Property Name="Checksum" Type="int" />
         </EntityType>
         <EntityContainer Name="LogModelStoreContainer">
           <EntitySet Name="LogDetails" EntityType="Self.LogDetails" Schema="dbo" store:Type="Tables" />
@@ -59,7 +60,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
-          <Property Name="DateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="DateTime" Type="DateTime" Nullable="false" Precision="7" />
           <Property Name="Key" Type="String" MaxLength="100" Unicode="true" FixedLength="false" />
           <Property Name="Code" Type="String" MaxLength="100" Unicode="false" FixedLength="false" />
           <Property Name="Text" Type="String" MaxLength="4000" Unicode="true" FixedLength="false" />
@@ -77,6 +78,7 @@
           <Property Name="RequestMethod" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="RequestHeaders" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="FromInternet" Type="Boolean" />
+          <Property Name="Checksum" Type="Int32" />
         </EntityType>
         <EntityType Name="LogDetail">
           <Key>
@@ -107,7 +109,8 @@
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="LogModelStoreContainer" CdmEntityContainer="LogContext">
           <EntitySetMapping Name="Logs"><EntityTypeMapping TypeName="Greewf.BaseLibrary.Logging.Log"><MappingFragment StoreEntitySet="Logs">
-            <ScalarProperty Name="FromInternet" ColumnName="FromInternet" />
+            <ScalarProperty Name="Checksum" ColumnName="Checksum" />
+                <ScalarProperty Name="FromInternet" ColumnName="FromInternet" />
                 <ScalarProperty Name="RequestHeaders" ColumnName="RequestHeaders" />
                 <ScalarProperty Name="RequestMethod" ColumnName="RequestMethod" />
                 <ScalarProperty Name="RequestBody" ColumnName="RequestBody" />

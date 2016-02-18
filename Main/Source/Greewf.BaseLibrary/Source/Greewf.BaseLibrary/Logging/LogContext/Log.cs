@@ -12,13 +12,13 @@ namespace Greewf.BaseLibrary.Logging
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Security.Cryptography;
+    using System.Text;
     using System.Text.RegularExpressions;
 
 
     public partial class Log
     {
-        static Regex _unicodeReplacer = new Regex(@"\\[uU]([0-9A-Fa-f]{4})"); //http://stackoverflow.com/questions/183907/how-do-convert-unicode-escape-sequences-to-unicode-characters-in-a-net-string
-
         public Log()
         {
             this.LogDetails = new HashSet<LogDetail>();
@@ -68,21 +68,6 @@ namespace Greewf.BaseLibrary.Logging
         public string UserAgent { get; set; }
 
 
-        private string _requestBody;
-        public string RequestBody
-        {
-            get
-            {
-                return _requestBody;
-            }
-            set
-            {
-                //because in some cases it sends some string like this : 'NewPassword':'\u0633\u0644\u0627\u0645\u062a\u06cc'
-                _requestBody = _unicodeReplacer.Replace(value, match => ((char)Int32.Parse(match.Value.Substring(2), NumberStyles.HexNumber)).ToString());
-            }
-        }
-
-
         public string RequestMethod { get; set; }
 
 
@@ -91,7 +76,9 @@ namespace Greewf.BaseLibrary.Logging
 
         public Nullable<bool> FromInternet { get; set; }
 
+        public Nullable<int> Checksum { get; set; }
 
         public virtual ICollection<LogDetail> LogDetails { get; set; }
+
     }
 }
