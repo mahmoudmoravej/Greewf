@@ -24,7 +24,7 @@ namespace Greewf.BaseLibrary.Logging
             set
             {
                 //because in some cases it sends some string like this : 'NewPassword':'\u0633\u0644\u0627\u0645\u062a\u06cc'
-                _requestBody = _unicodeReplacer.Replace(value, match => ((char)Int32.Parse(match.Value.Substring(2), NumberStyles.HexNumber)).ToString());
+                _requestBody = string.IsNullOrEmpty(value) ? null : _unicodeReplacer.Replace(value, match => ((char)Int32.Parse(match.Value.Substring(2), NumberStyles.HexNumber)).ToString());
             }
         }
 

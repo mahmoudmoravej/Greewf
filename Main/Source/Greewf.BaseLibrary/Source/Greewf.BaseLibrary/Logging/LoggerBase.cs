@@ -97,7 +97,7 @@ namespace Greewf.BaseLibrary.Logging
             var log = new Log();
 
 
-            ReadRequestToLog(ref log, extraData);
+            ReadRequestToLog(ref log, extraData);//NOTE : it may add log details too.
             if (!string.IsNullOrEmpty(text)) log.Text = text; //passed text is preferable to request text (if any)
 
             log.Browser = TakeMax(log.Browser, 50);
@@ -117,7 +117,7 @@ namespace Greewf.BaseLibrary.Logging
                 var typ = model.GetType();
 
                 log.Key = TakeMax(typ.Name, 100);
-                var excludedValues = AddLogDetails(log, model, modelDisplayNames, exludeModelProperties);
+                var excludedValues = AddLogDetails(log, model, modelDisplayNames, exludeModelProperties);//NOTE : log details may be filled previously in  ReadRequestToLog phase
 
                 //remove excluded values from body too
                 if (excludedValues != null && log.RequestBody != null)
@@ -135,7 +135,7 @@ namespace Greewf.BaseLibrary.Logging
 
         }
 
-        private List<string> AddLogDetails(Log log, object model, Dictionary<string, string> modelDisplayNames = null, string[] exludeModelProperties = null)
+        protected List<string> AddLogDetails(Log log, object model, Dictionary<string, string> modelDisplayNames = null, string[] exludeModelProperties = null)
         {
             List<string> excludedValues = null;
 
