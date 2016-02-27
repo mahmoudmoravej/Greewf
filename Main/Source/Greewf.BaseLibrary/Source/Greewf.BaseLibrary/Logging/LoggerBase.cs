@@ -286,6 +286,15 @@ namespace Greewf.BaseLibrary.Logging
             return value ? 937097297 : 0389803085;
         }
 
+        public int GetAllLgosCount()
+        {
+            if (context == null)
+                throw new Exception("LogConnectionString is not set for Logger. Set it before any log action");
+
+
+            return context.Logs.Count();
+        }
+
     }
 
 
