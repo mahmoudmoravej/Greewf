@@ -31,8 +31,11 @@ namespace Greewf.BaseLibrary.Logging
             }
         }
 
-        private HashSet<string> disabledLogs = null;
-        private bool isNeedToBeReload = false;
+        public Func<string> ProfileIdRetreiver { private get; set; }
+
+        private HashSet<string> _disabledLogs = null;
+        private bool _isNeedToBeReload = false;
+        private string _overridedProfileId = null;//if it has value, it means that we should not use ActiveProfileId of LogProfiles.xml in automatic reoloading (i.e. when the DependentFilesChanged called)
 
         public string LogProfileFilePath { get; private set; }
 
@@ -46,7 +49,7 @@ namespace Greewf.BaseLibrary.Logging
             lock (LogProfileFilePath)
                 lock (LogPointFilePath)
                 {
-                    Reload();
+                    LoadProfile();
                     AddCacheDependency(LogProfileFilePath, "profile");
                     AddCacheDependency(LogPointFilePath, "logPoint");
                 }
@@ -58,7 +61,7 @@ namespace Greewf.BaseLibrary.Logging
             if (System.Web.HttpContext.Current.Cache["__logProfileCacheChange" + key] != null)
                 System.Web.HttpContext.Current.Cache.Remove("__logProfileCacheChange" + key);
 
-            isNeedToBeReload = false;
+            _isNeedToBeReload = false;
 
             if (!string.IsNullOrWhiteSpace(filePath))
                 System.Web.HttpContext.Current.Cache.Add("__logProfileCacheChange" + key, "x" + key, new CacheDependency(filePath), DateTime.MaxValue, TimeSpan.Zero, CacheItemPriority.High, DependentFilesChanged);
@@ -67,49 +70,94 @@ namespace Greewf.BaseLibrary.Logging
         private void DependentFilesChanged(string key, object value, CacheItemRemovedReason reason)
         {
             //System.Web.HttpContext.Current.Cache.Remove("__logProfileCacheChange");
-            isNeedToBeReload = true;
+            _isNeedToBeReload = true;
         }
 
-        public void Reload()
+        public void LoadProfile(string profileId = null)
         {
             try
             {
-
-
                 var xmlProfiles = new XmlDocument();
                 xmlProfiles.Load(LogProfileFilePath);
 
                 var xmlLogPoints = new XmlDocument();
                 xmlLogPoints.Load(LogPointFilePath);
 
-                string activeProfileId = xmlProfiles.DocumentElement.Attributes["ActiveProfileId"].Value;
+                if (profileId != null)
+                    _overridedProfileId = profileId;
+                else
+                    profileId = _overridedProfileId;
 
-                var activeProfile = xmlProfiles.SelectSingleNode("/LogProfiles/Profile[@Id='" + activeProfileId + "']");
+                profileId = profileId ?? xmlProfiles.DocumentElement.Attributes["ActiveProfileId"].Value;
+
+                var activeProfile = xmlProfiles.SelectSingleNode("/LogProfiles/Profile[@Id='" + profileId + "']");
                 if (activeProfile == null) return;
 
-                disabledLogs = new HashSet<string>();
+                var enabledLogs = new HashSet<string>();
 
-                //DropAllNoLogDefaults means we consider all logpoints in a same way (ignoring logpoint default value)
-                if (activeProfile.SelectSingleNode("DropAllNoLogDefaults") == null)
-                    foreach (XmlNode node in xmlLogPoints.SelectNodes("LogPoints/Log[@Default='NoLog']"))
-                        disabledLogs.Add(node.Attributes["Id"].Value);
+                foreach (XmlNode node in xmlLogPoints.SelectNodes("LogPoints/Log[not(@Default)]|LogPoints/Log[@Default!='NoLog']"))
+                    enabledLogs.Add(node.Attributes["Id"].Value);
+
 
                 foreach (XmlNode node in activeProfile.ChildNodes)
                 {
+                    if (node.Name == "AddAllNoLogDefaults")
+                    {
+                        var arr = new List<string>();
+                        foreach (XmlNode n in xmlLogPoints.SelectNodes("LogPoints/Log[@Default='NoLog']"))
+                            arr.Add(n.Attributes["Id"].Value);
+
+                        enabledLogs = new HashSet<string>(enabledLogs.Union(arr));
+
+                    }
                     if (node.Name == "ExceptAll")
                     {
-                        disabledLogs = null;//null means all are disabled
+                        enabledLogs = null;//null means all are disabled
                         break;
                     }
-                    else if (node.Name == "Except")
-                        disabledLogs.Add(node.Attributes["LogPoint"].Value);
-                    else if (node.Name == "Include")
+                    else if (node.Name == "ClearAll")
+                    {
+                        enabledLogs.Clear();//null means all are disabled                        
+                    }
+                    else if ((node.Name == "Except" || node.Name == "Remove") && node.Attributes["LogPoint"] != null)
+                        enabledLogs.Remove(node.Attributes["LogPoint"].Value);
+                    else if (node.Name == "Remove" && node.Attributes["Group"] != null)
+                    {
+                        var arr = new List<string>();
+                        string groupName = node.Attributes["Group"].Value;
+                        foreach (XmlNode n in xmlLogPoints.SelectNodes(string.Format("LogPoints/Log[@Group='{0}']", groupName)))
+                            arr.Add(n.Attributes["Id"].Value);
+
+                        enabledLogs = new HashSet<string>(enabledLogs.Except(arr));
+                    }
+                    else if ((node.Name == "Include" || node.Name == "Add") && node.Attributes["LogPoint"] != null)
                     {
                         string value = node.Attributes["LogPoint"].Value;
                         //note : we parse continously. so if we see a include, we remove the previously added "except" if any
-                        disabledLogs.Remove(value);
+                        enabledLogs.Add(value);
+                    }
+                    else if ( node.Name == "Add" && node.Attributes["Group"] != null)
+                    {
+                        var arr = new List<string>();
+                        string groupName = node.Attributes["Group"].Value;
+                        foreach (XmlNode n in xmlLogPoints.SelectNodes(string.Format("LogPoints/Log[not(@Default)][@Group='{0}']|LogPoints/Log[@Default!='NoLog'][@Group='{0}']", groupName)))
+                            arr.Add(n.Attributes["Id"].Value);
+
+                        enabledLogs = new HashSet<string>(enabledLogs.Union(arr));
                     }
                 }
+
+                if (enabledLogs == null || enabledLogs.Count == 0)
+                    _disabledLogs = null;
+                else
+                {
+                    var allLogs = new List<string>();
+                    foreach (XmlNode node in xmlLogPoints.SelectNodes("LogPoints/Log"))
+                        allLogs.Add(node.Attributes["Id"].Value);
+
+                    _disabledLogs = new HashSet<string>(allLogs.Except(enabledLogs).Distinct());
+                }
+
 
             }
             catch (Exception x)
@@ -119,11 +167,39 @@ namespace Greewf.BaseLibrary.Logging
 
         }
 
+        public Dictionary<string, string> GetProfiles(string attributeName = null, string attributeValue = null)
+        {
+            var xmlProfiles = new XmlDocument();
+            var query = "/LogProfiles/Profile";
+            var result = new Dictionary<string, string>();
+
+            query = string.IsNullOrEmpty(attributeName) ? query : query + string.Format("[@{0}='{1}]'", attributeName, attributeValue);
+            xmlProfiles.Load(LogProfileFilePath);
+
+            foreach (XmlNode profile in xmlProfiles.SelectSingleNode(query))
+                result.Add(profile.Attributes["Id"].Value, profile.Attributes["Title"].Value);
+
+            return result;
+        }
+
         public bool IsLogDisabled(string logId)
         {
-            if (isNeedToBeReload) LoadFiles(LogProfileFilePath, LogPointFilePath);
-            if (disabledLogs == null) return true;//null means all are disabled
-            return disabledLogs.Contains(logId);
+            if (ProfileIdRetreiver != null) RetriveProfileId();
+            if (_isNeedToBeReload) LoadFiles(LogProfileFilePath, LogPointFilePath);
+
+            if (_disabledLogs == null) return true;//null means all are disabled
+            return _disabledLogs.Contains(logId);
+        }
+
+        private void RetriveProfileId()
+        {
+            var retreivedId = ProfileIdRetreiver();
+            if (retreivedId != _overridedProfileId)
+            {
+                _overridedProfileId = retreivedId;//we need it to reset to default if nothing is passed.
+                LoadProfile();
+            }
+
         }
 
         public bool IsLogDisabled(int logId, Type logEnumType)
