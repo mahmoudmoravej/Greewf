@@ -170,13 +170,13 @@ namespace Greewf.BaseLibrary.Logging
         public Dictionary<string, string> GetProfiles(string attributeName = null, string attributeValue = null)
         {
             var xmlProfiles = new XmlDocument();
-            var query = "/LogProfiles/Profile";
+            var query = "LogProfiles/Profile";
             var result = new Dictionary<string, string>();
 
-            query = string.IsNullOrEmpty(attributeName) ? query : query + string.Format("[@{0}='{1}]'", attributeName, attributeValue);
+            query = string.IsNullOrEmpty(attributeName) ? query : query + string.Format("[@{0}='{1}']", attributeName, attributeValue);
             xmlProfiles.Load(LogProfileFilePath);
 
-            foreach (XmlNode profile in xmlProfiles.SelectSingleNode(query))
+            foreach (XmlNode profile in xmlProfiles.SelectNodes(query))
                 result.Add(profile.Attributes["Id"].Value, profile.Attributes["Title"].Value);
 
             return result;
