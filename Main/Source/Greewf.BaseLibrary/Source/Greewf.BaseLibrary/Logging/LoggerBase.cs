@@ -112,6 +112,8 @@ namespace Greewf.BaseLibrary.Logging
             log.Username = TakeMax(ReadUsername(), 50);
             log.UserFullname = TakeMax(ReadUserFullName(), 50);
 
+            if (log.ServerMachineName == null) FillServerDetails(log);
+
             if (model != null)
             {
                 var typ = model.GetType();
@@ -133,6 +135,21 @@ namespace Greewf.BaseLibrary.Logging
             Log(log);
             return log.Id;
 
+        }
+
+        private void FillServerDetails(Logging.Log log)
+        {
+            log.ServerMachineName = TakeMax(System.Environment.MachineName, 40);
+
+            try
+            {
+                var process = System.Diagnostics.Process.GetCurrentProcess();
+                log.ServerProcessName = TakeMax(process.ProcessName, 30);
+                log.ServerProcessId = process.Id;
+            }
+            catch
+            {
+            }
         }
 
         protected List<string> AddLogDetails(Log log, object model, Dictionary<string, string> modelDisplayNames = null, string[] exludeModelProperties = null)
@@ -243,6 +260,9 @@ namespace Greewf.BaseLibrary.Logging
                 hash = hash * 16777619 ^ GetTextHash(log.UserAgent ?? "$|");
                 hash = hash * 16777619 ^ GetTextHash(log.UserFullname ?? "fd");
                 hash = hash * 16777619 ^ GetTextHash(log.Username ?? "V*");
+                hash = hash * 16777619 ^ GetTextHash(log.ServerMachineName ?? "Sm$*");
+                hash = hash * 16777619 ^ GetTextHash(log.ServerProcessName ?? "sp^");
+                hash = hash * 16777619 ^ GetIntHash(log.ServerProcessId ?? -999999);
 
                 if (log.LogDetails != null)
                     foreach (var detail in log.LogDetails)
@@ -284,6 +304,11 @@ namespace Greewf.BaseLibrary.Logging
         private static int GetBooleanHash(bool value)
         {
             return value ? 937097297 : 0389803085;
+        }
+
+        private static int GetIntHash(int value)
+        {
+            return value;
         }
 
         public int GetAllLgosCount()

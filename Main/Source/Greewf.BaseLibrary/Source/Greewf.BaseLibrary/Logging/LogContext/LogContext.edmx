@@ -37,6 +37,9 @@
           <Property Name="RequestMethod" Type="nvarchar" MaxLength="100" />
           <Property Name="RequestBody" Type="nvarchar(max)" />
           <Property Name="RequestHeaders" Type="nvarchar(max)" />
+          <Property Name="ServerMachineName" Type="nvarchar" MaxLength="40" />
+          <Property Name="ServerProcessName" Type="nvarchar" MaxLength="30" />
+          <Property Name="ServerProcessId" Type="int" />
           <Property Name="Checksum" Type="int" />
         </EntityType>
         <EntityContainer Name="LogModelStoreContainer">
@@ -79,6 +82,9 @@
           <Property Name="RequestHeaders" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="FromInternet" Type="Boolean" />
           <Property Name="Checksum" Type="Int32" />
+          <Property Name="ServerMachineName" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
+          <Property Name="ServerProcessName" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="ServerProcessId" Type="Int32" />
         </EntityType>
         <EntityType Name="LogDetail">
           <Key>
@@ -109,7 +115,10 @@
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="LogModelStoreContainer" CdmEntityContainer="LogContext">
           <EntitySetMapping Name="Logs"><EntityTypeMapping TypeName="Greewf.BaseLibrary.Logging.Log"><MappingFragment StoreEntitySet="Logs">
-            <ScalarProperty Name="Checksum" ColumnName="Checksum" />
+            <ScalarProperty Name="ServerProcessId" ColumnName="ServerProcessId" />
+                <ScalarProperty Name="ServerProcessName" ColumnName="ServerProcessName" />
+                <ScalarProperty Name="ServerMachineName" ColumnName="ServerMachineName" />
+                <ScalarProperty Name="Checksum" ColumnName="Checksum" />
                 <ScalarProperty Name="FromInternet" ColumnName="FromInternet" />
                 <ScalarProperty Name="RequestHeaders" ColumnName="RequestHeaders" />
                 <ScalarProperty Name="RequestMethod" ColumnName="RequestMethod" />
