@@ -545,7 +545,7 @@
             success: function (json) {
                 succeeded = 1;
                 layoutCore.handleResponsiveJsonResult(json);
-                layoutCore.handleCloseCallBack(sender, null, ownerWindow, true);
+                layoutCore.handleCloseCallBack(sender, json, ownerWindow, json.ResponseType != 3/*Failed*/); //we need set the isSuccessfulFlagUp to false in cases like modelstate error. In projects like crm we used it. Also we change some behavior: pass received json as data too. it seems to be ok. isn't it?
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 layoutHelper.windowLayout.ShowErrorMessage('<div style="overflow:auto;direction:ltr;max-width:400px;max-height:300px">' + xhr.responseText + '</div>', 'بروز خطا');
