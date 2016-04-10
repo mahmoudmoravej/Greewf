@@ -57,6 +57,8 @@ namespace Greewf.BaseLibrary.Logging
 
         private void AddCacheDependency(string filePath, string key)
         {
+            if (System.Web.HttpContext.Current == null)//when we use the librart out of web context (for example in a test project)
+                return;
 
             if (System.Web.HttpContext.Current.Cache["__logProfileCacheChange" + key] != null)
                 System.Web.HttpContext.Current.Cache.Remove("__logProfileCacheChange" + key);
@@ -68,8 +70,7 @@ namespace Greewf.BaseLibrary.Logging
         }
 
         private void DependentFilesChanged(string key, object value, CacheItemRemovedReason reason)
-        {
-            //System.Web.HttpContext.Current.Cache.Remove("__logProfileCacheChange");
+        {            
             _isNeedToBeReload = true;
         }
 
