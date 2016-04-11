@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Web.Caching;
+using System.Web;
 
 namespace Greewf.BaseLibrary.Logging
 {
@@ -57,16 +58,13 @@ namespace Greewf.BaseLibrary.Logging
 
         private void AddCacheDependency(string filePath, string key)
         {
-            if (System.Web.HttpContext.Current == null)//when we use the librart out of web context (for example in a test project)
-                return;
-
-            if (System.Web.HttpContext.Current.Cache["__logProfileCacheChange" + key] != null)
-                System.Web.HttpContext.Current.Cache.Remove("__logProfileCacheChange" + key);
+            if (HttpRuntime.Cache["__logProfileCacheChange" + key] != null)
+                HttpRuntime.Cache.Remove("__logProfileCacheChange" + key);
 
             _isNeedToBeReload = false;
 
             if (!string.IsNullOrWhiteSpace(filePath))
-                System.Web.HttpContext.Current.Cache.Add("__logProfileCacheChange" + key, "x" + key, new CacheDependency(filePath), DateTime.MaxValue, TimeSpan.Zero, CacheItemPriority.High, DependentFilesChanged);
+                HttpRuntime.Cache.Add("__logProfileCacheChange" + key, "x" + key, new CacheDependency(filePath), DateTime.MaxValue, TimeSpan.Zero, CacheItemPriority.High, DependentFilesChanged);
         }
 
         private void DependentFilesChanged(string key, object value, CacheItemRemovedReason reason)
