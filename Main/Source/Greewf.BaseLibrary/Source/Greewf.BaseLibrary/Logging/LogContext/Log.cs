@@ -61,7 +61,7 @@ namespace Greewf.BaseLibrary.Logging
         public Nullable<bool> IsMobile { get; set; }
     	
         
-        public string UserAgent { get; set; }    
+        public string UserAgent { get; set; }
     	
         
         public string RequestMethod { get; set; }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "00-Greewf.BaseLibrary", "Greewf.BaseLibrary\Source\Greewf.BaseLibrary\00-Greewf.BaseLibrary.csproj", "{3E04F4A9-AA08-4492-BD72-2EBC76CC85A1}"
 EndProject
@@ -10,21 +10,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "01-Greewf.BaseLibrary.MVC", "Greewf.BaseLibrary.MVC\Source\Greewf.BaseLibrary.MVC\01-Greewf.BaseLibrary.MVC.csproj", "{566A5C58-FBA2-467D-B647-4A0CA767062C}"
 EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs15
-		SccProjectUniqueName0 = Greewf.BaseLibrary.MVC\\Source\\Greewf.BaseLibrary.MVC\\01-Greewf.BaseLibrary.MVC.csproj
-		SccProjectName0 = Greewf.BaseLibrary.MVC/Source/Greewf.BaseLibrary.MVC
-		SccLocalPath0 = Greewf.BaseLibrary.MVC\\Source\\Greewf.BaseLibrary.MVC
-		SccProjectUniqueName1 = Greewf.BaseLibrary\\Source\\Greewf.BaseLibrary\\00-Greewf.BaseLibrary.csproj
-		SccProjectName1 = Greewf.BaseLibrary/Source/Greewf.BaseLibrary
-		SccLocalPath1 = Greewf.BaseLibrary\\Source\\Greewf.BaseLibrary
-		SccProjectUniqueName2 = Greewf.Scaffolder\\Source\\Greewf.Scaffolder\\09-Greewf.Scaffolder.csproj
-		SccProjectName2 = Greewf.Scaffolder/Source/Greewf.Scaffolder
-		SccLocalPath2 = Greewf.Scaffolder\\Source\\Greewf.Scaffolder
-		SccLocalPath3 = .
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -45,5 +30,20 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs15
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = Greewf.BaseLibrary.MVC\\Source\\Greewf.BaseLibrary.MVC\\01-Greewf.BaseLibrary.MVC.csproj
+		SccProjectName1 = Greewf.BaseLibrary.MVC/Source/Greewf.BaseLibrary.MVC
+		SccLocalPath1 = Greewf.BaseLibrary.MVC\\Source\\Greewf.BaseLibrary.MVC
+		SccProjectUniqueName2 = Greewf.BaseLibrary\\Source\\Greewf.BaseLibrary\\00-Greewf.BaseLibrary.csproj
+		SccProjectName2 = Greewf.BaseLibrary/Source/Greewf.BaseLibrary
+		SccLocalPath2 = Greewf.BaseLibrary\\Source\\Greewf.BaseLibrary
+		SccProjectUniqueName3 = Greewf.Scaffolder\\Source\\Greewf.Scaffolder\\09-Greewf.Scaffolder.csproj
+		SccProjectName3 = Greewf.Scaffolder/Source/Greewf.Scaffolder
+		SccLocalPath3 = Greewf.Scaffolder\\Source\\Greewf.Scaffolder
 	EndGlobalSection
 EndGlobal
