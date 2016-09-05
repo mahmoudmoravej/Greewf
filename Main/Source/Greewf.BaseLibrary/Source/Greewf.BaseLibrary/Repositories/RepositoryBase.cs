@@ -6,6 +6,7 @@ using System.Data.Entity;
 using System.Linq.Expressions;
 using Greewf.BaseLibrary.Repositories;
 using Greewf.BaseLibrary;
+using Greewf.BaseLibrary.Linq;
 
 namespace Greewf.BaseLibrary.Repositories
 {
@@ -15,7 +16,7 @@ namespace Greewf.BaseLibrary.Repositories
     /// <typeparam name="T">EF Context</typeparam>
     /// <typeparam name="Y">UnitOfRepository</typeparam>
     public class RepositoryBase<T, Y>
-        where T : DbContext, ISavingTracker, new()
+        where T : DbContext, ISavingTracker, IQueryHintContext, new()
         where Y : class , new()
     {
         protected T context = null;
@@ -80,7 +81,7 @@ namespace Greewf.BaseLibrary.Repositories
     }
 
     public class RepositoryBase<T, Y, M> : RepositoryBase<T, Y>
-        where T : DbContext, ISavingTracker, new()
+        where T : DbContext, ISavingTracker, IQueryHintContext, new()
         where Y : class , new()
         where M : class, new()
     {

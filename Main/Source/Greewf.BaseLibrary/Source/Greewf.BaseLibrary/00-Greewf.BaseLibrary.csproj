@@ -115,6 +115,9 @@
     <Compile Include="DataSetLinqOperators.cs" />
     <Compile Include="DiffMatchPatch\DiffMatchPatch.cs" />
     <Compile Include="IP\IpAddressRange.cs" />
+    <Compile Include="Linq\QueryHint\HintInterceptor.cs" />
+    <Compile Include="Linq\QueryHint\HintScope.cs" />
+    <Compile Include="Linq\QueryHint\IQueryHintContext.cs" />
     <Compile Include="Logging\DefaultLogProfileReader.cs" />
     <Compile Include="Logging\LogContext\Log-Partial.cs" />
     <Compile Include="Logging\LogContext\Log.cs">
@@ -303,6 +306,7 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
