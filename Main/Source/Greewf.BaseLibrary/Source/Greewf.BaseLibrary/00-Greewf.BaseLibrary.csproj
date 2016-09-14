@@ -115,6 +115,11 @@
     <Compile Include="DataSetLinqOperators.cs" />
     <Compile Include="DiffMatchPatch\DiffMatchPatch.cs" />
     <Compile Include="IP\IpAddressRange.cs" />
+    <Compile Include="Linq\FullTextSearch\Effts\FreeTextExtensions.cs" />
+    <Compile Include="Linq\FullTextSearch\Effts\FtsInterceptor.cs" />
+    <Compile Include="Linq\FullTextSearch\Effts\FullTextPrefixes.cs" />
+    <Compile Include="Linq\FullTextSearch\Effts\LanguageExtensions.cs" />
+    <Compile Include="Linq\FullTextSearch\FullTextSeachExtensions.cs" />
     <Compile Include="Linq\QueryHint\HintInterceptor.cs" />
     <Compile Include="Linq\QueryHint\HintScope.cs" />
     <Compile Include="Linq\QueryHint\IQueryHintContext.cs" />
@@ -302,6 +307,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="FastQueryBuilder\Notes!.txt" />
+    <Content Include="Linq\FullTextSearch\Effts\NOTE!.txt" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
