@@ -86,8 +86,8 @@ namespace effts
                 var value = (string)parameter.Value;
                 if (value.IndexOf(FullTextPrefixes.ContainsPrefix, StringComparison.Ordinal) >= 0)
                 {
-                    parameter.Size = 4096;
-                    parameter.DbType = DbType.AnsiStringFixedLength;
+                    parameter.Size = 4000;
+                    parameter.DbType = DbType.String;
                     value = value.Replace(FullTextPrefixes.ContainsPrefix, ""); // remove prefix we added n linq query
                     value = value.Substring(1, value.Length - 2); // remove %% escaping by linq translator from string.Contains to sql LIKE
                     parameter.Value = value;
@@ -101,8 +101,8 @@ namespace effts
                 }
                 else if (value.IndexOf(FullTextPrefixes.FreetextPrefix, StringComparison.Ordinal) >= 0)
                 {
-                    parameter.Size = 4096;
-                    parameter.DbType = DbType.AnsiStringFixedLength;
+                    parameter.Size = 4000;
+                    parameter.DbType = DbType.String;
                     value = value.Replace(FullTextPrefixes.FreetextPrefix, ""); // remove prefix we added n linq query
                     value = value.Substring(1, value.Length - 2); // remove %% escaping by linq translator from string.Contains to sql LIKE
                     parameter.Value = value;
