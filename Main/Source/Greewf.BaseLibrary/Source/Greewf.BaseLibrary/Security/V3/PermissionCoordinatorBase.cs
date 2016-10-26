@@ -189,7 +189,13 @@ namespace Greewf.BaseLibrary.Security.V3
         /// <param name="permission"></param>
         /// <param name="extraData">In some permission models we may need some extra data</param>
         /// <returns></returns>
-        public int?[] GetAllowedObjectIds<P>(int userId, OT objectType, P permission, object extraData = null)
+        public int?[] GetAllowedObjectIds<P>(int userId, OT objectType, P permission)
+        {
+            var group = GetGroupOfType(typeof(P));
+            return GetAllowedObjectIds(userId, objectType, (int)(object)group, (long)(object)permission, null);
+        }
+
+        public int?[] GetAllowedObjectIds<P, E>(int userId, OT objectType, P permission, E extraData)
         {
             var group = GetGroupOfType(typeof(P));
             return GetAllowedObjectIds(userId, objectType, (int)(object)group, (long)(object)permission, extraData);
