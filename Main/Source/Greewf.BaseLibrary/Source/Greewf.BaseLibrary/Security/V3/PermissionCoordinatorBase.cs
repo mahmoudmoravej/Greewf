@@ -180,13 +180,31 @@ namespace Greewf.BaseLibrary.Security.V3
             return HasPermission(userId, PermissionObject<OT>.ReadFrom(obj), group, permission);
         }
 
-        public int?[] GetAllowedObjectIds<P>(int userId, OT objectType, P permission)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="P"></typeparam>
+        /// <param name="userId"></param>
+        /// <param name="objectType"></param>
+        /// <param name="permission"></param>
+        /// <param name="extraData">In some permission models we may need some extra data</param>
+        /// <returns></returns>
+        public int?[] GetAllowedObjectIds<P>(int userId, OT objectType, P permission, object extraData = null)
         {
             var group = GetGroupOfType(typeof(P));
-            return GetAllowedObjectIds(userId, objectType, (int)(object)group, (long)(object)permission);
+            return GetAllowedObjectIds(userId, objectType, (int)(object)group, (long)(object)permission, extraData);
         }
 
-        protected abstract int?[] GetAllowedObjectIds(int userId, OT objectType, int group, long permission);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="objectType"></param>
+        /// <param name="group"></param>
+        /// <param name="permission"></param>
+        /// <param name="extraData">In some permission models we may need some extra data</param>
+        /// <returns></returns>
+        protected abstract int?[] GetAllowedObjectIds(int userId, OT objectType, int group, long permission, object extraData = null);
 
         public int[] GetAllowedUserIds<P>(PermissionObject<OT> obj, P permission)
         {
