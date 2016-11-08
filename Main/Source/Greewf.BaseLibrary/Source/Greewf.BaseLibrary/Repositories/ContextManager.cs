@@ -5,18 +5,27 @@ using System.Text;
 using System.Data.Entity;
 using effts;
 using System.Data.Entity.Infrastructure.Interception;
+using System.Transactions;
 
 namespace Greewf.BaseLibrary.Repositories
 {
     public abstract class ContextManagerBase
     {
-        public DbContext ContextBase { get; protected set; } //we need this in ChangesTracker module.
+        public DbContext ContextBase { get; protected set; } //we need this in ChangesTracker module.     
+        public event Action OnChangesCommitted;
+
+        protected internal void InvokeOnChangesCommittedEvent()
+        {
+            OnChangesCommitted?.Invoke();
+        }
     }
 
     public abstract class ContextManager<T> : ContextManagerBase
         where T : DbContext, new()
     {
         private static bool _isFullTextSearchInitiated = false;
+        private bool _isTransactionScopeCreated;
+
         public IValidationDictionary ValidationDictionary { get; private set; }
 
         public T Context { get; private set; }
@@ -32,11 +41,41 @@ namespace Greewf.BaseLibrary.Repositories
             }
         }
 
-        public virtual int SaveChanges()
+        public virtual bool SaveChanges()
         {
             if (ValidationDictionary != null && !ValidationDictionary.IsValid)
-                throw new Exception("Greewf: the ValidationDictionary is not valid!");
-            return Context.SaveChanges();
+                return false;
+
+            bool result = true;
+
+            if (_isTransactionScopeCreated)//to avoid creating new scope (it comes when savechanges causes to call savechanges again)
+            {
+                Context.SaveChanges();
+                if (ValidationDictionary?.IsValid == false)
+                    result = false;
+
+                return result;
+            }
+
+            _isTransactionScopeCreated = true;
+            using (var scope = new TransactionScope())
+            {
+                Context.SaveChanges();//my be some calls on onChangesSaved event that needs to be in transaction
+
+                if (ValidationDictionary?.IsValid == false)
+                    result = false;
+
+                if (result)
+                    scope.Complete();
+                else
+                    scope.Dispose();              
+            }
+            _isTransactionScopeCreated = false;
+
+            if (result) InvokeOnChangesCommittedEvent();
+
+            return result;
         }
+       
     }
 }

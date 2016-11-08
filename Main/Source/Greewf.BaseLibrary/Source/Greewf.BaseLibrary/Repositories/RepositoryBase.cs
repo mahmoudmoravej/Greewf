@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using Greewf.BaseLibrary.Repositories;
 using Greewf.BaseLibrary;
 using Greewf.BaseLibrary.Linq;
+using System.Transactions;
 
 namespace Greewf.BaseLibrary.Repositories
 {
@@ -17,7 +18,7 @@ namespace Greewf.BaseLibrary.Repositories
     /// <typeparam name="Y">UnitOfRepository</typeparam>
     public class RepositoryBase<T, Y>
         where T : DbContext, ISavingTracker, IQueryHintContext, new()
-        where Y : class , new()
+        where Y : class, new()
     {
         protected T context = null;
         protected ContextManager<T> ContextManager { get; private set; }
@@ -41,6 +42,7 @@ namespace Greewf.BaseLibrary.Repositories
 
             context.OnSavedChanges += OnChangesSaved;
             context.OnSavingChanges += OnChangesSaving;
+            contextManager.OnChangesCommitted += OnChangesCommitted;
 
             UoR = unitOfRepository;
 
@@ -54,8 +56,13 @@ namespace Greewf.BaseLibrary.Repositories
         {
         }
 
+        protected virtual void OnChangesCommitted()
+        {
 
-        protected IQueryable<X> AllIncluding<X>(DbSet<X> dbset, params Expression<Func<X, object>>[] includeProperties) where X : class ,new()
+        }
+
+
+        protected IQueryable<X> AllIncluding<X>(DbSet<X> dbset, params Expression<Func<X, object>>[] includeProperties) where X : class, new()
         {
             IQueryable<X> query = dbset;
             foreach (var includeProperty in includeProperties)
@@ -82,13 +89,13 @@ namespace Greewf.BaseLibrary.Repositories
 
     public class RepositoryBase<T, Y, M> : RepositoryBase<T, Y>
         where T : DbContext, ISavingTracker, IQueryHintContext, new()
-        where Y : class , new()
+        where Y : class, new()
         where M : class, new()
     {
         //NOTE! this class is just for generic ValidationDictionart<M>. please put your extensibility codes in base class.
 
         public RepositoryBase(ContextManager<T> contextManager, Y unitOfRepository)
-            : base(contextManager,unitOfRepository)
+            : base(contextManager, unitOfRepository)
         {
         }
 
