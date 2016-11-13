@@ -31,8 +31,7 @@ namespace Greewf.BaseLibrary.Repositories
             if (contextManager == null)
             {
                 context = new T();// throw new Exception("ContextManager cannot be empty for Repository creation");
-                ValidationDictionary = new DefaultValidationDictionary();//when contextmanager is null.
-
+                ValidationDictionary = new DefaultValidationDictionary();//when contextmanager is null.                
             }
             else
             {
@@ -40,9 +39,20 @@ namespace Greewf.BaseLibrary.Repositories
                 ValidationDictionary = ContextManager.ValidationDictionary;
             }
 
+            //handling events
             context.OnSavedChanges += OnChangesSaved;
             context.OnSavingChanges += OnChangesSaving;
-            contextManager.OnChangesCommitted += OnChangesCommitted;
+
+            if (contextManager == null)
+            {
+                context.OnSavedChanges += (o) =>
+                {
+                    OnChangesCommitted();
+                };
+            }
+            else
+                contextManager.OnChangesCommitted += OnChangesCommitted;
+
 
             UoR = unitOfRepository;
 
