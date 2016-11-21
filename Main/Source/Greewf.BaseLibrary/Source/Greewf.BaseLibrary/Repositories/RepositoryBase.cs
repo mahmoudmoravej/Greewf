@@ -17,7 +17,7 @@ namespace Greewf.BaseLibrary.Repositories
     /// <typeparam name="T">EF Context</typeparam>
     /// <typeparam name="Y">UnitOfRepository</typeparam>
     public class RepositoryBase<T, Y>
-        where T : DbContext, ISavingTracker, IQueryHintContext, new()
+        where T : DbContext, ISavingTracker, ITransactionScopeAwareness, IQueryHintContext, new()
         where Y : class, new()
     {
         protected T context = null;
@@ -40,19 +40,17 @@ namespace Greewf.BaseLibrary.Repositories
             }
 
             //handling events
-            context.OnSavedChanges += OnChangesSaved;
-            context.OnSavingChanges += OnChangesSaving;
+            context.OnChangesSaving += OnChangesSaving;
+            context.OnChangesSaved += OnChangesSaved;
+            context.OnChangesCommitted += OnChangesCommitted;
 
-            if (contextManager == null)
-            {
-                context.OnSavedChanges += (o) =>
-                {
-                    OnChangesCommitted();
-                };
-            }
-            else
-                contextManager.OnChangesCommitted += OnChangesCommitted;
-
+            //if (contextManager == null)//because committing transaction is handled with context manager. when there is no any context manager, so we don't have any outer transaction(transactionscope indeed). so when the changes saved, it means commission too.
+            //{
+            //    context.OnChangesSaved += (o) =>
+            //    {
+            //        context.OnChangesCommittedEventInvoker();
+            //    };
+            //}
 
             UoR = unitOfRepository;
 
@@ -98,7 +96,7 @@ namespace Greewf.BaseLibrary.Repositories
     }
 
     public class RepositoryBase<T, Y, M> : RepositoryBase<T, Y>
-        where T : DbContext, ISavingTracker, IQueryHintContext, new()
+        where T : DbContext, ISavingTracker, ITransactionScopeAwareness, IQueryHintContext, new()
         where Y : class, new()
         where M : class, new()
     {

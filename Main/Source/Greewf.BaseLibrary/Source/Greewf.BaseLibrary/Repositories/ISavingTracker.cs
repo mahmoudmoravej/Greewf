@@ -8,7 +8,8 @@ namespace Greewf.BaseLibrary.Repositories
 {
     public interface ISavingTracker
     {
-        event Action<DbContext> OnSavingChanges;
-        event Action<DbContext> OnSavedChanges;
+        event Action<DbContext> OnChangesSaving;
+        event Action<DbContext> OnChangesSaved;
     }
+ 
 }

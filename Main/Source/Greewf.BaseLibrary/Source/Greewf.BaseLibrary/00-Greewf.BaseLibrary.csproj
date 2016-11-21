@@ -155,6 +155,7 @@
     <Compile Include="ReportLoaderExtensions\ReportSettingsBase.cs" />
     <Compile Include="ReportLoaderExtensions\ReportSettings.cs" />
     <Compile Include="ReportLoaderExtensions\StreamOutputResult.cs" />
+    <Compile Include="Repositories\ICommittedTransactionAwareness.cs" />
     <Compile Include="Validation\DefaultValidationDictionary.cs" />
     <Compile Include="Validation\ExtendedModelError.cs" />
     <Compile Include="Validation\IQuestionDictionary.cs" />

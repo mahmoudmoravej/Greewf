@@ -12,19 +12,18 @@ namespace Greewf.BaseLibrary.Repositories
     public abstract class ContextManagerBase
     {
         public DbContext ContextBase { get; protected set; } //we need this in ChangesTracker module.     
-        public event Action OnChangesCommitted;
+                                                             // public event Action OnChangesCommitted;
 
-        protected internal void InvokeOnChangesCommittedEvent()
-        {
-            OnChangesCommitted?.Invoke();
-        }
+        //protected internal void InvokeOnChangesCommittedEvent()
+        //{
+        //    OnChangesCommitted?.Invoke();
+        //}
     }
 
     public abstract class ContextManager<T> : ContextManagerBase
-        where T : DbContext, new()
+        where T : DbContext, ITransactionScopeAwareness, new()
     {
         private static bool _isFullTextSearchInitiated = false;
-        private bool _isTransactionScopeCreated;
 
         public IValidationDictionary ValidationDictionary { get; private set; }
 
@@ -33,7 +32,7 @@ namespace Greewf.BaseLibrary.Repositories
         {
             Context = new T();
             ContextBase = Context;
-            ValidationDictionary = validationDictionary ?? new DefaultValidationDictionary();        
+            ValidationDictionary = validationDictionary ?? new DefaultValidationDictionary();
             if (!_isFullTextSearchInitiated)
             {
                 _isFullTextSearchInitiated = true;
@@ -48,7 +47,7 @@ namespace Greewf.BaseLibrary.Repositories
 
             bool result = true;
 
-            if (_isTransactionScopeCreated)//to avoid creating new scope (it comes when savechanges causes to call savechanges again)
+            if (Context.TransactionScope != null)//to avoid creating new scope (it comes when savechanges causes to call savechanges again)
             {
                 Context.SaveChanges();
                 if (ValidationDictionary?.IsValid == false)
@@ -57,9 +56,9 @@ namespace Greewf.BaseLibrary.Repositories
                 return result;
             }
 
-            _isTransactionScopeCreated = true;
             using (var scope = new TransactionScope())
             {
+                Context.TransactionScope = scope;
                 Context.SaveChanges();//my be some calls on onChangesSaved event that needs to be in transaction
 
                 if (ValidationDictionary?.IsValid == false)
@@ -68,14 +67,19 @@ namespace Greewf.BaseLibrary.Repositories
                 if (result)
                     scope.Complete();
                 else
-                    scope.Dispose();              
+                    scope.Dispose();
             }
-            _isTransactionScopeCreated = false;
 
-            if (result) InvokeOnChangesCommittedEvent();
+            Context.TransactionScope = null;            
+
+            if (result)
+            {
+                //  InvokeOnChangesCommittedEvent();              
+                Context.OnChangesCommittedEventInvoker();
+            }
 
             return result;
         }
-       
+
     }
 }

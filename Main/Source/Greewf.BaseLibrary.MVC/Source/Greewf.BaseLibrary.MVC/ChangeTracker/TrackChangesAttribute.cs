@@ -22,11 +22,17 @@ namespace Greewf.BaseLibrary.MVC.ChangeTracker
             if (controller == null || controller.ContextManagerBase == null) return;
 
             if (controller.ContextManagerBase.ContextBase is ISavingTracker == false)
-                throw new Exception(string.Format("Your DbContext 'Controller.ContextManagerBase.ContextBase' should implements '{0}' interface in order to support using TrackChangesAttribute.", typeof(ISavingTracker).ToString()));
+                throw new Exception(string.Format("Your DbContext 'Controller.ContextManagerBase.ContextBase' should implements '{0}' interface in order to support using TrackChangesAttribute.", nameof(ISavingTracker)));
 
-            var context = controller.ContextManagerBase.ContextBase as ISavingTracker;
-            context.OnSavingChanges += OnSavingChanges;
-            context.OnSavedChanges += OnSavedChanges;
+            if (controller.ContextManagerBase.ContextBase is ITransactionScopeAwareness == false)
+                throw new Exception(string.Format("Your DbContext 'Controller.ContextManagerBase.ContextBase' should implements '{0}' interface in order to support using TrackChangesAttribute.", nameof(ITransactionScopeAwareness)));
+
+
+            var savingTracker = controller.ContextManagerBase.ContextBase as ISavingTracker;
+            savingTracker.OnChangesSaving += OnSavingChanges;
+
+            var commitTracker = controller.ContextManagerBase.ContextBase as ITransactionScopeAwareness;
+            commitTracker.OnChangesCommitted += OnChangesCommitted;//we should listen to commit to ensure that all changes are persisted
         }
 
         AuditingWidget auditingResult;
@@ -35,7 +41,7 @@ namespace Greewf.BaseLibrary.MVC.ChangeTracker
             auditingResult = ChangeTracker.Current.AuditContext(context);
         }
 
-        private void OnSavedChanges(DbContext context)
+        private void OnChangesCommitted()
         {
             ChangeTracker.Current.SaveAuditing(auditingResult);
             auditingResult = null;
