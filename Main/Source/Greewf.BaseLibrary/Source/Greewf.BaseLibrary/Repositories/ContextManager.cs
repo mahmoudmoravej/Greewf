@@ -47,7 +47,7 @@ namespace Greewf.BaseLibrary.Repositories
 
             bool result = true;
 
-            if (Context.TransactionScope != null)//to avoid creating new scope (it comes when savechanges causes to call savechanges again)
+            if (Context.IsInActiveTransactionScope)//to avoid creating new scope (it comes when savechanges causes to call savechanges again)
             {
                 Context.SaveChanges();
                 if (ValidationDictionary?.IsValid == false)
@@ -56,27 +56,33 @@ namespace Greewf.BaseLibrary.Repositories
                 return result;
             }
 
-            using (var scope = new TransactionScope())
+            try
             {
-                Context.TransactionScope = scope;
-                Context.SaveChanges();//my be some calls on onChangesSaved event that needs to be in transaction
+                using (var scope = new TransactionScope())
+                {
+                    Context.IsInActiveTransactionScope = true;
+                    Context.SaveChanges();//my be some calls on onChangesSaved event that needs to be in transaction
 
-                if (ValidationDictionary?.IsValid == false)
-                    result = false;
+                    if (ValidationDictionary?.IsValid == false)
+                        result = false;
 
-                if (result)
-                    scope.Complete();
-                else
-                    scope.Dispose();
+                    if (result)
+                        scope.Complete();
+                    else
+                        scope.Dispose();
+                }
+            }
+            finally
+            {
+                Context.IsInActiveTransactionScope = false;
             }
 
-            Context.TransactionScope = null;            
+       
 
             if (result)
-            {
-                //  InvokeOnChangesCommittedEvent();              
-                Context.OnChangesCommittedEventInvoker();
-            }
+                Context.OnTransactionScopeCommitted();
+            else
+                Context.OnTransactionScopeRollbacked();
 
             return result;
         }

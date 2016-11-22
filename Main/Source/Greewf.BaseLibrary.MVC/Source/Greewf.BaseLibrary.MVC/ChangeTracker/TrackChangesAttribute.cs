@@ -24,15 +24,10 @@ namespace Greewf.BaseLibrary.MVC.ChangeTracker
             if (controller.ContextManagerBase.ContextBase is ISavingTracker == false)
                 throw new Exception(string.Format("Your DbContext 'Controller.ContextManagerBase.ContextBase' should implements '{0}' interface in order to support using TrackChangesAttribute.", nameof(ISavingTracker)));
 
-            if (controller.ContextManagerBase.ContextBase is ITransactionScopeAwareness == false)
-                throw new Exception(string.Format("Your DbContext 'Controller.ContextManagerBase.ContextBase' should implements '{0}' interface in order to support using TrackChangesAttribute.", nameof(ITransactionScopeAwareness)));
-
-
             var savingTracker = controller.ContextManagerBase.ContextBase as ISavingTracker;
-            savingTracker.OnChangesSaving += OnSavingChanges;
 
-            var commitTracker = controller.ContextManagerBase.ContextBase as ITransactionScopeAwareness;
-            commitTracker.OnChangesCommitted += OnChangesCommitted;//we should listen to commit to ensure that all changes are persisted
+            savingTracker.OnChangesSaving += OnSavingChanges;
+            savingTracker.OnChangesCommitted += OnChangesCommitted;//we should listen to commit to ensure that all changes are persisted
         }
 
         AuditingWidget auditingResult;

@@ -9,7 +9,20 @@ namespace Greewf.BaseLibrary.Repositories
     public interface ISavingTracker
     {
         event Action<DbContext> OnChangesSaving;
+
+        /// <summary>
+        /// this event is intended to be raised after saving and before transaction scope commission
+        /// NOTE: if there is no transaction scope, this event will be same with OnChangesCommitted
+        /// </summary>
         event Action<DbContext> OnChangesSaved;
+
+
+        /// <summary>
+        /// this event is intended to be raised after saving and after transaction scope commission
+        /// NOTE: if there is no transaction scope, this event will be same with OnChangesSaved
+        /// </summary>
+        event Action OnChangesCommitted;
+
     }
- 
+
 }
