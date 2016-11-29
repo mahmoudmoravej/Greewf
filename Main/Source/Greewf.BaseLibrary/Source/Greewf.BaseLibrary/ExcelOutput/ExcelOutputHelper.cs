@@ -18,13 +18,13 @@ namespace Greewf.BaseLibrary.ExcelOutput
             //var metadata = ModelMetadataProviders.Current.GetMetadataForType(() => o, rowType);
 
             //Create new Excel workbook
-            //NOTE : XSSFWorkbook is for xslx format but its buggy in this version. 
+            //NOTE : XSSFWorkbook is for xslx format but its buggy in this version (2.1.3). 
             IWorkbook workbook;
 
             if (useExcel2007AndAbove)
-                workbook = new HSSFWorkbook();
-            else
                 workbook = new XSSFWorkbook();
+            else
+                workbook = new HSSFWorkbook();
 
             //Create new Excel sheet
             var sheet = workbook.CreateSheet();
