@@ -1,6 +1,7 @@
 ﻿using NPOI.HSSF.UserModel;
 using NPOI.HSSF.Util;
 using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +11,7 @@ namespace Greewf.BaseLibrary.ExcelOutput
 {
     public static class ExcelOutputHelper
     {
-        public static MemoryStream ExportToExcel(IQueryable data, List<ExcelColumnLayout> columnLayouts, Type columnsDataProviderContext)
+        public static MemoryStream ExportToExcel(IQueryable data, List<ExcelColumnLayout> columnLayouts, Type columnsDataProviderContext, IValidationDictionary validationDictionary = null, bool useExcel2007AndAbove = false)
         {
             var rowType = data.GetType().GetGenericArguments()[0];
             var o = Activator.CreateInstance(rowType);
@@ -18,7 +19,12 @@ namespace Greewf.BaseLibrary.ExcelOutput
 
             //Create new Excel workbook
             //NOTE : XSSFWorkbook is for xslx format but its buggy in this version. 
-            var workbook = new HSSFWorkbook();
+            IWorkbook workbook;
+
+            if (useExcel2007AndAbove)
+                workbook = new HSSFWorkbook();
+            else
+                workbook = new XSSFWorkbook();
 
             //Create new Excel sheet
             var sheet = workbook.CreateSheet();
@@ -117,7 +123,13 @@ namespace Greewf.BaseLibrary.ExcelOutput
 
             foreach (var rowData in data)
             {
-                var row = sheet.CreateRow(rowNumber++);
+                rowNumber++;
+                if (validationDictionary != null && rowNumber == 65537 && workbook is HSSFWorkbook)//excel 2003 does not supports rows more than 65534
+                {
+                    validationDictionary.AddError("", "امکان ارسال بیش از 65535 ردیف به اکسل نمی باشد ");//TODO:we should change it to 
+                    return null;
+                }
+                var row = sheet.CreateRow(rowNumber);
 
                 idx = 0;
                 foreach (var item in columnLayouts)
