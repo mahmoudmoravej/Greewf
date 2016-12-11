@@ -119,7 +119,7 @@ namespace Greewf.BaseLibrary.ExcelOutput
             var extraWidthCellStyle = workbook.CreateCellStyle();
             extraWidthCellStyle.WrapText = true;
 
-            int rowNumber = 1;
+            int rowNumber = useExcel2007AndAbove ? 0 : 1;
 
             foreach (var rowData in data)
             {
