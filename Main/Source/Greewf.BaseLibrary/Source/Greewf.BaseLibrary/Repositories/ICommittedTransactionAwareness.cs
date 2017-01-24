@@ -28,5 +28,13 @@ namespace Greewf.BaseLibrary.Repositories
         void OnTransactionScopeCommitted();
 
         void OnTransactionScopeRollbacked();
+
+        /// <summary>
+        /// از آنجا که بعد از آنکه ترنزکشن شروع شد نمی توان کانکشن جدیدی را در آن شروع کرد مگر آنکه 
+        /// سرویس تراکنش توزیع یافته یا 
+        /// DTC
+        /// شروع شده باشد، از طریق این تابع سعی می کنیم که در صورت امکان کانکشن های لازم را ایجاد کنیم
+        /// </summary>
+        void OnBeforeTransactionScopeStart();
     }
 }

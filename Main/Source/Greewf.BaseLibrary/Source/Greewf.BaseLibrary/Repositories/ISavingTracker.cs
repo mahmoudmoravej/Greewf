@@ -23,6 +23,12 @@ namespace Greewf.BaseLibrary.Repositories
         /// </summary>
         event Action OnChangesCommitted;
 
+        /// <summary>
+        /// this event is intended to be raised before starting transaction scope
+        /// NOTE: if there is no transaction scope, this event will be same with OnChangesSaving
+        /// </summary>
+        event Action OnBeforeTransactionStart;
+
     }
 
 }

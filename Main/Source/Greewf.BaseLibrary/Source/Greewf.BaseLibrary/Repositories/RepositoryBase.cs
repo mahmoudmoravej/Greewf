@@ -43,6 +43,7 @@ namespace Greewf.BaseLibrary.Repositories
             context.OnChangesSaving += OnChangesSaving;
             context.OnChangesSaved += OnChangesSaved;
             context.OnChangesCommitted += OnChangesCommitted;
+            context.OnBeforeTransactionStart += OnBeforeTransactionStart;
 
             //if (contextManager == null)//because committing transaction is handled with context manager. when there is no any context manager, so we don't have any outer transaction(transactionscope indeed). so when the changes saved, it means commission too.
             //{
@@ -69,6 +70,10 @@ namespace Greewf.BaseLibrary.Repositories
 
         }
 
+        protected virtual void OnBeforeTransactionStart()
+        {
+
+        }
 
         protected IQueryable<X> AllIncluding<X>(DbSet<X> dbset, params Expression<Func<X, object>>[] includeProperties) where X : class, new()
         {

@@ -58,6 +58,8 @@ namespace Greewf.BaseLibrary.Repositories
 
             try
             {
+                Context.OnBeforeTransactionScopeStart();
+
                 using (var scope = new TransactionScope())
                 {
                     Context.IsInActiveTransactionScope = true;
