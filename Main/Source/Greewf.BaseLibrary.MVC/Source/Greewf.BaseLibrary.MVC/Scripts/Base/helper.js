@@ -520,9 +520,12 @@ telerikHelper = new function () {
                     cols.push({ Id: o.member, Title: o.title, Type: o.type, Index: i });
             });
 
-            var form = $('<form method="post"><input type="submit"/><input type="hidden" name="layout" /></form>').attr('action', href);
+            var form = $('<form method="post" style="display:none;"><input type="submit"/><input type="hidden" name="layout" /></form>').attr('action', href);
             $('input[name="layout"]', form).val(JSON.stringify(cols));
+            $(document.body).append(form);
             $('input[type="submit"]', form).click();
+            $(form).remove();
+
             return false;
         });
 
