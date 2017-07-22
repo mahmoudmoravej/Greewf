@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="LogModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityContainer Name="LogModelStoreContainer">
+          <EntitySet Name="AuditLogDetails" EntityType="LogModel.Store.AuditLogDetails" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="AuditLogs" EntityType="LogModel.Store.AuditLogs" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+        </EntityContainer>
+        <EntityType Name="AuditLogDetails">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="AuditLogId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PropertyName" Type="nvarchar" Nullable="false" MaxLength="100" />
+          <Property Name="OriginalValue" Type="nvarchar(max)" />
+          <Property Name="NewValue" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="AuditLogs">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="EntityName" Type="nvarchar" Nullable="false" MaxLength="100" />
+          <Property Name="EntityKey" Type="nvarchar" MaxLength="100" />
+          <Property Name="DateTime" Type="datetime" Nullable="false" />
+          <Property Name="ParentId" Type="uniqueidentifier" />
+          <Property Name="UserId" Type="nvarchar" MaxLength="50" />
+          <Property Name="EventType" Type="char" Nullable="false" MaxLength="1" />
+          <Property Name="Description" Type="nvarchar" MaxLength="400" />
+        </EntityType>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ChangeTrackerModel" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2009/11/edm" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
+        <EntityContainer Name="ChangeTrackerContext" annotation:LazyLoadingEnabled="true" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
+          <EntitySet Name="AuditLogDetails" EntityType="ChangeTrackerModel.AuditLogDetail" />
+          <EntitySet Name="AuditLogs" EntityType="ChangeTrackerModel.AuditLog" />
+          <AssociationSet Name="FK_AuditLogDetail_AuditLogDetail" Association="ChangeTrackerModel.FK_AuditLogDetail_AuditLogDetail">
+            <End Role="AuditLog" EntitySet="AuditLogs" />
+            <End Role="AuditLogDetail" EntitySet="AuditLogDetails" />
+          </AssociationSet>
+          <AssociationSet Name="AuditLogAuditLog" Association="ChangeTrackerModel.AuditLogAuditLog">
+            <End Role="AuditLog" EntitySet="AuditLogs" />
+            <End Role="AuditLog1" EntitySet="AuditLogs" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="AuditLogDetail">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Guid" Name="Id" Nullable="false" />
+          <Property Type="Guid" Name="AuditLogId" Nullable="false" />
+          <Property Type="String" Name="PropertyName" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="OriginalValue" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="NewValue" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AuditLog" Relationship="ChangeTrackerModel.FK_AuditLogDetail_AuditLogDetail" FromRole="AuditLogDetail" ToRole="AuditLog" />
+        </EntityType>
+        <EntityType Name="AuditLog">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Guid" Name="Id" Nullable="false" />
+          <Property Type="String" Name="EntityName" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="EntityKey" MaxLength="100" FixedLength="false" Unicode="true" Nullable="true" />
+          <Property Type="DateTime" Name="DateTime" Nullable="false" />
+          <Property Type="Guid" Name="ParentId" />
+          <Property Type="String" Name="UserId" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="EventType" Nullable="false" MaxLength="1" FixedLength="true" Unicode="false" />
+          <NavigationProperty Name="AuditLogDetails" Relationship="ChangeTrackerModel.FK_AuditLogDetail_AuditLogDetail" FromRole="AuditLog" ToRole="AuditLogDetail" />
+          <NavigationProperty Name="Parent" Relationship="ChangeTrackerModel.AuditLogAuditLog" FromRole="AuditLog1" ToRole="AuditLog" />
+          <Property Type="String" Name="Description" MaxLength="400" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <Association Name="FK_AuditLogDetail_AuditLogDetail">
+          <End Type="ChangeTrackerModel.AuditLog" Role="AuditLog" Multiplicity="1" />
+          <End Type="ChangeTrackerModel.AuditLogDetail" Role="AuditLogDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AuditLog">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AuditLogDetail">
+              <PropertyRef Name="AuditLogId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="AuditLogAuditLog">
+          <End Type="ChangeTrackerModel.AuditLog" Role="AuditLog" Multiplicity="0..1" />
+          <End Type="ChangeTrackerModel.AuditLog" Role="AuditLog1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AuditLog">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AuditLog1">
+              <PropertyRef Name="ParentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="LogModelStoreContainer" CdmEntityContainer="ChangeTrackerContext">
+          <EntitySetMapping Name="AuditLogDetails">
+            <EntityTypeMapping TypeName="ChangeTrackerModel.AuditLogDetail">
+              <MappingFragment StoreEntitySet="AuditLogDetails">
+                <ScalarProperty Name="NewValue" ColumnName="NewValue" />
+                <ScalarProperty Name="OriginalValue" ColumnName="OriginalValue" />
+                <ScalarProperty Name="PropertyName" ColumnName="PropertyName" />
+                <ScalarProperty Name="AuditLogId" ColumnName="AuditLogId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AuditLogs">
+            <EntityTypeMapping TypeName="ChangeTrackerModel.AuditLog">
+              <MappingFragment StoreEntitySet="AuditLogs">
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="EventType" ColumnName="EventType" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="DateTime" ColumnName="DateTime" />
+                <ScalarProperty Name="EntityKey" ColumnName="EntityKey" />
+                <ScalarProperty Name="EntityName" ColumnName="EntityName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams>
+      <Diagram Name="LogContext">
+        <EntityTypeShape EntityType="ChangeTrackerModel.AuditLogDetail" Width="1.5" PointX="5.125" PointY="1.625" Height="2.1725878906249996" />
+        <EntityTypeShape EntityType="ChangeTrackerModel.AuditLog" Width="1.5" PointX="1.625" PointY="1.25" Height="2.9417936197916656" />
+        <AssociationConnector Association="ChangeTrackerModel.FK_AuditLogDetail_AuditLogDetail">
+          <ConnectorPoint PointX="3.125" PointY="2.7112939453125" />
+          <ConnectorPoint PointX="5.125" PointY="2.7112939453125" />
+        </AssociationConnector>
+        <AssociationConnector Association="ChangeTrackerModel.AuditLogAuditLog">
+          <ConnectorPoint PointX="2.1569230769230767" PointY="4.1917936197916656" />
+          <ConnectorPoint PointX="2.1569230769230767" PointY="4.4417936197916656" />
+          <ConnectorPoint PointX="2.6034615384615383" PointY="4.4417936197916656" />
+          <ConnectorPoint PointX="2.6034615384615383" PointY="4.1917936197916656" />
+        </AssociationConnector>
+      </Diagram>
+    </Diagrams>
+  </Designer>
+</edmx:Edmx>

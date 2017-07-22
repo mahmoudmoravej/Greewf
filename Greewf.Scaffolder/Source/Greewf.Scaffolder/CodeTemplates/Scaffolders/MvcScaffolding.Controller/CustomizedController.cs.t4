@@ -1,0 +1,27 @@
+﻿<#@ template language="C#" HostSpecific="True"  inherits="DynamicTransform" #>
+<#@ Output Extension="cs" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="EnvDTE" #>
+		<# 
+		string name="";
+		if (Model.RelatedEntity is RelatedEntityInfo && Model.RelatedEntity.RelationType == RelationType.Parent){ 
+			name = (Model.RelatedEntity as RelatedEntityInfo).RelatedEntityType.Name+"Repository";
+		}
+		else if(Model.RelatedEntity is CodeType){//where the entity passed to this T4 directly
+			name = (Model.RelatedEntity as CodeType).Name+"Repository";
+		}
+		if(!string.IsNullOrWhiteSpace(name)){			
+		#>
+        
+        public I<#=name#> <#=name#>
+        {
+            get
+            {
+                return UoR.<#=name#>;
+            }
+        }
+		
+  		<#}#>

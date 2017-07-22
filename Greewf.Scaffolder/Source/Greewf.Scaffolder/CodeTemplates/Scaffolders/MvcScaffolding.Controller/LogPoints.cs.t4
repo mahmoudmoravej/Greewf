@@ -1,0 +1,38 @@
+﻿<#@ template language="C#" HostSpecific="True"  inherits="DynamicTransform" #>
+<#@ Output Extension="cs" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="EnvDTE" #>
+<# 
+    var modelType = (EnvDTE.CodeType)Model.ModelType; 
+    var modelName = modelType.Name; 
+#>
+  <Log Id="<#= modelName #>Create" Group="<#= modelName #>" Category="Create">تعریف <#= GetDisplayName(modelType) #> جدید</Log>
+  <Log Id="<#= modelName #>Edit"   Group="<#= modelName #>" Category="Edit">ویرایش <#= GetDisplayName(modelType) #></Log>
+  <Log Id="<#= modelName #>Delete" Group="<#= modelName #>" Category="Delete">حذف <#= GetDisplayName(modelType) #></Log>
+<#+
+string GetDisplayName(EnvDTE.CodeType type){
+	if (string.IsNullOrWhiteSpace(type.DocComment))
+		return type.Name;
+
+	var sum = GetCleanDocument(type.DocComment);
+    if (string.IsNullOrWhiteSpace(sum))
+        return type.Name;
+    return sum;
+}
+string GetCleanDocument(string doc)
+{	
+	return 
+		doc
+		.Replace("<doc>","")
+		.Replace("</doc>","")
+		.Replace("<summary>","")
+		.Replace("</summary>","")
+		.Replace("\r","")
+		.Replace("\n","")
+		.Replace(@"///","")
+		.Trim();
+}
+#>

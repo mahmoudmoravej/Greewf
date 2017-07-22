@@ -1,0 +1,31 @@
+﻿.g-clearfix:after {
+    content: " ";
+    display: block;
+    height: 0;
+    clear: both;
+}
+
+.g-window-buttonbar {
+    padding: 5px;
+    margin: 0px;
+    display: block;
+    border-width: 1px 0 0!important;
+}
+
+.g-buttons-content button {
+    margin-left: 3px;
+    margin-right: 3px;
+}
+
+.g-form-content {
+    padding: 10px; /*for padding inside the forms*/
+}
+
+.g-warning-content {
+    background-color: #FFCC00;
+}
+
+ .t-state-hover .t-group .t-link:not(.t-state-hover) {
+        color: initial!important; /*becuase of bug in some telerik themse(like forest) for menus insde the panel bar*/
+}
+

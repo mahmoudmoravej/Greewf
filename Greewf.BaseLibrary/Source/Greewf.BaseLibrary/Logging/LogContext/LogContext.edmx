@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="LogModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="LogDetails">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LogId" Type="bigint" Nullable="false" />
+          <Property Name="Key" Type="varchar" MaxLength="100" />
+          <Property Name="KeyTitle" Type="nvarchar" MaxLength="200" />
+          <Property Name="Value" Type="nvarchar" MaxLength="2000" />
+        </EntityType>
+        <EntityType Name="Logs">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DateTime" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="Key" Type="nvarchar" MaxLength="100" />
+          <Property Name="Code" Type="varchar" MaxLength="100" />
+          <Property Name="Text" Type="nvarchar" MaxLength="4000" />
+          <Property Name="Ip" Type="varchar" MaxLength="50" />
+          <Property Name="FromInternet" Type="bit" />
+          <Property Name="MachineName" Type="nvarchar" MaxLength="50" />
+          <Property Name="Browser" Type="varchar" MaxLength="50" />
+          <Property Name="Username" Type="nvarchar" MaxLength="50" />
+          <Property Name="UserFullname" Type="nvarchar" MaxLength="50" />
+          <Property Name="RequestUrl" Type="nvarchar" MaxLength="1000" />
+          <Property Name="Querystring" Type="nvarchar(max)" />
+          <Property Name="UserAgent" Type="varchar" MaxLength="400" />
+          <Property Name="IsMobile" Type="bit" />
+          <Property Name="RequestMethod" Type="nvarchar" MaxLength="100" />
+          <Property Name="RequestBody" Type="nvarchar(max)" />
+          <Property Name="RequestHeaders" Type="nvarchar(max)" />
+          <Property Name="ServerMachineName" Type="nvarchar" MaxLength="40" />
+          <Property Name="ServerProcessName" Type="nvarchar" MaxLength="30" />
+          <Property Name="ServerProcessId" Type="int" />
+          <Property Name="Checksum" Type="int" />
+        </EntityType>
+        <EntityContainer Name="LogModelStoreContainer">
+          <EntitySet Name="LogDetails" EntityType="Self.LogDetails" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Logs" EntityType="Self.Logs" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="Greewf.BaseLibrary.Logging" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2009/11/edm" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
+        <EntityContainer Name="LogContext" annotation:LazyLoadingEnabled="true" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
+          <EntitySet Name="Logs" EntityType="Greewf.BaseLibrary.Logging.Log" />
+          <EntitySet Name="LogDetails" EntityType="Greewf.BaseLibrary.Logging.LogDetail" />
+          <AssociationSet Name="LogLogDetails" Association="Greewf.BaseLibrary.Logging.LogLogDetails">
+            <End Role="Log" EntitySet="Logs" />
+            <End Role="LogDetails" EntitySet="LogDetails" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Log">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Name="DateTime" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Key" Type="String" MaxLength="100" Unicode="true" FixedLength="false" />
+          <Property Name="Code" Type="String" MaxLength="100" Unicode="false" FixedLength="false" />
+          <Property Name="Text" Type="String" MaxLength="4000" Unicode="true" FixedLength="false" />
+          <Property Name="Ip" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="MachineName" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="Browser" Type="String" MaxLength="50" Unicode="false" FixedLength="false" />
+          <Property Name="Username" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="UserFullname" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="RequestUrl" Type="String" MaxLength="1000" Unicode="true" FixedLength="false" />
+          <Property Name="Querystring" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <Property Type="Boolean" Name="IsMobile" />
+          <Property Type="String" Name="UserAgent" MaxLength="400" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="LogDetails" Relationship="Greewf.BaseLibrary.Logging.LogLogDetails" FromRole="Log" ToRole="LogDetails" />
+          <Property Name="RequestBody" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="RequestMethod" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="RequestHeaders" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="FromInternet" Type="Boolean" />
+          <Property Name="Checksum" Type="Int32" />
+          <Property Name="ServerMachineName" Type="String" MaxLength="40" FixedLength="false" Unicode="true" />
+          <Property Name="ServerProcessName" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+          <Property Name="ServerProcessId" Type="Int32" />
+        </EntityType>
+        <EntityType Name="LogDetail">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int64" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+          <Property Type="Int64" Name="LogId" Nullable="false" />
+          <Property Type="String" Name="Key" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="KeyTitle" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Value" MaxLength="2000" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <Association Name="LogLogDetails">
+          <End Type="Greewf.BaseLibrary.Logging.Log" Role="Log" Multiplicity="1" />
+          <End Type="Greewf.BaseLibrary.Logging.LogDetail" Role="LogDetails" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Log">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="LogDetails">
+              <PropertyRef Name="LogId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="LogModelStoreContainer" CdmEntityContainer="LogContext">
+          <EntitySetMapping Name="Logs"><EntityTypeMapping TypeName="Greewf.BaseLibrary.Logging.Log"><MappingFragment StoreEntitySet="Logs">
+            <ScalarProperty Name="ServerProcessId" ColumnName="ServerProcessId" />
+                <ScalarProperty Name="ServerProcessName" ColumnName="ServerProcessName" />
+                <ScalarProperty Name="ServerMachineName" ColumnName="ServerMachineName" />
+                <ScalarProperty Name="Checksum" ColumnName="Checksum" />
+                <ScalarProperty Name="FromInternet" ColumnName="FromInternet" />
+                <ScalarProperty Name="RequestHeaders" ColumnName="RequestHeaders" />
+                <ScalarProperty Name="RequestMethod" ColumnName="RequestMethod" />
+                <ScalarProperty Name="RequestBody" ColumnName="RequestBody" />
+                <ScalarProperty Name="UserAgent" ColumnName="UserAgent" />
+                <ScalarProperty Name="IsMobile" ColumnName="IsMobile" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+            <ScalarProperty Name="DateTime" ColumnName="DateTime" />
+            <ScalarProperty Name="Key" ColumnName="Key" />
+            <ScalarProperty Name="Code" ColumnName="Code" />
+            <ScalarProperty Name="Text" ColumnName="Text" />
+            <ScalarProperty Name="Ip" ColumnName="Ip" />
+            <ScalarProperty Name="MachineName" ColumnName="MachineName" />
+            <ScalarProperty Name="Browser" ColumnName="Browser" />
+            <ScalarProperty Name="Username" ColumnName="Username" />
+            <ScalarProperty Name="UserFullname" ColumnName="UserFullname" />
+            <ScalarProperty Name="RequestUrl" ColumnName="RequestUrl" />
+            <ScalarProperty Name="Querystring" ColumnName="Querystring" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="LogDetails">
+            <EntityTypeMapping TypeName="Greewf.BaseLibrary.Logging.LogDetail">
+              <MappingFragment StoreEntitySet="LogDetails">
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="KeyTitle" ColumnName="KeyTitle" />
+                <ScalarProperty Name="Key" ColumnName="Key" />
+                <ScalarProperty Name="LogId" ColumnName="LogId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="False" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+        <DesignerProperty Name="UseLegacyProvider" Value="False" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams>
+      <Diagram Name="LogContext">
+        <EntityTypeShape EntityType="Greewf.BaseLibrary.Logging.Log" Width="1.5" PointX="3.75" PointY="0.75" Height="3.9033007812499996" IsExpanded="true" />
+        <EntityTypeShape EntityType="Greewf.BaseLibrary.Logging.LogDetail" Width="1.5" PointX="7" PointY="1.5" Height="1.9802864583333326" />
+        <AssociationConnector Association="Greewf.BaseLibrary.Logging.LogLogDetails">
+          <ConnectorPoint PointX="5.25" PointY="2.4901432291666663" />
+          <ConnectorPoint PointX="7" PointY="2.4901432291666663" />
+        </AssociationConnector>
+      </Diagram>
+    </Diagrams>
+  </Designer>
+</edmx:Edmx>

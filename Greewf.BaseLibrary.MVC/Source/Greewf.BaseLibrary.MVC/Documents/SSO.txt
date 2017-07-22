@@ -1,0 +1,14 @@
+﻿note : set the following lines (with your own values) to support SSO(Single Sign-On) with different applications
+
+        <authentication mode="Forms">
+          <forms name=".ASPXFORMSAUTH" loginUrl="~/Account/LogOn" protection="All" />
+        </authentication>
+        <machineKey
+         validationKey="A90B3C89CB21F4F1422FA158A5B42D0E8DB8CB5CDA1742572A487D9401E3400267682B202B746511891C1BAF47F8D25C07F6C39A104696DB51F17C529AD3CABE"
+         decryptionKey="8A9BE8FD67AF6979E7D20198CFEA50DD3D3799C77AF2B714"
+         validation="SHA1" />
+
+PAY ATTENTION:
+1- setting domain is optional for <forms> if your server just host one site (refer to : http://msdn.microsoft.com/en-us/library/eb0zx8fc.aspx)
+2- change machinekeys values BUT preserve its length
+3- set the same name for <forms> and same <machinekey> for application that want to use the SSO service

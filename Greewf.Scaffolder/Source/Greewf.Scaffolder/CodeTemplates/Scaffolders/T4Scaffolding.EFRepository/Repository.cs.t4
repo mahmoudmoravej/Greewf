@@ -1,0 +1,146 @@
+﻿<#@ template language="C#" HostSpecific="True"  inherits="DynamicTransform" #>
+<#@ assembly name="System.Data.Entity" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="EnvDTE" #>
+<#@ Output Extension="cs" #>
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Web;
+using Greewf.BaseLibrary.Repositories;
+using Greewf.BaseLibrary;
+
+using <#= Model.RepositoryInterfaceNamespace #>;
+
+<# foreach(var ns in new[] { Model.ModelTypeNamespace, Model.DbContextNamespace }.Where(x => !string.IsNullOrEmpty(x) && (x != Model.RepositoryNamespace)).Distinct()) { #>
+using <#= ns #>;
+<# } #>
+
+namespace <#= Model.RepositoryNamespace #>
+{ 
+<# 
+    var modelType = (CodeType)Model.ModelType; 
+    var modelName = modelType.Name; 
+    var modelNamePlural = Model.ModelTypePluralized; 
+    var contextName = ((CodeType)Model.DbContextType).Name; 
+    var primaryKeyProperty = modelType.VisibleMembers().OfType<CodeProperty>().Single(x => x.Name == Model.PrimaryKey);
+    var isObjectContext = ((CodeType)Model.DbContextType).IsAssignableTo<System.Data.Objects.ObjectContext>();
+#>
+    public class <#= modelName #>Repository : RepositoryBase, I<#= modelName #>Repository
+    {
+
+        public <#= modelName #>Repository()
+            : base(null, null)
+        {
+        }
+
+        public <#= modelName #>Repository(ContextManager contextManager, UnitOfRepositories unitOfRepositories)
+            : base(contextManager, unitOfRepositories)
+        {
+        }
+
+        public IQueryable<<#= modelName #>> All
+        {
+            get { return context.<#= modelNamePlural #>; }
+        }
+
+        public IQueryable<<#= modelName #>> AllIncluding(params Expression<Func<<#= modelName #>, object>>[] includeProperties)
+        {
+		 	return AllIncluding<<#= modelName #>>(context.<#= modelNamePlural #>, includeProperties);
+        }
+
+        public <#= modelName #> Find(<#= primaryKeyProperty.Type.AsString #> id)
+        {
+            return context.<#= modelNamePlural #>.Single(x => x.<#= Model.PrimaryKey #> == id);
+		}
+
+        public <#= modelName #> Find(<#= primaryKeyProperty.Type.AsString #> id,params Expression<Func<<#= modelName #>, object>>[] includeProperties)
+        {
+<# if(isObjectContext) { #>
+            return AllIncluding(includeProperties).Single(x => x.<#= Model.PrimaryKey #> == id);
+<# } else { #>
+            return AllIncluding(includeProperties).Single(x => x.<#= Model.PrimaryKey #> == id);
+<# } #>
+        }
+
+        public bool InsertOrUpdate(<#= modelName #> <#= modelName.ToLower() #>)
+        {
+            if (!Validate(<#= modelName.ToLower() #>))
+                return false;
+
+            if (<#= modelName.ToLower() #>.<#= Model.PrimaryKey #> == default(<#= primaryKeyProperty.Type.AsString #>)) {
+                // New entity
+<# if(primaryKeyProperty.Type.AsString == "System.Guid") { #>
+                <#= modelName.ToLower() #>.<#= primaryKeyProperty.Name #> = Guid.NewGuid();
+<# } #>
+<# if(isObjectContext) { #>
+                context.<#= modelNamePlural #>.AddObject(<#= modelName.ToLower() #>);
+<# } else { #>
+                context.<#= modelNamePlural #>.Add(<#= modelName.ToLower() #>);
+<# } #>
+            } else {
+                // Existing entity
+<# if(isObjectContext) { #>
+                context.<#= modelNamePlural #>.Attach(<#= modelName.ToLower() #>);
+                context.ObjectStateManager.ChangeObjectState(<#= modelName.ToLower() #>, EntityState.Modified);
+<# } else { #>
+                context.Entry(<#= modelName.ToLower() #>).State = EntityState.Modified;
+<# } #>
+            }
+            return true;
+
+        }
+
+        public bool Delete(<#= primaryKeyProperty.Type.AsString #> id)
+        {
+<# if(isObjectContext) { #>
+            var <#= modelName.ToLower() #> = context.<#= modelNamePlural #>.Single(x => x.<#= Model.PrimaryKey #> == id);
+<# } else { #>
+            var <#= modelName.ToLower() #> = context.<#= modelNamePlural #>.Find(id);
+<# } #>
+            if (ValidateDeleting(<#= modelName.ToLower() #>))
+            {
+<# if(isObjectContext) { #>
+                context.<#= modelNamePlural #>.DeleteObject(<#= modelName.ToLower() #>);
+<# } else { #>
+                context.<#= modelNamePlural #>.Remove(<#= modelName.ToLower() #>);
+<# } #>
+                return true;
+            }
+            return false;
+
+        }
+
+        public bool ValidateDeleting(<#= modelName #> <#= modelName.ToLower() #>)
+        {
+            //TODO : write your entity deleting conditions codes that should to be met here.
+            // follow the following pattern 
+            //int relatedCount = deletingItem.RelatedItems.Count;
+            //if (relatedCount > 0)
+            //    ValidationDictionary.AddError("", string.Format("وجود {0} آیتم مرتبط", relatedCount));
+
+            return ValidationDictionary.IsValid;
+        }
+
+        public bool Validate(<#= modelName #> <#= modelName.ToLower() #>)
+        {
+            //TODO : write your entity validation codes (for insert or update) here.
+            return ValidationDictionary.IsValid;
+        }
+
+        public void Save()
+        {
+            context.SaveChanges();
+        }
+		
+		public void Detach(<#= modelName #> <#= modelName.ToLower() #>)
+		{
+            context.Entry(<#= modelName.ToLower() #>).State = System.Data.EntityState.Detached;
+		}
+
+    }
+ 
+}

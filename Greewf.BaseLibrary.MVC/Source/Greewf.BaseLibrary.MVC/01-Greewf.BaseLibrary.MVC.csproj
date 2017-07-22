@@ -1,0 +1,441 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{566A5C58-FBA2-467D-B647-4A0CA767062C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Greewf.BaseLibrary.MVC</RootNamespace>
+    <AssemblyName>Greewf.BaseLibrary.MVC</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Greewf.key.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AutoMapper, Version=1.1.0.188, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\..\..\SharedBinaries\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\NPOI.2.1.3.1\lib\net40\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.Common, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.ReportViewer.2015.Runtime.12.0.2.2402\lib\Microsoft.ReportViewer.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.ProcessingObjectModel, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.ReportViewer.2015.Runtime.12.0.2.2402\lib\Microsoft.ReportViewer.ProcessingObjectModel.DLL</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WebForms, Version=12.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.ReportViewer.2015.Runtime.12.0.2.2402\lib\Microsoft.ReportViewer.WebForms.DLL</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI, Version=2.1.3.1, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\NPOI.2.1.3.1\lib\net40\NPOI.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OOXML, Version=2.1.3.1, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\NPOI.2.1.3.1\lib\net40\NPOI.OOXML.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net, Version=2.1.3.1, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\NPOI.2.1.3.1\lib\net40\NPOI.OpenXml4Net.dll</HintPath>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats, Version=2.1.3.1, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\NPOI.2.1.3.1\lib\net40\NPOI.OpenXmlFormats.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.Mvc.4.0.20710.0\lib\net40\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.Razor.2.0.20715.0\lib\net40\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Telerik.Web.Mvc, Version=2012.1.214.340, Culture=neutral, PublicKeyToken=121fae78165ba3d4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\SharedBinaries\Telerik.Web.Mvc.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Ajax\ResponsiveJson.cs" />
+    <Compile Include="Ajax\CustomizedAjaxOption.cs" />
+    <Compile Include="ChangeTracker\AuditingWidget.cs" />
+    <Compile Include="ChangeTracker\ChangeTracker.cs" />
+    <Compile Include="ChangeTracker\ChangeTrackerContext\AuditLog.cs">
+      <DependentUpon>ChangeTrackerContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ChangeTracker\ChangeTrackerContext\AuditLogDetail.cs">
+      <DependentUpon>ChangeTrackerContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext.Context1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ChangeTrackerContext.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext.Extend.cs" />
+    <Compile Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ChangeTrackerContext.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ChangeTrackerContext.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="ChangeTracker\ChangeTrackerDetailsProvider.cs" />
+    <Compile Include="ChangeTracker\ChangeTrackerEntityDetailsProvider.cs" />
+    <Compile Include="ChangeTracker\DefaultChangeTracker.cs" />
+    <Compile Include="ChangeTracker\TrackChangesAttribute.cs" />
+    <Compile Include="Controller\ActionType.cs" />
+    <Compile Include="Controller\ModelPermissionLimiters.cs" />
+    <Compile Include="Controller\RedirectToRouteResultEx.cs" />
+    <Compile Include="Controller\RedirectToRouteResultExtensions.cs" />
+    <Compile Include="Controller\SuccessViewResult.cs" />
+    <Compile Include="Controller\SensetiveFields.cs" />
+    <Compile Include="Controller\CustomizedControllerBase.cs" />
+    <Compile Include="CustomHelpers\CheckBoxListFor.cs" />
+    <Compile Include="CustomHelpers\Commons\GreewfHelperFactoryT.cs" />
+    <Compile Include="CustomHelpers\Commons\GreewfHelperFactory.cs" />
+    <Compile Include="CustomHelpers\Commons\HtmlHelperExtension.cs" />
+    <Compile Include="CustomHelpers\ContextMenu\GreewfHelperFactory.cs" />
+    <Compile Include="CustomHelpers\ContextMenu\ContextMenuItemsBuilder.cs" />
+    <Compile Include="CustomHelpers\ContextMenu\ContextMenuItemBuilder.cs" />
+    <Compile Include="CustomHelpers\ContextMenu\ContextMenuItem.cs" />
+    <Compile Include="CustomHelpers\ContextMenu\ContextMenu.cs" />
+    <Compile Include="CustomHelpers\ImagePickerFor.cs" />
+    <Compile Include="CustomHelpers\PersianDatePickerFor.cs" />
+    <Compile Include="CustomHelpers\DiffMatchPatch.cs" />
+    <Compile Include="CustomHelpers\ValidationFor.cs" />
+    <Compile Include="CustomHelpers\PartialFor.cs" />
+    <Compile Include="CustomHelpers\ValidationSummary.cs" />
+    <Compile Include="CustomHelpers\WindowValueSelectorFor.cs" />
+    <Compile Include="CustomHelpers\Utility.cs" />
+    <Compile Include="CustomHelpers\CompundComboListFor.cs" />
+    <Compile Include="Controller\CustomizedControllerBaseT.cs" />
+    <Content Include="Documents\SSO.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Compile Include="GreewfHttpApplication.cs" />
+    <Compile Include="GridViewModelBase.cs" />
+    <Compile Include="HttpModules\PersianCharacterCorrecterModule.cs" />
+    <Compile Include="IGreewfHomeController.cs" />
+    <Compile Include="Logging\DefaultLogger.cs" />
+    <Compile Include="Logging\HttpWebLogger.cs" />
+    <Compile Include="Logging\LogAttribute.cs" />
+    <Compile Include="Logging\LoggerExtensions.cs" />
+    <Compile Include="OfflineTools\HashStamp.cs" />
+    <Compile Include="RedirectToRouteSuccessResult.cs" />
+    <Content Include="Documents\AreaRules.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\FormAjaxifier.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\Layout.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\Layout.Window.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\Layout.Core.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\Layout.Tooltip.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Compile Include="Security\CurrentUserBase.cs" />
+    <Compile Include="Security\V2\CurrentUserBase.cs" />
+    <Compile Include="Security\V2\PermissionCoordinatorBase.cs" />
+    <Compile Include="Security\V2\PermissionLimiterBase.cs" />
+    <Compile Include="Security\V2\SystemRole.cs" />
+    <Compile Include="Security\V2\UserPermissionHelper.cs" />
+    <Compile Include="Security\V1\PermissionLimiterBase.cs" />
+    <Compile Include="Security\PermissionLimiterBase.cs" />
+    <Compile Include="ExcelOutput\ExcelOutputAttribute.cs" />
+    <Compile Include="TelerikExtentions\Helper.cs" />
+    <Compile Include="Validators\Localized\FkRequiredAttribute.cs" />
+    <Compile Include="Validators\Localized\RangeAttribute.cs" />
+    <Compile Include="Validators\Localized\DigitsOnlyAttribute.cs" />
+    <Compile Include="Validators\Localized\LengthAttribute.cs" />
+    <Compile Include="Validators\Localized\PhoneAttribute.cs" />
+    <Compile Include="Validators\Localized\RequiredAttribute.cs" />
+    <Compile Include="Mappers\AutoMapAttribute.cs" />
+    <Compile Include="Mappers\IModelMapperController.cs" />
+    <Compile Include="Mappers\IMapper.cs" />
+    <Compile Include="Mappers\ViewModelMapper.cs" />
+    <Compile Include="Security\V1\CurrentUserBase.cs" />
+    <Compile Include="ProfileCommonBase.cs" />
+    <Compile Include="ProfileExtentions.cs" />
+    <Compile Include="Security\PermissionAttribute.cs" />
+    <Compile Include="Security\V1\PermissionCoordinatorBase.cs" />
+    <Compile Include="Security\SecurityException.cs" />
+    <Compile Include="Security\V1\UserPermissionHelper.cs" />
+    <Compile Include="Validators\Localized\ValidatorAttributesLocalizer.cs" />
+    <Compile Include="Validators\PersianDateAttribute.cs" />
+    <Compile Include="Validators\PersianDateValidationRule.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReportsLoaderBase.cs" />
+    <Content Include="Scripts\Chosen\!!NOTES!!.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\DiffMatchPatch\diff_match_patch.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\DiffMatchPatch\diff_match_patch_uncompressed.js" />
+    <Content Include="Scripts\DiffMatchPatch\Api Help.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\DiffMatchPatch\Notes.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\fileDownload\jquery.fileDownload -- SOURCE.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\fileDownload\jquery.fileDownload.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\jQuery Text Change Event - ZURB Playground - ZURB.com.htm" />
+    <Content Include="Scripts\jquery.notice.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\qTip\jquery.qtip.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\qTip\jquery.qtip.min.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\qTip\jquery.qtip.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\qTip\old\jquery.qtip.css" />
+    <Content Include="Scripts\qTip\old\jquery.qtip.min.css" />
+    <Content Include="Scripts\qTip\old\jquery.qtip.min.js" />
+    <Content Include="Scripts\ScrollParent\NOTES!!!!!.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\ScrollParent\scrollParent.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\telerik.menu.min-Corrected jquery live problem.js" />
+    <Content Include="Scripts\TelerikModified\NOTES!!!!!.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\TelerikModified\telerik.menu-- ORIGINAL --.js" />
+    <Content Include="Scripts\TelerikModified\telerik.menu.js" />
+    <Content Include="Scripts\TelerikModified\telerik.grid.resizing-- RTL MODE --.js" />
+    <Content Include="Scripts\TelerikModified\telerik.grid.resizing-- ORIGINAL --.js" />
+    <Content Include="Scripts\TelerikModified\telerik.grid.resizing.min--ORIGINAL--.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\TelerikModified\telerik.grid.resizing.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\TelerikModified\telerik.menu.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\TelerikModified\telerik.menu.min-- ORIGINAL --.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\TelerikModified\telerik.window.min-- ORIGINAL --.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\TelerikModified\telerik.window.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\_references.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Documents\Conventions.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\helper.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\jquery-ui-tab4telerik.1.8.11.js" />
+    <Content Include="Scripts\Base\jquery-ui-tab4telerik.1.8.11.min-old.js" />
+    <Content Include="Scripts\Base\jquery-ui-tab4telerik.1.8.11.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\JqueryTabstripCustomStyle.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Base\TabstripLayoutManager.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Chosen\chosen-sprite.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Chosen\chosen.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\Chosen\chosen.jquery.js" />
+    <Content Include="Scripts\Chosen\chosen.jquery.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\jquery.textchange.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\MicrosoftAjax.min.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.pack.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.persian-fa.js" />
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.persian.js" />
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.persian.pack.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker-fa.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker.js" />
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker.pack-original.js" />
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.picker.pack.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\PersianCalendar\jquery.calendars.plus.pack.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\PersianCalendar\jquery.localisation.js" />
+    <Content Include="Scripts\PersianCalendar\jquery.localisation.pack.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\PersianCalendar\jquery.localisation2.pack.js" />
+    <Content Include="Scripts\PersianCalendar\persianDateConvertor.js" />
+    <Content Include="Scripts\PersianCalendar\persianDateConvertor.pack.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.Config" />
+    <None Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ChangeTrackerContext.Context1.cs</LastGenOutput>
+    </None>
+    <EntityDeploy Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>ChangeTrackerContext1.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="ChangeTracker\ChangeTrackerContext\ChangeTrackerContext.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ChangeTrackerContext1.cs</LastGenOutput>
+    </None>
+    <None Include="Greewf.key.snk" />
+    <None Include="packages.config" />
+    <None Include="Scripts\DiffMatchPatch\diff_match_patch_20121119.source.zip" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Greewf.BaseLibrary\Source\Greewf.BaseLibrary\00-Greewf.BaseLibrary.csproj">
+      <Project>{3E04F4A9-AA08-4492-BD72-2EBC76CC85A1}</Project>
+      <Name>00-Greewf.BaseLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /Y /E /D "$(TargetDir)\Scripts" "$(SolutionDir)\GreewfRelease\Scripts\"
+xcopy /Y /E /D "$(TargetDir)\Documents" "$(SolutionDir)\GreewfRelease\Documents\"
+xcopy /Y /D "$(TargetDir)*.dll" "$(SolutionDir)\GreewfRelease\Dlls\"
+
+rem if exist "\\Server\Software\SharedResources\GreewfRelease\" xcopy /Y /E /D "$(SolutionDir)\..\GreewfRelease\*" "\\Server\Software\SharedResources\GreewfRelease\"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

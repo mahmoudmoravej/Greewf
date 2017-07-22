@@ -1,0 +1,24 @@
+﻿
+.ui-tabs
+{
+    direction: rtl;
+}
+.ui-tabs .ui-tabs-nav li .ui-tabs-selected, .ui-tabs .ui-tabs-nav li.ui-state-default, .ui-icon-close
+{
+    float: right;
+}
+.ui-tabs .ui-tabs-nav li a
+{
+    float: right;
+}
+
+.ui-tabs-hide
+{
+    display: none !important;
+}
+
+.t-content
+{
+    height: 94%;
+    overflow: auto;
+}

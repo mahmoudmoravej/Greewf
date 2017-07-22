@@ -1,0 +1,8 @@
+﻿ALL Changes are for version : 2012.2.607
+
+** CHANGES IN telerki.window.min.js  :
+
+adding following line to "onDocumentResize" function
++f.find("> .g-window-buttonbar").outerHeight()
+
+-------------------------------------------------

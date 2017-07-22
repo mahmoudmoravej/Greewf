@@ -1,0 +1,2 @@
+﻿I used the source directly because the nuget package has problem with public key token:
+the source are from : http://effts.codeplex.com/SourceControl/latest#effts/effts
