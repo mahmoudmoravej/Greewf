@@ -32,6 +32,6 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.8.*")]
-[assembly: AssemblyFileVersion("2.8")]
+[assembly: AssemblyVersion("2.9")]//we ignore * because we change this dll regularly. But we don't update all reference assemblies at same time. So we may get this error "Could not load file or assembly 'Greewf.BaseLibrary, Version..." because of old versions.
+[assembly: AssemblyFileVersion("2.9")]
 
