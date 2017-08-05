@@ -482,10 +482,13 @@ namespace Greewf.BaseLibrary
             return false;
         }
 
-        public static string ShowDiffsAsHtml(string oldText, string newText)
+        public static string ShowDiffsAsHtml(string oldText, string newText, bool cleanupSemanticLossless = false)
         {
             var dmp = new DiffMatchPatch.diff_match_patch();
             var diffs = dmp.diff_main(oldText ?? "", newText ?? "");
+
+            if (cleanupSemanticLossless)
+                dmp.diff_cleanupEfficiency(diffs);
 
             return dmp.diff_prettyHtml(diffs);
 
