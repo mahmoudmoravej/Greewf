@@ -482,16 +482,35 @@ namespace Greewf.BaseLibrary
             return false;
         }
 
-        public static string ShowDiffsAsHtml(string oldText, string newText, bool cleanupSemantic = false)
+        public static string ShowDiffsAsHtml(string oldText, string newText, int? sizeThreshold = null, bool cleanupSemantic = false)
         {
             var dmp = new DiffMatchPatch.diff_match_patch();
             var diffs = dmp.diff_main(oldText ?? "", newText ?? "");
+
+            if (sizeThreshold != null &&
+                ((oldText != null && oldText.Length <= sizeThreshold) ||
+                 (newText != null && newText.Length <= sizeThreshold)
+                )
+               )
+                return
+                    "<del style=\"background:#ffe6e6;\">" + CorrectHtml(oldText) + "</del>" +
+                    "<ins style=\"background:#e6ffe6;\">" + CorrectHtml(newText) + "</ins>";
 
             if (cleanupSemantic)
                 dmp.diff_cleanupSemantic(diffs);
 
             return dmp.diff_prettyHtml(diffs);
 
+        }
+
+        private static string CorrectHtml(string str)
+        {
+            if (string.IsNullOrEmpty(str)) return str;
+            return str//comes from diff_prettyHtml function
+                 .Replace("&", "&amp;")
+                 .Replace("<", "&lt;")
+                 .Replace(">", "&gt;")
+                 .Replace("\n", "&para;<br>");
         }
 
         public static bool IsIpInRange(string ip, string lowerBandIp, string upperBandIp)
