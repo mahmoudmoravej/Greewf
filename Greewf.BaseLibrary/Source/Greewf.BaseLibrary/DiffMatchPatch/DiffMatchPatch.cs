@@ -1560,11 +1560,11 @@ namespace Greewf.BaseLibrary.DiffMatchPatch
                 switch (aDiff.operation)
                 {
                     case Operation.INSERT:
-                        html.Append("<ins style=\"background:#e6ffe6;\">").Append(text)
+                        html.Append("<ins style=\"background:#e6ffe6;padding:4px 8px 4px 8px;\">").Append(text)//padding is added by moravej
                             .Append("</ins>");
                         break;
                     case Operation.DELETE:
-                        html.Append("<del style=\"background:#ffe6e6;\">").Append(text)
+                        html.Append("<del style=\"background:#ffe6e6;padding:4px 8px 4px 8px;\">").Append(text)//padding is added by moravej
                             .Append("</del>");
                         break;
                     case Operation.EQUAL:
