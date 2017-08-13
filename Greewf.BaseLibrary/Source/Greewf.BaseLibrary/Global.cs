@@ -493,7 +493,7 @@ namespace Greewf.BaseLibrary
                 )
                )
                 return
-                    "<del style=\"background:#ffe6e6;\">" + CorrectHtml(oldText) + "</del>" +
+                    "<del style=\"background:#ffe6e6;\">" + CorrectHtml(oldText) + "</del>" + "&nbsp;" +
                     "<ins style=\"background:#e6ffe6;\">" + CorrectHtml(newText) + "</ins>";
 
             if (cleanupSemantic)
