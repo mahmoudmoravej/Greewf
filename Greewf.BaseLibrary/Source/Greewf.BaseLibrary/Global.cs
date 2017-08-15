@@ -493,8 +493,8 @@ namespace Greewf.BaseLibrary
                 )
                )
                 return
-                    "<del style=\"background:#ffe6e6;display:inline-block;padding:4px 8px 4px 8px;\">" + CorrectHtml(oldText) + "</del>" + "&nbsp;" +
-                    "<ins style=\"background:#e6ffe6;display:inline-block;padding:4px 8px 4px 8px;\">" + CorrectHtml(newText) + "</ins>";
+                    (string.IsNullOrEmpty(oldText) ? "" : "<del style=\"background:#ffe6e6;display:inline-block;padding:4px 8px 4px 8px;\">" + CorrectHtml(oldText) + "</del>" + "&nbsp;") +
+                    (string.IsNullOrEmpty(newText) ? "" : "<ins style=\"background:#e6ffe6;display:inline-block;padding:4px 8px 4px 8px;\">" + CorrectHtml(newText) + "</ins>");
 
             if (cleanupSemantic)
                 dmp.diff_cleanupSemantic(diffs);
