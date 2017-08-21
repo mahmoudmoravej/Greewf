@@ -46,7 +46,7 @@ namespace Greewf.BaseLibrary
         public static string DisplayFullDateTime(DateTime? date, bool includeMilliSecond = false)
         {
             if (date.HasValue && date.Value != DateTime.MinValue)
-                return string.Format(FULLDATETIMEFORMAT, pcal.GetYear(date.Value), pcal.GetMonth(date.Value), pcal.GetDayOfMonth(date.Value), date.Value.Hour, date.Value.Minute, date.Value.Second, includeMilliSecond ? "." + date.Value.Millisecond.ToString() : "");
+                return string.Format(FULLDATETIMEFORMAT, pcal.GetYear(date.Value), pcal.GetMonth(date.Value), pcal.GetDayOfMonth(date.Value), date.Value.Hour, date.Value.Minute, date.Value.Second, includeMilliSecond ? "." + date.Value.Millisecond.ToString("000") : "");
             return "";
         }
 
