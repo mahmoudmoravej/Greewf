@@ -48,7 +48,7 @@ namespace Greewf.BaseLibrary.MVC
                     req.GetResponse();
                     Thread.Sleep(KeepAliveInterval);
                 }
-                catch (Exception x)
+                catch (Exception)
                 {
                     break;
                 }

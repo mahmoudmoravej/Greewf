@@ -12,7 +12,7 @@ namespace Greewf.BaseLibrary.FastQueryBuilder
 
     /// <summary>
     /// Represents an <see cref="AggregateFunction"/> that uses aggregate extension 
-    /// methods provided in <see cref="Enumerable"/> using <see cref="SourceField"/>
+    /// methods provided in <see cref="Enumerable"/> using <see cref="urceField"/>
     /// as a member selector.
     /// </summary>
     public abstract class EnumerableSelectorAggregateFunction : EnumerableAggregateFunctionBase

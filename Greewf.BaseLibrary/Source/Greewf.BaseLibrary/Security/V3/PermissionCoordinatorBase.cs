@@ -85,7 +85,7 @@ namespace Greewf.BaseLibrary.Security.V3
             {
                 return dicTypeGroupMaps[type];
             }
-            catch (KeyNotFoundException x)
+            catch (KeyNotFoundException)
             {
                 throw new Exception(string.Format("The given type({0}) is not mapped in PermissionCoordinator's 'LoadPermissionRelationships' method(for 'enumMaps' parameter).", type.ToString()));
             }
@@ -186,8 +186,7 @@ namespace Greewf.BaseLibrary.Security.V3
         /// <typeparam name="P"></typeparam>
         /// <param name="userId"></param>
         /// <param name="objectType"></param>
-        /// <param name="permission"></param>
-        /// <param name="extraData">In some permission models we may need some extra data</param>
+        /// <param name="permission"></param>        
         /// <returns></returns>
         public int?[] GetAllowedObjectIds<P>(int userId, OT objectType, P permission)
         {

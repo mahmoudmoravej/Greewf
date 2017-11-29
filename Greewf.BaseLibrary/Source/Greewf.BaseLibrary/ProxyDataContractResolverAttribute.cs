@@ -1,15 +1,15 @@
-﻿/// THis comes from http://blogs.msdn.com/b/adonet/archive/2010/01/05/poco-proxies-part-2-serializing-poco-proxies.aspx
-/// We need this for OperationContract methods when return EF POCO classes .
-/// sample : 
-/// [ServiceContract]
-/// public interface IServices
-/// {
-///    [OperationContract]
-///    [ProxyDataContractResolver]
-///    Invoice GetInvoiceInfo(int invoiceNo);
-/// }
-/// OR YOU SHOULD SET : "context.Configuration.ProxyCreationEnabled = false;" for EF Context
-///
+﻿// THis comes from http://blogs.msdn.com/b/adonet/archive/2010/01/05/poco-proxies-part-2-serializing-poco-proxies.aspx
+// We need this for OperationContract methods when return EF POCO classes .
+// sample : 
+// [ServiceContract]
+// public interface IServices
+// {
+//    [OperationContract]
+//    [ProxyDataContractResolver]
+//    Invoice GetInvoiceInfo(int invoiceNo);
+// }
+// OR YOU SHOULD SET : "context.Configuration.ProxyCreationEnabled = false;" for EF Context
+//
 
 
 using System;
