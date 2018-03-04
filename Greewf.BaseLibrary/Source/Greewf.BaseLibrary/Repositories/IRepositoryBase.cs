@@ -18,6 +18,7 @@ namespace Greewf.BaseLibrary.Repositories
         T Find(Y id);
         T Find(Y id, params Expression<Func<T, object>>[] includeProperties);
         bool InsertOrUpdate(T entity);
+        bool InsertRange(IEnumerable<T> entities);
         bool Delete(Y id);
         bool Delete(T entity);
         bool Delete(Y[] ids);
