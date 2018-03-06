@@ -23,6 +23,7 @@ namespace Greewf.BaseLibrary.Repositories
         bool Delete(T entity);
         bool Delete(Y[] ids);
         bool DeleteRange(IEnumerable<T> entities);
+        bool DeleteRange(Y[] ids);
         void Save();
         void Detach(T entity);
         bool Validate(T entity);
