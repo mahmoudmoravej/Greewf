@@ -78,8 +78,9 @@ namespace Greewf.BaseLibrary.Logging
             }
         }
 
-        public void Log(Log log)
+        private void Log(Log log)
         {
+            //توجه! به دلیل آنکه لازم است قبل از لاگ چک سام استخراج شود، لازم است که طول رشته ها متناسب شده باشند. در غیر اینصورت ممکن است رشته ای بعد از ذخیره ترانکیت شود و بعدا نمی توان آنرا ارزیابی کرد
             if (context == null)
                 throw new Exception("LogConnectionString is not set for Logger. Set it before any log action");
 
@@ -295,7 +296,7 @@ namespace Greewf.BaseLibrary.Logging
 
         private static int GetDateHash(DateTime date)
         {
-            //it is safe if your column type is datetime2            
+            //it is safe if your column type is datetime2. Are you sure?!! if not please change it to : .ToString("yyyMMddHHmmssfff")            
             return GetTextHash(date.Ticks.ToString());
 
             //return GetTextHash(date.ToString("MMddyyyyHHmmssfff"));
