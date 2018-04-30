@@ -11,7 +11,7 @@ namespace Greewf.BaseLibrary.ExcelOutput
 {
     public static class ExcelOutputHelper
     {
-        public static MemoryStream ExportToExcel(IQueryable data, List<ExcelColumnLayout> columnLayouts, Type columnsDataProviderContext, IValidationDictionary validationDictionary = null, bool useExcel2007AndAbove = false)
+        public static MemoryStream ExportToExcel(IQueryable data, List<ExcelColumnLayout> columnLayouts, Type columnsDataProviderContext, bool isTree, int ExcelOutputLevel, IValidationDictionary validationDictionary = null, bool useExcel2007AndAbove = false)
         {
             var rowType = data.GetType().GetGenericArguments()[0];
             var o = Activator.CreateInstance(rowType);
@@ -121,6 +121,16 @@ namespace Greewf.BaseLibrary.ExcelOutput
 
             int rowNumber = useExcel2007AndAbove ? 0 : 1;
 
+            ArrayList finalData = new ArrayList();
+            if (isTree)
+            {
+                finalData = flatTreeData(data, ExcelOutputLevel, validationDictionary);
+                List<object> results = finalData.Cast<object>()
+                                                    .ToList();
+                data = results.AsQueryable();
+            }
+
+
             foreach (var rowData in data)
             {
                 rowNumber++;
@@ -185,10 +195,13 @@ namespace Greewf.BaseLibrary.ExcelOutput
                     }
                     else
                     {
+
                         cell = row.CreateCell(idx++, CellType.String);
                         value = propertyValue == null ? "" : propertyValue.ToString();
                         cell.SetCellValue(value);
+
                     }
+
 
                     //NOTE : I don't know what the problem is but all the cell style are indeed ONE instance object!!!
 
@@ -198,11 +211,18 @@ namespace Greewf.BaseLibrary.ExcelOutput
                     if ((value ?? "").Length > 200)
                     {
                         cell.CellStyle = extraWidthCellStyle;
+
                         lstIgnoreColumnAutoSize.Add(idx - 1);
                     }
                 }
 
             }
+
+
+
+            //row.SetAttribute(new OpenXmlAttribute("outlineLevel", string.Empty, "1"));
+
+
 
 
             for (int i = 0; i < columnCount; i++)
@@ -217,6 +237,7 @@ namespace Greewf.BaseLibrary.ExcelOutput
             //sheet.IsRightToLeft = true;
             sheet.IsRightToLeft = true;
             sheet.PrintSetup.LeftToRight = false;
+            groupData(finalData, sheet, isTree);
 
             //Write the workbook to a memory stream
             MemoryStream output = new MemoryStream();
@@ -226,5 +247,192 @@ namespace Greewf.BaseLibrary.ExcelOutput
 
             return output;
         }
+        // to get the last item node in a subtree
+        private static int getLastItemIndex(List<object> myData, object item)
+        {
+            var lastItem = item;
+            bool isLeaf = false;
+            int lastItemIndex= myData.IndexOf(item);
+            while (!isLeaf)
+            {
+                var resultProperties = item.GetType().GetProperties();
+                foreach (var property in resultProperties)
+                {
+
+                    if (property.Name == "Children")
+                    {
+                        var children = property.GetValue(lastItem);
+                        var List = (object[])children;
+                        if (List != null && List.Any())
+                        {
+                            lastItem = List.LastOrDefault();
+
+                            if (myData.IndexOf(lastItem) > 0)
+                            {
+                                lastItemIndex = myData.IndexOf(lastItem);
+                            }
+                            else { isLeaf = true; }
+                        }
+                        else { isLeaf = true; }
+
+                    }
+                }
+
+            };
+            return lastItemIndex;
+        }
+
+        // add child node to item data list
+        private static ArrayList flatTreeData(IQueryable data, int ExcelOutputLevel, IValidationDictionary validationDictionary)
+        {
+
+            ArrayList finalResults = ConvertQueryToList(data);
+            ArrayList results = ConvertQueryToList(data);
+
+            if (results.Count > 0)
+            {
+
+                Type resultsType = results[0].GetType();
+                PropertyInfo[] resultProperties = resultsType.GetProperties();
+
+                foreach (var item in results)
+                {
+                    int counter = 1;
+                    foreach (var property in resultProperties)
+                    {
+                        if (property.Name == "Children")
+                        {
+                            var children = property.GetValue(item);
+                            var List = (object[])children;
+                            if (List != null && List.Any())
+                            {
+                                foreach (var node in List)
+                                {
+                                    string ChildTitle = node.GetType().GetProperty("Title").GetValue(node).ToString();
+                                    string spaces = new string(' ', counter * 8);
+                                    ChildTitle = spaces + ChildTitle;
+                                    node.GetType().GetProperty("Title").SetValue(node, ChildTitle);
+                                }
+                                var itemindex = finalResults.IndexOf(item);
+                                //add the first Level to result
+
+                                if (ExcelOutputLevel > counter)
+                                {
+
+                                    finalResults.InsertRange(itemindex + 1, List);
+
+                                    counter++;
+                                    if (ExcelOutputLevel > counter)
+                                    {
+                                        foreach (var ch in List)
+                                        {
+                                            var ar1 = addChildToResult(ch, finalResults, ExcelOutputLevel, counter, validationDictionary);
+                                        }
+                                    }
+                                }
+
+                            }
+                        };
+                    }
+
+                }
+            }
+            return finalResults;
+        }
+
+        private static ArrayList addChildToResult(object ch, ArrayList fResult, int ExcelOutputLevel, int counter, IValidationDictionary validationDictionary)
+        {
+
+            //int counter=1;
+            ArrayList ar = new ArrayList();
+            Type resultsType = ch.GetType();
+            PropertyInfo[] resultProperties = resultsType.GetProperties();
+
+            foreach (var property in resultProperties)
+            {
+                if (property.Name == "Children")
+                {
+                    var children = property.GetValue(ch);
+                    var List = (object[])children;
+                    if (List != null && List.Any())
+                    {
+                        foreach (var child in List)
+                        {
+                            string ChildTitle = child.GetType().GetProperty("Title").GetValue(child).ToString();
+                            string spaces = new string(' ', counter*8);
+                            ChildTitle = spaces + ChildTitle;
+                            child.GetType().GetProperty("Title").SetValue(child, ChildTitle);
+                        }
+
+                        var itemindex = fResult.IndexOf(ch);
+                        fResult.InsertRange(itemindex + 1, List);
+                        counter++;
+                        if (counter > 6)
+                        {
+                            validationDictionary.AddError("", "امکان خروجی برای داده های بیشتر از 7 سطح مقدور نمیباشد لذا داده های با سطح بالاتر در خروجی  حذف شده است ");
+
+                        }
+                        if (ExcelOutputLevel > counter)
+                        {
+                            foreach (var che in List)
+                            {
+
+                                addChildToResult(che, fResult, ExcelOutputLevel, counter, validationDictionary);
+
+                            }
+                        }
+
+                    }
+                };
+            }
+            return fResult;
+        }
+
+        private static void groupData(ArrayList finalData, ISheet sheet, bool isTree)
+        {
+
+            if (isTree)
+            {
+                List<object> finalDataList = finalData.OfType<object>().ToList();
+                foreach (var item in finalDataList)
+                {
+                    bool HasChild = false;
+                    var resultProperties = item.GetType().GetProperties();
+                    foreach (var property in resultProperties)
+                    {
+                        if (property.Name == "Children")
+                        {
+                            var children = property.GetValue(item);
+                            var ListChild = (object[])children;
+                            if (ListChild != null && ListChild.Any())
+                            {
+                                HasChild = true;
+                            }
+                        }
+
+                    }
+                    //item.GetType().GetProperty("Children").GetValue(item) != null
+                    if (HasChild)
+                    {
+                        int firstItemindex = finalDataList.IndexOf(item) + 2;
+                        int lastchildIndex = getLastItemIndex(finalDataList, item);
+                        sheet.GroupRow(firstItemindex, lastchildIndex + 1);
+                      
+                    }
+                }
+                sheet.RowSumsBelow = false;
+            }
+
+        }
+
+
+        public static ArrayList ConvertQueryToList(IQueryable query)
+        {
+            ArrayList results = new ArrayList();
+            results.AddRange(query.Cast<object>().ToList());
+            return results;
+        }
+
+
     }
 }
