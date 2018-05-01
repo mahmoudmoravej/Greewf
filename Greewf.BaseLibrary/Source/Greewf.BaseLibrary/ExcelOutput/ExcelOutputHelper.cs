@@ -3,15 +3,17 @@ using NPOI.HSSF.Util;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace Greewf.BaseLibrary.ExcelOutput
 {
     public static class ExcelOutputHelper
     {
-        public static MemoryStream ExportToExcel(IQueryable data, List<ExcelColumnLayout> columnLayouts, Type columnsDataProviderContext, bool isTree, int ExcelOutputLevel, IValidationDictionary validationDictionary = null, bool useExcel2007AndAbove = false)
+        public static MemoryStream ExportToExcel(IQueryable data, List<ExcelColumnLayout> columnLayouts, Type columnsDataProviderContext, IValidationDictionary validationDictionary = null, bool useExcel2007AndAbove = false, bool isTree = false, int excelOutputLevel = 7)
         {
             var rowType = data.GetType().GetGenericArguments()[0];
             var o = Activator.CreateInstance(rowType);
@@ -124,7 +126,7 @@ namespace Greewf.BaseLibrary.ExcelOutput
             ArrayList finalData = new ArrayList();
             if (isTree)
             {
-                finalData = flatTreeData(data, ExcelOutputLevel, validationDictionary);
+                finalData = FlatTreeData(data, excelOutputLevel, validationDictionary);
                 List<object> results = finalData.Cast<object>()
                                                     .ToList();
                 data = results.AsQueryable();
@@ -237,7 +239,7 @@ namespace Greewf.BaseLibrary.ExcelOutput
             //sheet.IsRightToLeft = true;
             sheet.IsRightToLeft = true;
             sheet.PrintSetup.LeftToRight = false;
-            groupData(finalData, sheet, isTree);
+            GroupData(finalData, sheet, isTree);
 
             //Write the workbook to a memory stream
             MemoryStream output = new MemoryStream();
@@ -248,7 +250,7 @@ namespace Greewf.BaseLibrary.ExcelOutput
             return output;
         }
         // to get the last item node in a subtree
-        private static int getLastItemIndex(List<object> myData, object item)
+        private static int GetLastItemIndex(List<object> myData, object item)
         {
             var lastItem = item;
             bool isLeaf = false;
@@ -283,7 +285,7 @@ namespace Greewf.BaseLibrary.ExcelOutput
         }
 
         // add child node to item data list
-        private static ArrayList flatTreeData(IQueryable data, int ExcelOutputLevel, IValidationDictionary validationDictionary)
+        private static ArrayList FlatTreeData(IQueryable data, int ExcelOutputLevel, IValidationDictionary validationDictionary)
         {
 
             ArrayList finalResults = ConvertQueryToList(data);
@@ -326,7 +328,7 @@ namespace Greewf.BaseLibrary.ExcelOutput
                                     {
                                         foreach (var ch in List)
                                         {
-                                            var ar1 = addChildToResult(ch, finalResults, ExcelOutputLevel, counter, validationDictionary);
+                                            var ar1 = AddChildToResult(ch, finalResults, ExcelOutputLevel, counter, validationDictionary);
                                         }
                                     }
                                 }
@@ -340,7 +342,7 @@ namespace Greewf.BaseLibrary.ExcelOutput
             return finalResults;
         }
 
-        private static ArrayList addChildToResult(object ch, ArrayList fResult, int ExcelOutputLevel, int counter, IValidationDictionary validationDictionary)
+        private static ArrayList AddChildToResult(object ch, ArrayList fResult, int ExcelOutputLevel, int counter, IValidationDictionary validationDictionary)
         {
 
             //int counter=1;
@@ -377,7 +379,7 @@ namespace Greewf.BaseLibrary.ExcelOutput
                             foreach (var che in List)
                             {
 
-                                addChildToResult(che, fResult, ExcelOutputLevel, counter, validationDictionary);
+                                AddChildToResult(che, fResult, ExcelOutputLevel, counter, validationDictionary);
 
                             }
                         }
@@ -388,7 +390,7 @@ namespace Greewf.BaseLibrary.ExcelOutput
             return fResult;
         }
 
-        private static void groupData(ArrayList finalData, ISheet sheet, bool isTree)
+        private static void GroupData(ArrayList finalData, ISheet sheet, bool isTree)
         {
 
             if (isTree)
@@ -415,7 +417,7 @@ namespace Greewf.BaseLibrary.ExcelOutput
                     if (HasChild)
                     {
                         int firstItemindex = finalDataList.IndexOf(item) + 2;
-                        int lastchildIndex = getLastItemIndex(finalDataList, item);
+                        int lastchildIndex = GetLastItemIndex(finalDataList, item);
                         sheet.GroupRow(firstItemindex, lastchildIndex + 1);
                       
                     }
