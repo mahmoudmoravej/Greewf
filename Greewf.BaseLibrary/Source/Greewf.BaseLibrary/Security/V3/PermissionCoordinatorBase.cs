@@ -140,6 +140,11 @@ namespace Greewf.BaseLibrary.Security.V3
             return dicObjectTypeParents[objectType] ?? new OT[0];
         }
 
+        public OT[] GetObjectTypeChilds(OT objectType)
+        {
+            return dicObjectTypeParents.Where(o => o.Value.Contains(objectType)).Select(o => o.Key).ToArray();
+        }
+
         public abstract Task<bool> HasPermissionAsync(int userId, PermissionObject<OT>? obj, G group, long permission);
 
         public override Task<bool> HasPermissionAsync(int userId, IPermissionObject obj, int group, long permission)
