@@ -60,7 +60,7 @@ namespace Greewf.BaseLibrary.Repositories
             {
                 Context.OnBeforeTransactionScopeStart();
 
-                using (var scope = new TransactionScope())
+                using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled/*due to https://stackoverflow.com/q/13543254/790811 to be able to support async cases*/ ))
                 {
                     Context.IsInActiveTransactionScope = true;
                     Context.SaveChanges();//my be some calls on onChangesSaved event that needs to be in transaction
@@ -79,7 +79,7 @@ namespace Greewf.BaseLibrary.Repositories
                 Context.IsInActiveTransactionScope = false;
             }
 
-       
+
 
             if (result)
                 Context.OnTransactionScopeCommitted();
