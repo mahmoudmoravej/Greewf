@@ -167,6 +167,7 @@
     <Compile Include="ReportLoaderExtensions\ReportSettings.cs" />
     <Compile Include="ReportLoaderExtensions\StreamOutputResult.cs" />
     <Compile Include="Repositories\ICommittedTransactionAwareness.cs" />
+    <Compile Include="Repositories\IRepositoryBase2.cs" />
     <Compile Include="SqlServerTypes\Loader.cs" />
     <Compile Include="Validation\DefaultValidationDictionary.cs" />
     <Compile Include="Validation\ExtendedModelError.cs" />
