@@ -57,5 +57,10 @@ namespace Greewf.BaseLibrary.FastQueryBuilder
         /// Inside a list items (Added By Moravej)
         /// </summary>
         IsInList,
+
+        /// <summary>
+        /// Fulltext search "contains" method
+        /// </summary>
+        SemanticContains,
     }
 }

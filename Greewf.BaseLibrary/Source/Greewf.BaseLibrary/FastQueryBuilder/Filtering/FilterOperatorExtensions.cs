@@ -5,6 +5,7 @@
 
 namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expressions
 {
+    using effts;
     using System;
     using System.Linq.Expressions;
     using System.Reflection;
@@ -15,7 +16,7 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
         internal static readonly MethodInfo StringStartsWithMethodInfo = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
         internal static readonly MethodInfo StringEndsWithMethodInfo = typeof(string).GetMethod("EndsWith", new[] { typeof(string) });
         internal static readonly MethodInfo StringCompareMethodInfo = typeof(string).GetMethod("Compare", new[] { typeof(string), typeof(string) });
-        internal static readonly MethodInfo StringContainsMethodInfo = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+        internal static readonly MethodInfo StringContainsMethodInfo = typeof(string).GetMethod("Contains", new[] { typeof(string) });        
 
 
         /// <exception cref="InvalidOperationException"><c>InvalidOperationException</c>.</exception>
@@ -59,6 +60,9 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
                 case FilterOperator.IsInList:
                     return GenerateIsInList(left, right, liftMemberAccess);
 
+                case FilterOperator.SemanticContains:
+                    return GenerateSemanticContains(left, right);
+
             }
 
             throw new InvalidOperationException();
@@ -89,7 +93,7 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
             if (left.Type == typeof(string))
             {
                 return Expression.GreaterThan(
-                    GenerateCaseInsensitiveStringMethodCall(StringCompareMethodInfo, left, right, liftMemberAccess), 
+                    GenerateCaseInsensitiveStringMethodCall(StringCompareMethodInfo, left, right, liftMemberAccess),
                     ExpressionFactory.ZeroExpression);
             }
             return Expression.GreaterThan(left, right);
@@ -122,7 +126,7 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
             if (left.Type == typeof(string))
             {
                 return Expression.LessThanOrEqual(
-                    GenerateCaseInsensitiveStringMethodCall(StringCompareMethodInfo, left, right, liftMemberAccess), 
+                    GenerateCaseInsensitiveStringMethodCall(StringCompareMethodInfo, left, right, liftMemberAccess),
                     ExpressionFactory.ZeroExpression);
             }
             return Expression.LessThanOrEqual(left, right);
@@ -142,6 +146,9 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
                 ExpressionConstants.TrueLiteral);
         }
 
+
+
+
         private static Expression GenerateIsContainedIn(Expression left, Expression right, bool liftMemberAccess)
         {
             return Expression.Equal(
@@ -152,7 +159,7 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
         private static Expression GenerateStartsWith(Expression left, Expression right, bool liftMemberAccess)
         {
             return Expression.Equal(
-                GenerateCaseInsensitiveStringMethodCall(StringStartsWithMethodInfo, left, right, liftMemberAccess), 
+                GenerateCaseInsensitiveStringMethodCall(StringStartsWithMethodInfo, left, right, liftMemberAccess),
                 ExpressionConstants.TrueLiteral);
         }
 
@@ -164,9 +171,9 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
         }
 
         private static Expression GenerateCaseInsensitiveStringMethodCall(MethodInfo methodInfo, Expression left, Expression right, bool liftMemberAccess)
-		{
+        {
 
-             var leftToLower = GenerateToLowerCall(left, liftMemberAccess);
+            var leftToLower = GenerateToLowerCall(left, liftMemberAccess);
             var rightToLower = GenerateToLowerCall(right, liftMemberAccess);
 
             if (methodInfo.IsStatic)
@@ -175,11 +182,21 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
             }
 
             return Expression.Call(leftToLower, methodInfo, rightToLower);
-		}
+        }
 
         private static Expression GenerateIsInList(Expression left, Expression right, bool liftMemberAccess)//added by moravej
         {
             return Expression.Call(typeof(System.Linq.Enumerable), "Contains", new[] { left.Type }, right, left);
+        }
+
+        private static Expression GenerateSemanticContains(Expression left, Expression right)//added by moravej
+        {
+            if (StringContainsMethodInfo.IsStatic)
+            {
+                return Expression.Call(StringContainsMethodInfo, new[] { left, right });
+            }
+
+            return Expression.Call(left, StringContainsMethodInfo, right);
         }
 
         private static Expression GenerateToLowerCall(Expression stringExpression, bool liftMemberAccess)

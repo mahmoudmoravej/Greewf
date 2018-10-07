@@ -1,5 +1,6 @@
 ﻿//Source : http://stackoverflow.com/a/26762756/790811
 
+using effts;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure.Interception;
@@ -21,9 +22,9 @@ namespace Greewf.BaseLibrary.Linq
         /// <param name="expression"></param>
         /// <param name="searchTerm"></param>
         /// <returns></returns>
-        public static IQueryable<TEntity> FreeTextSearch<TEntity>(this IQueryable<TEntity> source, Expression<Func<TEntity, object>> expression, string searchTerm) where TEntity : class
+        public static IQueryable<TEntity> FullTextFreeText<TEntity>(this IQueryable<TEntity> source, Expression<Func<TEntity, object>> expression, string searchTerm) where TEntity : class
         {
-            return effts.FullTextSearchExtensions.FreeTextSearch(source, expression, searchTerm);
+            return effts.FullTextSearchExtensions.FullTextFreeText(source, expression, searchTerm);
         }
 
         /// <summary>
@@ -34,10 +35,11 @@ namespace Greewf.BaseLibrary.Linq
         /// <param name="expression"></param>
         /// <param name="searchTerm"></param>
         /// <returns></returns>
-        public static IQueryable<TEntity> ContainsSearch<TEntity>(this IQueryable<TEntity> source, Expression<Func<TEntity, object>> expression, string searchTerm) where TEntity : class
+        public static IQueryable<TEntity> FullTextContains<TEntity>(this IQueryable<TEntity> source, Expression<Func<TEntity, object>> expression, string searchTerm) where TEntity : class
         {
-            return effts.FullTextSearchExtensions.ContainsSearch(source, expression, searchTerm);
+            return effts.FullTextSearchExtensions.FullTextContains(source, expression, searchTerm);
         }
+
 
     }
 }

@@ -12,6 +12,7 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
     using Extensions;
     using System.Collections;
     using System.Collections.Generic;
+    using effts;
 
     internal class FilterDescriptorExpressionBuilder : FilterExpressionBuilder
     {
@@ -38,7 +39,7 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
 
             Type memberType = memberExpression.Type;
 
-            Expression valueExpression = CreateValueExpression(memberType, this.descriptor.Value, CultureInfo.InvariantCulture);
+            Expression valueExpression = CreateValueExpression(memberType, this.descriptor.Value, this.descriptor.Operator, CultureInfo.InvariantCulture);
 
             bool isConversionSuccessful = true;
 
@@ -116,8 +117,10 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
             return Expression.Constant(value);
         }
 
-        private static Expression CreateValueExpression(Type targetType, object value, CultureInfo culture)//edited by moravej
+        private static Expression CreateValueExpression(Type targetType, object value, FilterOperator filterOperator, CultureInfo culture)//edited by moravej
         {
+
+
             if (((targetType != typeof(string)) && (!targetType.IsValueType || targetType.IsNullableType())) &&
                 (string.Compare(value as string, "null", StringComparison.OrdinalIgnoreCase) == 0))
             {
@@ -127,6 +130,12 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
             {
                 Type nonNullableTargetType = targetType.GetNonNullableType();
                 var valueType = value.GetType();//added by moravej
+
+                if (valueType == typeof(string) && filterOperator == FilterOperator.SemanticContains)//Added by moravej
+                {
+                    value = FullTextPrefixes.Contains(value.ToString(), true);
+                }
+
                 if (valueType != nonNullableTargetType)
                 {
                     if (nonNullableTargetType.IsEnum)
@@ -163,13 +172,13 @@ namespace Greewf.BaseLibrary.FastQueryBuilder.Infrastructure.Implementation.Expr
             {
                 if (!isNullableType && itemValue == null)
                     throw new Exception("ExtJsGridAction : You passed a null value for a list item, but the target field does not support null values. ");
-                
+
                 else if (itemValue == null)
                     result.SetValue(null, idx++);
-                
+
                 else if (isEnumType)
                     result.SetValue(Enum.Parse(nonNullableTargetType, itemValue.ToString(), true), idx++);
-                
+
                 else if (isIConvertible)
                     result.SetValue(Convert.ChangeType(itemValue, nonNullableTargetType, culture), idx++);
             }
