@@ -63,6 +63,8 @@ namespace Greewf.BaseLibrary.Logging
         
         public string UserAgent { get; set; }
     	
+               
+    	
         
         public string RequestMethod { get; set; }
     	
