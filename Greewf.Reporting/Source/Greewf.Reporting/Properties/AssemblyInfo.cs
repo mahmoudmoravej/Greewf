@@ -35,5 +35,4 @@ using System.Security;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("4.0")]//we ignore * because we change this dll regularly. But we don't update all reference assemblies at same time. So we may get this error "Could not load file or assembly 'Greewf.BaseLibrary, Version..." because of old versions.
 [assembly: AssemblyFileVersion("4.0")]
-
-
+[assembly: AllowPartiallyTrustedCallers]//RDLC needs this when it runs in legacy mode

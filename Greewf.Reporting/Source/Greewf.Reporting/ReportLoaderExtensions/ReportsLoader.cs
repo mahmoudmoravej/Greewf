@@ -1,20 +1,16 @@
-﻿using System;
+﻿using Microsoft.Reporting.WebForms;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Microsoft.Reporting.WebForms;
-using Greewf.BaseLibrary;
 using System.IO;
-using System.Text;
+using System.Reflection;
 using System.Security;
 using System.Security.Permissions;
 using System.Security.Policy;
-using System.Reflection;
+using System.Text;
 
 
-namespace Greewf.BaseLibrary.ReportLoaderExtensions
-{
-
+namespace Greewf.Reporting
+{    
     public static class ReportsLoader
     {
         private static Dictionary<ReportingServiceOutputFileFormat, string> _dicOutputTypes = new Dictionary<ReportingServiceOutputFileFormat, string>();
@@ -35,14 +31,73 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
         private static string PrepareAndGetDeviceInfo(LocalReport report, ReportSettings settings)
         {
 
-            //var customAssemblyName = "Greewf.BaseLibrary, Culture=neutral, PublicKeyToken=ebf2eb006a1f561b";
-            //var customAssembly = Assembly.Load(customAssemblyName);
-            //StrongName assemblyStrongName = CreateStrongName(customAssembly);
-            //report.AddFullTrustModuleInSandboxAppDomain(assemblyStrongName);
+            /*
+            برای افزایش سرعت در حالت سندباکس کارهای زیاد انجام دادیم ولی نشد. 
+            توجه!!!!! خیلی جالب آنکه اجرا در لوکال از سرور های تست    
+            خیلی سریعتیر است اما بعد از پابلیش در سرور همچنان کند است
 
-            //it seems that the following lines do not need anymore becuase of code sigining. In test senario, it doesn't affect performance.
-            PermissionSet permissions = new PermissionSet(PermissionState.Unrestricted);
-            report.SetBasePermissionsForSandboxAppDomain(permissions);
+            کارهای زیر انجام شد : 
+
+            ----------------------------- کار 1 --------------------------------------------------------------
+
+            کد زیر دقیقا در همین تابع و در همین ابندای آن قرار داده شد. کد کار می کند ولی تاثیری در سرعت نداشت : 
+            
+             
+                PermissionSet permissions = new PermissionSet(PermissionState.Unrestricted);
+                permissions.AddPermission(new SecurityPermission(PermissionState.Unrestricted));
+                permissions.AddPermission(new SecurityPermission(SecurityPermissionFlag.AllFlags));
+                permissions.AddPermission(new FileIOPermission(PermissionState.Unrestricted));
+                permissions.AddPermission(new SecurityPermission(SecurityPermissionFlag.Execution));             
+
+                report.SetBasePermissionsForSandboxAppDomain(permissions);
+
+                var customAssembly = typeof(ReportsLoader).Assembly;// "Greewf.Reporting, Culture=neutral, PublicKeyToken=ebf2eb006a1f561b";
+                StrongName assemblyStrongName = CreateStrongName(customAssembly);
+                report.AddFullTrustModuleInSandboxAppDomain(assemblyStrongName);
+
+            
+
+            ----------------------------- کار 2 --------------------------------------------------------------
+
+            همچنین تنظیمات زیر را هم در وب کانفیگ پروژه اجرایی گذاشتیم ولی باز تاثیری نداشت : 
+            این موارد طبق این پست ها بود : https://stackoverflow.com/a/26733816/790811 & https://docs.microsoft.com/en-us/previous-versions/dotnet/netframework-4.0/ee191568(v=vs.100)
+            
+            در بخش configuration: 
+        
+              <startup uselegacyv2runtimeactivationpolicy="true">
+              </startup> 
+
+            و در بخش runtime: 
+
+                <NetFx40_LegacySecurityPolicy enabled="true" />
+
+            
+            همچنین در اینجا یک پست هست که توضیح با بالاترین ووت هم خواندنی است : https://social.msdn.microsoft.com/Forums/sqlserver/en-US/6d89e2ce-3528-465f-9740-7e22aa7b7aae/slow-performance-with-dynamic-grouping-and-reportviewer-in-local-mode?forum=sqlreportingservices
+
+            
+            
+            ----------------------------- کار 3 --------------------------------------------------------------
+            در کانفیگ این کار را هم طبق پست روبرو انجام دادیم. سرعت به طرز وحشتناکی خوب شد : https://social.msdn.microsoft.com/Forums/en-US/b35bf409-4d73-4506-b13b-2629b1216773/reportviewer-in-net-4-even-possible-legacycasmodelquottruequot-causes-problems?forum=vsreportcontrols
+            اما محدودیت آن فراوان است           
+            
+            در بخش system.web :            
+                <trust legacyCasModel="true" level="Full"/>
+
+            در تنظیمات اسمبلی همین اسمبلی باید خط زیر را اضافه کنید : https://stackoverflow.com/a/2504341/790811
+            برای همین کار مجبور هستیم کل پروژه را جدا کنیم چراکه برای بخش های دیگر دچار مشکل می کند
+                [assembly: AllowPartiallyTrustedCallers]
+
+            و در کد دقیقا در همین محل عملیات زیر انجام شد : 
+            var customAssembly = typeof(ReportsLoader).Assembly;
+            report.AddTrustedCodeModuleInCurrentAppDomain(customAssembly.FullName);
+
+            
+            */
+
+            //این کد در صورتی اثر می کند که در کانفیگ برنامه تنظیم گفته شده در توضیحات انجام شده باشد
+            //توجه: اسمبلی را دستی نوشتیم. دقت کنید که اگر از خود اسمبلی می گرفتیم ورژن هم داشت و ما نباید
+            //در این نام آنرا به ورژن وابسته کنیم
+            report.AddTrustedCodeModuleInCurrentAppDomain("Greewf.Reporting, Culture=neutral, PublicKeyToken=ebf2eb006a1f561b");
 
 
             var defaults = report.GetDefaultPageSettings();

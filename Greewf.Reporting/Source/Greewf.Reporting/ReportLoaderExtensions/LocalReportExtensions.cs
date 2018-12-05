@@ -1,13 +1,11 @@
 ﻿using Microsoft.Reporting.WebForms;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 using System.Xml.Linq;
 
-namespace Greewf.BaseLibrary.ReportLoaderExtensions
+namespace Greewf.Reporting
 {
     public static class LocalReportExtensions
     {
@@ -165,7 +163,7 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
                     if (formatNode != null) format = "\"" + formatNode.Value + "\"";
 
                     valueNode.Value =
-                        "=Greewf.BaseLibrary.Global.HmxFontCorrectorExceptExcel(" +
+                        "=Greewf.Reporting.Global.HmxFontCorrectorExceptExcel(" +
                         valueNode.Value.TrimStart(' ', '\n', '\r', '=') +
                         ",Globals!RenderFormat.Name," + format + "," + convertSlashBetweenDigitsToDecimalSepratorParameter + ")";
                 }
@@ -173,7 +171,7 @@ namespace Greewf.BaseLibrary.ReportLoaderExtensions
             else if (!string.IsNullOrWhiteSpace(valueNode.Value)) //constant string except white spaces
             {
                 var newValue = valueNode.Value.Replace("\"", "\"\"").Replace("\r\n", "\" + vbCrlf + \"");
-                valueNode.Value = "=Greewf.BaseLibrary.Global.HmxFontCorrectorExceptExcel(\"" + newValue + "\",Globals!RenderFormat.Name,nothing," + convertSlashBetweenDigitsToDecimalSepratorParameter + ")";
+                valueNode.Value = "=Greewf.Reporting.Global.HmxFontCorrectorExceptExcel(\"" + newValue + "\",Globals!RenderFormat.Name,nothing," + convertSlashBetweenDigitsToDecimalSepratorParameter + ")";
             }
         }
 
