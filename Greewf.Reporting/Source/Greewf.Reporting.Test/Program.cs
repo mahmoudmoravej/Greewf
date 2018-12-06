@@ -1,6 +1,8 @@
 ﻿using Microsoft.Reporting.WebForms;
 using System;
+using System.Configuration;
 using System.IO;
+using System.Xml;
 
 namespace Greewf.Reporting.Test
 {
@@ -9,6 +11,15 @@ namespace Greewf.Reporting.Test
         static void Main(string[] args)
         {
 
+            var xml = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None).GetSection("runtime").SectionInformation.GetRawXml();
+            var doc = new XmlDocument();
+            doc.LoadXml(xml);
+
+            bool isCasMode = doc.GetElementsByTagName("legacyCasPolicy")?[0]?.Attributes?["enabled"]?.Value == "true";
+
+            ReportsLoader.RunInLegacyCasModel = isCasMode;//اگر این مقدار را  تغییر دادید مقدار معادل آنرا در کانفیگ هم تغییر دهید
+
+            Console.WriteLine("Test mode : " + (ReportsLoader.RunInLegacyCasModel ? "Legacy CAS Mode(Superfast reports)" : "Regular .Net 4.0 Settings(super slow reports!)"));
             Console.WriteLine("Genrating HM Fonts corrected report....");
 
             //try
@@ -22,7 +33,8 @@ namespace Greewf.Reporting.Test
 
             File.WriteAllBytes("..\\..\\SampleResult.pdf", report);
 
-            Console.WriteLine("Report Generated!");
+            Console.WriteLine("Report Generated! (and will be opened in a second...)");
+            System.Diagnostics.Process.Start("..\\..\\SampleResult.pdf");
 
             //}
             //catch (Exception x)

@@ -3,16 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Security;
 using System.Security.Permissions;
 using System.Security.Policy;
 using System.Text;
 
 
 namespace Greewf.Reporting
-{    
+{
     public static class ReportsLoader
     {
+        public static bool RunInLegacyCasModel = false;
+
         private static Dictionary<ReportingServiceOutputFileFormat, string> _dicOutputTypes = new Dictionary<ReportingServiceOutputFileFormat, string>();
 
         static ReportsLoader()
@@ -68,7 +69,6 @@ namespace Greewf.Reporting
               </startup> 
 
             و در بخش runtime: 
-
                 <NetFx40_LegacySecurityPolicy enabled="true" />
 
             
@@ -82,6 +82,8 @@ namespace Greewf.Reporting
             
             در بخش system.web :            
                 <trust legacyCasModel="true" level="Full"/>
+            البته در صورتیکه برنامه شما یک وب سایت نیست از طریق این تنظیم runtime: (طبق لینک روبرو این تگ با NetFx40_LegacySecurityPolicy تفاوتی ندارد : https://blogs.msdn.microsoft.com/shawnfa/2009/06/12/temporarily-re-enabling-cas-policy-during-migration/)
+                <legacyCasPolicy enabled="true" />
 
             در تنظیمات اسمبلی همین اسمبلی باید خط زیر را اضافه کنید : https://stackoverflow.com/a/2504341/790811
             برای همین کار مجبور هستیم کل پروژه را جدا کنیم چراکه برای بخش های دیگر دچار مشکل می کند
@@ -97,7 +99,14 @@ namespace Greewf.Reporting
             //این کد در صورتی اثر می کند که در کانفیگ برنامه تنظیم گفته شده در توضیحات انجام شده باشد
             //توجه: اسمبلی را دستی نوشتیم. دقت کنید که اگر از خود اسمبلی می گرفتیم ورژن هم داشت و ما نباید
             //در این نام آنرا به ورژن وابسته کنیم
-            report.AddTrustedCodeModuleInCurrentAppDomain("Greewf.Reporting, Culture=neutral, PublicKeyToken=ebf2eb006a1f561b");
+
+            if (RunInLegacyCasModel)
+                report.AddTrustedCodeModuleInCurrentAppDomain("Greewf.Reporting, Culture=neutral, PublicKeyToken=ebf2eb006a1f561b");
+            else
+            {
+                var assembly = typeof(ReportsLoader).Assembly;
+                report.AddFullTrustModuleInSandboxAppDomain(CreateStrongName(assembly));
+            }
 
 
             var defaults = report.GetDefaultPageSettings();
