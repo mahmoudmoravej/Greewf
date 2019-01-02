@@ -74,13 +74,24 @@
     <Compile Include="SqlServerTypes\Loader.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
+    <None Include="PostBuildTasks.targets" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Greewf.Reporting\00-Greewf.Reporting.csproj">
+    <ProjectReference Include="..\Greewf.Reporting.PersianRenderer.MsBuildTask\01-Greewf.Reporting.PersianRenderer.MsBuildTask.csproj">
+      <Project>{fdfac179-cd39-4051-951e-3d1d2cb656d9}</Project>
+      <Name>01-Greewf.Reporting.PersianRenderer.MsBuildTask</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Greewf.Reporting.PersianRenderer\01-Greewf.Reporting.PersianRenderer.csproj">
+      <Project>{1c3eb98d-aa5c-476a-b67e-ebc487919d29}</Project>
+      <Name>01-Greewf.Reporting.PersianRenderer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Greewf.Reporting\02-Greewf.Reporting.csproj">
       <Project>{d4fb6e99-9453-4528-9754-0d34ea9df8b8}</Project>
-      <Name>00-Greewf.Reporting</Name>
+      <Name>02-Greewf.Reporting</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -102,4 +113,5 @@
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="PostBuildTasks.targets" />
 </Project>

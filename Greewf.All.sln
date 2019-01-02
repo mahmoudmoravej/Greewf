@@ -3,15 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "01-Greewf.BaseLibrary", "Greewf.BaseLibrary\Source\Greewf.BaseLibrary\01-Greewf.BaseLibrary.csproj", "{3E04F4A9-AA08-4492-BD72-2EBC76CC85A1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "03-Greewf.BaseLibrary", "Greewf.BaseLibrary\Source\Greewf.BaseLibrary\03-Greewf.BaseLibrary.csproj", "{3E04F4A9-AA08-4492-BD72-2EBC76CC85A1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "09-Greewf.Scaffolder", "Greewf.Scaffolder\Source\Greewf.Scaffolder\09-Greewf.Scaffolder.csproj", "{3D0CD01E-4968-4A13-91D1-5FF8105DF783}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "01-Greewf.BaseLibrary.MVC", "Greewf.BaseLibrary.MVC\Source\Greewf.BaseLibrary.MVC\01-Greewf.BaseLibrary.MVC.csproj", "{566A5C58-FBA2-467D-B647-4A0CA767062C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "04-Greewf.BaseLibrary.MVC", "Greewf.BaseLibrary.MVC\Source\Greewf.BaseLibrary.MVC\04-Greewf.BaseLibrary.MVC.csproj", "{566A5C58-FBA2-467D-B647-4A0CA767062C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "00-Greewf.Reporting", "Greewf.Reporting\Source\Greewf.Reporting\00-Greewf.Reporting.csproj", "{D4FB6E99-9453-4528-9754-0D34EA9DF8B8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "02-Greewf.Reporting", "Greewf.Reporting\Source\Greewf.Reporting\02-Greewf.Reporting.csproj", "{D4FB6E99-9453-4528-9754-0D34EA9DF8B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "00-Greewf.Reporting.Test", "Greewf.Reporting\Source\Greewf.Reporting.Test\00-Greewf.Reporting.Test.csproj", "{8FC6FB95-7801-4F48-8672-A3E34A2A7D64}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "02-Greewf.Reporting.Test", "Greewf.Reporting\Source\Greewf.Reporting.Test\02-Greewf.Reporting.Test.csproj", "{8FC6FB95-7801-4F48-8672-A3E34A2A7D64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "01-Greewf.Reporting.PersianRenderer", "Greewf.Reporting\Source\Greewf.Reporting.PersianRenderer\01-Greewf.Reporting.PersianRenderer.csproj", "{1C3EB98D-AA5C-476A-B67E-EBC487919D29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "01-Greewf.Reporting.PersianRenderer.MsBuildTask", "Greewf.Reporting\Source\Greewf.Reporting.PersianRenderer.MsBuildTask\01-Greewf.Reporting.PersianRenderer.MsBuildTask.csproj", "{FDFAC179-CD39-4051-951E-3D1D2CB656D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,14 @@ Global
 		{8FC6FB95-7801-4F48-8672-A3E34A2A7D64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8FC6FB95-7801-4F48-8672-A3E34A2A7D64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8FC6FB95-7801-4F48-8672-A3E34A2A7D64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C3EB98D-AA5C-476A-B67E-EBC487919D29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C3EB98D-AA5C-476A-B67E-EBC487919D29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C3EB98D-AA5C-476A-B67E-EBC487919D29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C3EB98D-AA5C-476A-B67E-EBC487919D29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDFAC179-CD39-4051-951E-3D1D2CB656D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDFAC179-CD39-4051-951E-3D1D2CB656D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDFAC179-CD39-4051-951E-3D1D2CB656D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDFAC179-CD39-4051-951E-3D1D2CB656D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

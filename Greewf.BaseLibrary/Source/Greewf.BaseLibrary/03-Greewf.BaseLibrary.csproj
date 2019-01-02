@@ -161,10 +161,6 @@
     <Compile Include="Logging\DefaultLogger.cs" />
     <Compile Include="Logging\LoggerBase.cs" />
     <Compile Include="Logging\LogProfileReader.cs" />
-    <Compile Include="ReportLoaderExtensions\ReportCorrectionMode.cs" />
-    <Compile Include="ReportLoaderExtensions\ReportSettingsBase.cs" />
-    <Compile Include="ReportLoaderExtensions\ReportSettings.cs" />
-    <Compile Include="ReportLoaderExtensions\StreamOutputResult.cs" />
     <Compile Include="Repositories\ICommittedTransactionAwareness.cs" />
     <Compile Include="Repositories\IRepositoryBase2.cs" />
     <Compile Include="SqlServerTypes\Loader.cs" />
@@ -175,9 +171,6 @@
     <Compile Include="Validation\IValidationDictionary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProxyDataContractResolverAttribute.cs" />
-    <Compile Include="ReportLoaderExtensions\ReportingServiceOutputFileFormat.cs" />
-    <Compile Include="ReportLoaderExtensions\LocalReportExtensions.cs" />
-    <Compile Include="ReportLoaderExtensions\ReportsLoader.cs" />
     <Compile Include="Repositories\ContextManager.cs" />
     <Compile Include="Repositories\IRepositoryBase.cs" />
     <Compile Include="Repositories\ISavingTracker.cs" />
@@ -339,7 +332,16 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Greewf.Reporting\Source\Greewf.Reporting.PersianRenderer\01-Greewf.Reporting.PersianRenderer.csproj">
+      <Project>{1c3eb98d-aa5c-476a-b67e-ebc487919d29}</Project>
+      <Name>01-Greewf.Reporting.PersianRenderer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Greewf.Reporting\Source\Greewf.Reporting\02-Greewf.Reporting.csproj">
+      <Project>{d4fb6e99-9453-4528-9754-0d34ea9df8b8}</Project>
+      <Name>02-Greewf.Reporting</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

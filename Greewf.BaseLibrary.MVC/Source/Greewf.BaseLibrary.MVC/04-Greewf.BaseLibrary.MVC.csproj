@@ -427,9 +427,9 @@
     <None Include="Scripts\DiffMatchPatch\diff_match_patch_20121119.source.zip" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Greewf.BaseLibrary\Source\Greewf.BaseLibrary\00-Greewf.BaseLibrary.csproj">
+    <ProjectReference Include="..\..\..\Greewf.BaseLibrary\Source\Greewf.BaseLibrary\03-Greewf.BaseLibrary.csproj">
       <Project>{3E04F4A9-AA08-4492-BD72-2EBC76CC85A1}</Project>
-      <Name>00-Greewf.BaseLibrary</Name>
+      <Name>03-Greewf.BaseLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
