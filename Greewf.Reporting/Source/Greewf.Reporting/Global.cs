@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Globalization;
-using System.Net;
 
 namespace Greewf.Reporting
 {
@@ -357,14 +356,14 @@ namespace Greewf.Reporting
 
         public static object FormatPersianNumber(object value, string format)
         {
-            return FormatPersianNumber(value, format, false, null, null);
+            return FormatPersianNumber(value, format, false, null, null, false);
         }
 
-        public static object FormatPersianNumber(object value, string format, bool useOldSlashCharacter, string currentRendererFormat, bool? convertSlashBetweenDigitsToDecimalseprator, params string[] exceptedRendererFormats)
+        public static object FormatPersianNumber(object value, string format, bool useOldSlashCharacter, string currentRendererFormat, bool? convertSlashBetweenDigitsToDecimalseprator, bool ignoreCorrection, params string[] exceptedRendererFormats)
         {
 
             convertSlashBetweenDigitsToDecimalseprator = convertSlashBetweenDigitsToDecimalseprator ?? false;
-            if (exceptedRendererFormats != null && exceptedRendererFormats.Length > 0 && exceptedRendererFormats.Contains(currentRendererFormat))
+            if (ignoreCorrection || (exceptedRendererFormats != null && exceptedRendererFormats.Length > 0 && exceptedRendererFormats.Contains(currentRendererFormat)))
                 return value;
 
             if (value == null) return "";
@@ -406,14 +405,14 @@ namespace Greewf.Reporting
               }).ToString();
         }
 
-        public static object PersianNumberExceptExcel(object value, string format, string currentRendererFormat, bool convertSlashBetweenDigitsToDecimalseprator)
+        public static object PersianNumberExceptExcel(object value, string format, string currentRendererFormat, bool convertSlashBetweenDigitsToDecimalseprator, bool ignoreCorrection)
         {
-            return FormatPersianNumber(value, format, false, currentRendererFormat, convertSlashBetweenDigitsToDecimalseprator, "EXCELOPENXML", "EXCEL");
+            return FormatPersianNumber(value, format, false, currentRendererFormat, convertSlashBetweenDigitsToDecimalseprator, ignoreCorrection, "EXCELOPENXML", "EXCEL");
         }
 
-        public static object PersianNumberExceptExcelOldSlash(object value, string format, string currentRendererFormat)
+        public static object PersianNumberExceptExcelOldSlash(object value, string format, string currentRendererFormat, bool ignoreCorrection)
         {
-            return FormatPersianNumber(value, format, true, currentRendererFormat, null, "EXCELOPENXML", "EXCEL");
+            return FormatPersianNumber(value, format, true, currentRendererFormat, null, ignoreCorrection, "EXCELOPENXML", "EXCEL");
         }
 
         public static object OldFontCorrectorExceptExcel(object value, string currentRendererFormat)
@@ -440,9 +439,9 @@ namespace Greewf.Reporting
         }
 
 
-        public static object HmxFontCorrectorExceptExcel(object value, string currentRendererFormat, string format = null, bool convertSlashBetweenDigitsToDecimalseprator = false)
+        public static object HmxFontCorrectorExceptExcel(object value, string currentRendererFormat, string format = null, bool convertSlashBetweenDigitsToDecimalseprator = false, bool ignoreCorrection = false)
         {
-            return PersianNumberExceptExcel(value, format, currentRendererFormat, convertSlashBetweenDigitsToDecimalseprator);
+            return PersianNumberExceptExcel(value, format, currentRendererFormat, convertSlashBetweenDigitsToDecimalseprator, ignoreCorrection);
         }
 
         public static string CorrectPersian(string text)

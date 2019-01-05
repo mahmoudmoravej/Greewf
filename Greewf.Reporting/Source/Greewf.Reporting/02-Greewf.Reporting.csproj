@@ -77,12 +77,13 @@
   <ItemGroup>
     <Compile Include="Global.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReportLoaderExtensions\ReportsLoader[Server].cs" />
     <Compile Include="ReportLoaderExtensions\LocalReportExtensions.cs" />
     <Compile Include="ReportLoaderExtensions\ReportCorrectionMode.cs" />
     <Compile Include="ReportLoaderExtensions\ReportingServiceOutputFileFormat.cs" />
     <Compile Include="ReportLoaderExtensions\ReportSettings.cs" />
     <Compile Include="ReportLoaderExtensions\ReportSettingsBase.cs" />
-    <Compile Include="ReportLoaderExtensions\ReportsLoader.cs" />
+    <Compile Include="ReportLoaderExtensions\ReportsLoader[Client].cs" />
     <Compile Include="ReportLoaderExtensions\StreamOutputResult.cs" />
     <Compile Include="SqlServerTypes\Loader.cs" />
   </ItemGroup>

@@ -7,6 +7,8 @@ namespace Greewf.Reporting
 
     public class PersianRenderer
     {
+        public const string GreewfIgnorePersianCorrectionParameterName = "GreewfIgnorePersianCorrection";
+
         public static void CorrectReportDefinition(string reportDefinitionFileName, string outputFileName, bool ignoreGlobalVariables = true, bool convertSlashBetweenDigitsToDecimalSepratorParameter = true)
         {
             var xDoc = new XDocument();
@@ -38,10 +40,84 @@ namespace Greewf.Reporting
                     strConvertSlashBetweenDigitsToDecimalSepratorParameter = "false";
             }
 
+            //2: add custom parameters
+            AddCorrectionModelParameter(xDoc, ns);
 
-            //2: process rdlc definition file
+            //3: process rdlc definition file
             ProcessTextRuns(xDoc, ignoreGlobalVariables, strConvertSlashBetweenDigitsToDecimalSepratorParameter, ns);
             ProcessCharts(xDoc, ignoreGlobalVariables, strConvertSlashBetweenDigitsToDecimalSepratorParameter, ns);
+        }
+
+        private static void AddCorrectionModelParameter(XDocument xDoc, XNamespace ns)
+        {            
+
+            var parameters = xDoc.Root.Elements(ns + "ReportParameters").FirstOrDefault();
+            if (parameters == null)
+            {
+                xDoc.Root.Add(new XElement(ns + "ReportParameters"));
+                parameters = xDoc.Root.Elements(ns + "ReportParameters").FirstOrDefault();
+            }
+
+            parameters.Add(XElement.Parse(//توجه! وجود تگ پرامت الزامی است چراکه در غیر اینصورت آنرا یک پارامتر داخلی می شناسد و اجازه ارسال داده به آنرا نمی دهد
+                $@"
+                <ReportParameter Name=""{GreewfIgnorePersianCorrectionParameterName}"" xmlns=""{ns}"">
+                    <DataType>Boolean</DataType>
+                    <DefaultValue>
+                        <Values>
+                            <Value>false</Value>
+                        </Values>
+                    </DefaultValue>
+                    <Prompt>""{GreewfIgnorePersianCorrectionParameterName}""</Prompt>
+                    <Hidden>true</Hidden>
+                </ReportParameter>
+            "));
+
+            //correct the parameter layout (unfortunately, we need to correct this part either)
+            var layout = xDoc.Root.Elements(ns + "ReportParametersLayout").FirstOrDefault();
+            if (layout == null)
+            {
+                xDoc.Root.Add(XElement.Parse(
+                    $@"<ReportParametersLayout xmlns=""{ns}"">
+                          <GridLayoutDefinition>
+                            <NumberOfColumns>2</NumberOfColumns>
+                            <NumberOfRows>1</NumberOfRows>
+                            <CellDefinitions>
+                            </CellDefinitions>
+                          </GridLayoutDefinition>
+                      </ReportParametersLayout>
+                    "
+                   )
+                 );
+
+                layout = xDoc.Root.Elements(ns + "ReportParametersLayout").FirstOrDefault();
+            }
+
+            var gridLayout = layout.Descendants(ns + "GridLayoutDefinition").FirstOrDefault();
+
+            int numberOfRows = 0;
+            var numberOfRowsNode = gridLayout.Descendants(ns + "NumberOfRows").FirstOrDefault();
+            numberOfRowsNode.SetValue(numberOfRows = int.Parse(numberOfRowsNode.Value) + 1);
+
+            var cellDefinitions = gridLayout.Descendants(ns + "CellDefinitions").FirstOrDefault();
+            if (cellDefinitions == null)
+            {
+                gridLayout.Add(XElement.Parse(
+                       $@"<CellDefinitions xmlns=""{ns}"">            
+                          </CellDefinitions>
+                        "
+                ));
+
+                cellDefinitions = gridLayout.Descendants(ns + "CellDefinitions").FirstOrDefault();
+            }
+
+            cellDefinitions.Add(XElement.Parse($@"
+                <CellDefinition xmlns=""{ns}"">
+                  <ColumnIndex>0</ColumnIndex>
+                  <RowIndex>{numberOfRows - 1}</RowIndex>
+                  <ParameterName>{GreewfIgnorePersianCorrectionParameterName}</ParameterName>
+                </CellDefinition>
+            "));
+
         }
 
         private static void ProcessTextRuns(XDocument xDoc, bool ignoreGlobalVariables, string convertSlashBetweenDigitsToDecimalSepratorParameter, XNamespace ns)
@@ -104,15 +180,13 @@ namespace Greewf.Reporting
                     if (formatNode != null) format = "\"" + formatNode.Value + "\"";
 
                     valueNode.Value =
-                        "=Greewf.Reporting.Global.HmxFontCorrectorExceptExcel(" +
-                        valueNode.Value.TrimStart(' ', '\n', '\r', '=') +
-                        ",Globals!RenderFormat.Name," + format + "," + convertSlashBetweenDigitsToDecimalSepratorParameter + ")";
+                        $"=Greewf.Reporting.Global.HmxFontCorrectorExceptExcel({ valueNode.Value.TrimStart(' ', '\n', '\r', '=')},Globals!RenderFormat.Name,{format},{convertSlashBetweenDigitsToDecimalSepratorParameter},Parameters!{GreewfIgnorePersianCorrectionParameterName}.Value)";
                 }
             }
             else if (!string.IsNullOrWhiteSpace(valueNode.Value)) //constant string except white spaces
             {
                 var newValue = valueNode.Value.Replace("\"", "\"\"").Replace("\r\n", "\" + vbCrlf + \"");
-                valueNode.Value = "=Greewf.Reporting.Global.HmxFontCorrectorExceptExcel(\"" + newValue + "\",Globals!RenderFormat.Name,nothing," + convertSlashBetweenDigitsToDecimalSepratorParameter + ")";
+                valueNode.Value = $"=Greewf.Reporting.Global.HmxFontCorrectorExceptExcel(\"{newValue}\",Globals!RenderFormat.Name,nothing,{convertSlashBetweenDigitsToDecimalSepratorParameter},Parameters!{GreewfIgnorePersianCorrectionParameterName}.Value)";
             }
         }
 

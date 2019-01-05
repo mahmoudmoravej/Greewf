@@ -10,7 +10,7 @@ using System.Text;
 
 namespace Greewf.Reporting
 {
-    public static class ReportsLoader
+    public static partial class ReportsLoader
     {
         public static bool RunInLegacyCasModel = false;
 
@@ -174,6 +174,9 @@ namespace Greewf.Reporting
         public static byte[] ExportToFile(LocalReport report, ReportSettings settings)
         {
             var deviceInfo = PrepareAndGetDeviceInfo(report, settings);
+
+            report.SetParameters(new ReportParameter(PersianRenderer.GreewfIgnorePersianCorrectionParameterName, settings.IgnorePersianCorrection.ToString()));
+
             return report.Render(GetOutputFileFormat(settings.OutputType), deviceInfo);
 
         }

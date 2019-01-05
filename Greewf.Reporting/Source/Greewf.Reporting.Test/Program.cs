@@ -51,6 +51,9 @@ namespace Greewf.Reporting.Test
             //3rd test: correct file externally (usable for rdl files (reporting service files where we should correct them at build time by a msbuild task)
             Test03(repPath);
 
+            //4th test : correct report on demand but ignore persianc correction by a parameter (useful for rdl)
+            Test04(repPath);
+
             Console.WriteLine("Press any key to finish...");
             Console.Read();
 
@@ -102,6 +105,29 @@ namespace Greewf.Reporting.Test
 
             Console.WriteLine($"Report {nameof(Test03)} Generated! (and will be opened in a second...)");
             System.Diagnostics.Process.Start(correctedFileOutput);
+        }
+
+        private static void Test04(string repPath)
+        {
+            //try
+            //{
+
+            var outputfile = $"..\\..\\TestResults\\{nameof(Test04)}.OnDemandRenderingButIgnoreCorrection.pdf";
+            var localReport = new LocalReport();
+            localReport.LoadReport(repPath, ReportCorrectionMode.HmFontsCorrection);
+
+            var report = ReportsLoader.ExportToFile(localReport, new ReportSettings() { OutputType = ReportingServiceOutputFileFormat.PDF,  IgnorePersianCorrection = true });
+
+            File.WriteAllBytes(outputfile, report);
+
+            Console.WriteLine($"Report {nameof(Test04)} Generated! (and will be opened in a second...)");
+            System.Diagnostics.Process.Start(outputfile);
+
+            //}
+            //catch (Exception x)
+            //{
+            //    throw;
+            //}
         }
 
     }

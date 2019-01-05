@@ -40,5 +40,14 @@
         /// It seems setting value to 96 or higher has no any effect on lower file size!
         /// </summary>
         public int DpiY { get; set; }
+
+
+        /// <summary>
+        /// این ویژگی را برای گزارش های سروری استفاده می کنیم. جاییکه تعریف گزارش حتما با توابع فارسی ساز تغییر کرده است و 
+        /// حالا اگر بخواهیم که این توابع عمل نکنند تنها راهش این است که بصورت پارامتریک این توابع را 
+        /// از قصد خود اگاه سازیم
+        /// توجه کنید مقدار پیش فرض فالس است و بدین معنی است که می خواهیم فارسی سازی انجام شود 
+        /// </summary>
+        public bool IgnorePersianCorrection { get; set; } = false;
     }
 }
