@@ -5,8 +5,7 @@ using System.IO;
 namespace Greewf.Reporting
 {
     public class ReportPersianRendererTask : Task
-    {
-        [Required]
+    {        
         public string ReportDefinitionFileName { get; set; }
 
         [Required]
@@ -18,6 +17,12 @@ namespace Greewf.Reporting
 
         public override bool Execute()
         {
+            if (string.IsNullOrEmpty(ReportDefinitionFileName))
+            {
+                Log.LogMessage($"There were no any item passed to {nameof(ReportPersianRendererTask)}. So nothing happened!");
+                return true;
+            }
+
             ReportDefinitionFileName = Path.GetFullPath(ReportDefinitionFileName);
             OutputFileName = Path.GetFullPath(OutputFileName);
 

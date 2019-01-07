@@ -3,7 +3,13 @@
   <UsingTask TaskName="ReportPersianRendererTask" AssemblyFile="..\Greewf.Reporting.PersianRenderer.MsBuildTask\bin\$(Configuration)\Greewf.Reporting.PersianRenderer.MsBuildTask.dll" />
   <Target Name="PostBuildTasks" AfterTargets="AfterBuild">
     <Message Text="### Post Build Tasks : Reporting.Test ###" Importance="high" />
+    <ItemGroup>
+      <_Files_ServerReports Include="$(ProjectDir)FakeNameToTestEmptyFiles\**\*.rdl" />
+    </ItemGroup>
+
+
     <ReportPersianRendererTask ReportDefinitionFileName="SampleReport.rdlc" OutputFileName="TestResults\Test01.ReportPersianRendererTask.rdlc" ></ReportPersianRendererTask>
+    <ReportPersianRendererTask ReportDefinitionFileName="@(_Files_ServerReports)" OutputFileName="$(ProjectDir)\%(_Files_ServerReports.RecursiveDir)%(_Files_ServerReports.FileName)%(_Files_ServerReports.Extension)"/>
     
     <Message Text="### Post Build Tasks  : Reporting.Test (FINISHED!) ###" Importance="high" />    
   </Target>
