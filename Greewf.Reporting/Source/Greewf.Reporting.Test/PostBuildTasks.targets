@@ -4,12 +4,13 @@
   <Target Name="PostBuildTasks" AfterTargets="AfterBuild">
     <Message Text="### Post Build Tasks : Reporting.Test ###" Importance="high" />
     <ItemGroup>
-      <_Files_ServerReports Include="$(ProjectDir)FakeNameToTestEmptyFiles\**\*.rdl" />
+      <_TestReport_Files Include="$(ProjectDir)\*.rdlc" />
+      <_No_Files Include="$(ProjectDir)FakeNameToTestEmptyFiles\**\*.rdl" />
     </ItemGroup>
 
-
-    <ReportPersianRendererTask ReportDefinitionFileName="SampleReport.rdlc" OutputFileName="TestResults\Test01.ReportPersianRendererTask.rdlc" ></ReportPersianRendererTask>
-    <ReportPersianRendererTask ReportDefinitionFileName="@(_Files_ServerReports)" OutputFileName="$(ProjectDir)\%(_Files_ServerReports.RecursiveDir)%(_Files_ServerReports.FileName)%(_Files_ServerReports.Extension)"/>
+    
+    <ReportPersianRendererTask ReportDefinitionFileName="@(_TestReport_Files)" OutputFileName="$(ProjectDir)\TestResults\Test01.%(_TestReport_Files.RecursiveDir)%(_TestReport_Files.FileName).ReportPersianRendererTask%(_TestReport_Files.Extension)"/>
+    <ReportPersianRendererTask ReportDefinitionFileName="@(_No_Files)" OutputFileName="$(ProjectDir)\%(_No_Files.RecursiveDir)%(_No_Files.FileName)%(_No_Files.Extension)"/>
     
     <Message Text="### Post Build Tasks  : Reporting.Test (FINISHED!) ###" Importance="high" />    
   </Target>

@@ -1,13 +1,17 @@
 ﻿using Microsoft.Reporting.WebForms;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.IO;
 using System.Xml;
 
 namespace Greewf.Reporting.Test
 {
-    class Program
+    class Program : IDisposable
     {
+        private List<Process> processes = new List<Process>();
+
         static void Main(string[] args)
         {
             /*  !!!توجه!!!!! 
@@ -24,6 +28,15 @@ namespace Greewf.Reporting.Test
              *  
              */
 
+            using (var program = new Program())
+            {
+                program.Start();
+            }
+
+        }
+
+        private void Start()
+        {
 
 
             var xml = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None).GetSection("runtime").SectionInformation.GetRawXml();
@@ -40,24 +53,29 @@ namespace Greewf.Reporting.Test
 
 
             var reportFileName = "SampleReport";
-            var repPath = $"..\\..\\{reportFileName}.rdlc";
+            var subReportFileName = "SampleSubReport";
+
+            var reportPath = $"..\\..\\{reportFileName}.rdlc";
+            var subReportPath = $"..\\..\\{subReportFileName}.rdlc";
 
             //1st test : correct the report definition by MsBuild Task!
             Test01();
 
             //2nd test : correct report on demand (usable for rdlc files (or client report files)
-            Test02(repPath);
+            Test02(reportPath, processes);
 
             //3rd test: correct file externally (usable for rdl files (reporting service files where we should correct them at build time by a msbuild task)
-            Test03(repPath);
+            Test03(reportPath, subReportPath, processes);
 
             //4th test : correct report on demand but ignore persianc correction by a parameter (useful for rdl)
-            Test04(repPath);
+            Test04(reportPath, processes);
 
             Console.WriteLine("Press any key to finish...");
             Console.Read();
 
+
         }
+
 
         private static void Test01()
         {
@@ -66,13 +84,13 @@ namespace Greewf.Reporting.Test
         }
 
 
-        private static void Test02(string repPath)
+        private static void Test02(string repPath, List<Process> processes)
         {
-            //try
-            //{
 
             var outputfile = $"..\\..\\TestResults\\{nameof(Test02)}.OnDemandRendering.pdf";
             var localReport = new LocalReport();
+
+            localReport.ShowDetailedSubreportMessages = true;
             localReport.LoadReport(repPath, ReportCorrectionMode.HmFontsCorrection);
 
             var report = ReportsLoader.ExportToFile(localReport, new ReportSettings() { OutputType = ReportingServiceOutputFileFormat.PDF });
@@ -80,54 +98,78 @@ namespace Greewf.Reporting.Test
             File.WriteAllBytes(outputfile, report);
 
             Console.WriteLine($"Report {nameof(Test02)} Generated! (and will be opened in a second...)");
-            System.Diagnostics.Process.Start(outputfile);
+            processes.Add(System.Diagnostics.Process.Start(outputfile));
 
-            //}
-            //catch (Exception x)
-            //{
-            //    throw;
-            //}
         }
 
-        private static void Test03(string inputReportFile)
+        private static void Test03(string inputReportFile, string inputSubReportFile, List<Process> processes)
         {
             var outputReportFileBaseName = $"..\\..\\TestResults\\{nameof(Test03)}.PersianRenderer";
+
             var correctedFileDefinition = outputReportFileBaseName + ".rdlc";
+            var correctedSubReportFileDefinition = outputReportFileBaseName + ".SubReport.rdlc";
             var correctedFileOutput = outputReportFileBaseName + ".pdf";
 
+
             PersianRenderer.CorrectReportDefinition(inputReportFile, correctedFileDefinition);
+            PersianRenderer.CorrectReportDefinition(inputSubReportFile, correctedSubReportFileDefinition);
 
             var localReport = new LocalReport();
+            localReport.ShowDetailedSubreportMessages = true;
+
             localReport.LoadReport(correctedFileDefinition, ReportCorrectionMode.None);
+
+            var textReader = File.OpenText(correctedSubReportFileDefinition);
+            localReport.LoadSubreportDefinition("Subreport1", textReader);          //I dont' know why it doesn't work  
+
             var report = ReportsLoader.ExportToFile(localReport, new ReportSettings() { OutputType = ReportingServiceOutputFileFormat.PDF });
 
             File.WriteAllBytes(correctedFileOutput, report);
 
             Console.WriteLine($"Report {nameof(Test03)} Generated! (and will be opened in a second...)");
-            System.Diagnostics.Process.Start(correctedFileOutput);
+            processes.Add(System.Diagnostics.Process.Start(correctedFileOutput));
         }
 
-        private static void Test04(string repPath)
+        private static void Test04(string repPath, List<Process> processes)
         {
             //try
             //{
 
             var outputfile = $"..\\..\\TestResults\\{nameof(Test04)}.OnDemandRenderingButIgnoreCorrection.pdf";
             var localReport = new LocalReport();
+            localReport.ShowDetailedSubreportMessages = true;
+
             localReport.LoadReport(repPath, ReportCorrectionMode.HmFontsCorrection);
 
-            var report = ReportsLoader.ExportToFile(localReport, new ReportSettings() { OutputType = ReportingServiceOutputFileFormat.PDF,  IgnorePersianCorrection = true });
+            var report = ReportsLoader.ExportToFile(localReport, new ReportSettings() { OutputType = ReportingServiceOutputFileFormat.PDF, IgnorePersianCorrection = true });
 
             File.WriteAllBytes(outputfile, report);
 
             Console.WriteLine($"Report {nameof(Test04)} Generated! (and will be opened in a second...)");
-            System.Diagnostics.Process.Start(outputfile);
+            processes.Add(System.Diagnostics.Process.Start(outputfile));
 
             //}
             //catch (Exception x)
             //{
             //    throw;
             //}
+        }
+
+        public void Dispose()
+        {
+            foreach (var process in processes)
+            {
+                try
+                {
+                    process.Kill();
+                    process.WaitForExit();
+                }
+                catch
+                {
+
+                }
+
+            }
         }
 
     }

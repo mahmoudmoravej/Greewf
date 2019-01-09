@@ -49,7 +49,7 @@ namespace Greewf.Reporting
         }
 
         private static void AddCorrectionModelParameter(XDocument xDoc, XNamespace ns)
-        {            
+        {
 
             var parameters = xDoc.Root.Elements(ns + "ReportParameters").FirstOrDefault();
             if (parameters == null)
@@ -118,6 +118,29 @@ namespace Greewf.Reporting
                 </CellDefinition>
             "));
 
+            //add it to subreports too
+            foreach (var subReport in xDoc.Descendants(ns + "Subreport"))
+            {
+                var subReportParameters = subReport.Descendants(ns + "Parameters").FirstOrDefault();
+                if (subReportParameters == null)
+                {
+                    subReport.Add(XElement.Parse(
+                           $@"<Parameters xmlns=""{ns}"">            
+                          </Parameters>
+                        "
+                    ));
+
+                    subReportParameters = subReport.Descendants(ns + "Parameters").FirstOrDefault();
+                }
+
+
+                subReportParameters.Add(XElement.Parse($@"
+                <Parameter Name=""{GreewfIgnorePersianCorrectionParameterName}""  xmlns=""{ns}"">
+                  <Value>=Parameters!{GreewfIgnorePersianCorrectionParameterName}.Value</Value>
+                </Parameter>
+            "));
+
+            }
         }
 
         private static void ProcessTextRuns(XDocument xDoc, bool ignoreGlobalVariables, string convertSlashBetweenDigitsToDecimalSepratorParameter, XNamespace ns)

@@ -25,7 +25,7 @@
             </Paragraphs>
             <rd:DefaultName>Textbox1</rd:DefaultName>
             <Top>0.99162cm</Top>
-            <Left>3.01308cm</Left>
+            <Left>0.79058cm</Left>
             <Height>1.79062cm</Height>
             <Width>11.04604cm</Width>
             <Style>
@@ -38,8 +38,56 @@
               <PaddingBottom>2pt</PaddingBottom>
             </Style>
           </Textbox>
+          <Subreport Name="Subreport1">
+            <ReportName>SampleSubReport</ReportName>
+            <Top>3.47869cm</Top>
+            <Left>0.37628cm</Left>
+            <Height>6.51521cm</Height>
+            <Width>7.5cm</Width>
+            <ZIndex>1</ZIndex>
+            <Style>
+              <Border>
+                <Style>Solid</Style>
+                <Width>2pt</Width>
+              </Border>
+            </Style>
+          </Subreport>
+          <Textbox Name="Textbox2">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>در تست 3 زیرگزارش نشان داده نمی شود و دلیلش را نمی دانیم ولی خیلی مهم نیست موضوع</Value>
+                    <Style>
+                      <FontFamily>hm fLotoos</FontFamily>
+                      <Format>0.00;(0.00)</Format>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox1</rd:DefaultName>
+            <Top>4.56466cm</Top>
+            <Left>12.07323cm</Left>
+            <Height>1.79062cm</Height>
+            <Width>5.88666cm</Width>
+            <ZIndex>2</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+              <Direction>RTL</Direction>
+            </Style>
+          </Textbox>
         </ReportItems>
-        <Height>4.35875cm</Height>
+        <Height>10.91995cm</Height>
         <Style>
           <Border>
             <Style>None</Style>
