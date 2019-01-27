@@ -175,7 +175,13 @@ namespace Greewf.Reporting
         {
             var deviceInfo = PrepareAndGetDeviceInfo(report, settings);
 
-            report.SetParameters(new ReportParameter(PersianRenderer.GreewfIgnorePersianCorrectionParameterName, settings.IgnorePersianCorrection.ToString()));
+            try
+            {
+                report.SetParameters(new ReportParameter(PersianRenderer.GreewfIgnorePersianCorrectionParameterName, settings.IgnorePersianCorrection.ToString()));
+            }
+            catch (Exception x) when (x.ToString().Contains("GreewfIgnorePersianCorrection"))//در حالت کلاینت که کارکت کردن فونت ها ایگنور شده است، این پارامتر هم اضافه نشده است. لذا این خطا مهم نیست. راه دیگری فعلا برای تشخیص وجود ندارد مگر اینکه روش کار را تغییر دهیم
+            {
+            }
 
             return report.Render(GetOutputFileFormat(settings.OutputType), deviceInfo);
 

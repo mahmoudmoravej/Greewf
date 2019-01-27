@@ -70,6 +70,9 @@ namespace Greewf.Reporting.Test
             //4th test : correct report on demand but ignore persianc correction by a parameter (useful for rdl)
             Test04(reportPath, processes);
 
+            //5th test : ignore correction from scratch 
+            Test05(reportPath, processes);
+
             Console.WriteLine("Press any key to finish...");
             Console.Read();
 
@@ -153,6 +156,24 @@ namespace Greewf.Reporting.Test
             //{
             //    throw;
             //}
+        }
+
+        private static void Test05(string repPath, List<Process> processes)
+        {
+
+            var outputfile = $"..\\..\\TestResults\\{nameof(Test05)}.IngoreCorrectionFromScratch.pdf";
+            var localReport = new LocalReport();
+
+            localReport.ShowDetailedSubreportMessages = true;
+            localReport.LoadReport(repPath, ReportCorrectionMode.None);
+
+            var report = ReportsLoader.ExportToFile(localReport, new ReportSettings() { OutputType = ReportingServiceOutputFileFormat.PDF });
+
+            File.WriteAllBytes(outputfile, report);
+
+            Console.WriteLine($"Report {nameof(Test05)} Generated! (and will be opened in a second...)");
+            processes.Add(System.Diagnostics.Process.Start(outputfile));
+
         }
 
         public void Dispose()
