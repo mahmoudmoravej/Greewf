@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 
@@ -27,9 +26,9 @@ namespace Greewf.BaseLibrary.Security.V3
             return _instance;
         }
 
-        public abstract Task<bool> HasPermissionAsync(int userId, IPermissionObject obj, int group, long permission);
-        public abstract bool HasPermission(int userId, IPermissionObject obj, int group, long permission);
-        public abstract bool HasAnyPermission(int userId, int group, long permission);
+        public abstract Task<bool> HasPermissionAsync(int userId, IPermissionObject obj, int group, long permission, string permissionCondition = null);
+        public abstract bool HasPermission(int userId, IPermissionObject obj, int group, long permission, string permissionCondition = null);
+        public abstract bool HasAnyPermission(int userId, int group, long permission, string permissionCondition = null);
         public abstract string GetAppropriateExceptionMessage(SecurityException exception);
 
 
@@ -145,44 +144,44 @@ namespace Greewf.BaseLibrary.Security.V3
             return dicObjectTypeParents.Where(o => o.Value.Contains(objectType)).Select(o => o.Key).ToArray();
         }
 
-        public abstract Task<bool> HasPermissionAsync(int userId, PermissionObject<OT>? obj, G group, long permission);
+        public abstract Task<bool> HasPermissionAsync(int userId, PermissionObject<OT>? obj, G group, long permission, string permissionCondition = null);
 
-        public override Task<bool> HasPermissionAsync(int userId, IPermissionObject obj, int group, long permission)
+        public override Task<bool> HasPermissionAsync(int userId, IPermissionObject obj, int group, long permission, string permissionCondition = null)
         {
             return HasPermissionAsync(userId, (PermissionObject<OT>?)obj, (G)(object)group, permission);
         }
 
-        public Task<bool> HasPermissionAsync<P>(int userId, PermissionObject<OT>? obj, P permission)
+        public Task<bool> HasPermissionAsync<P>(int userId, PermissionObject<OT>? obj, P permission, string permissionCondition = null)
         {
             int group = (int)(object)GetGroupOfType(typeof(P));
             long p = (long)(object)permission;
 
-            return HasPermissionAsync(userId, obj, group, p);
+            return HasPermissionAsync(userId, obj, group, p, permissionCondition);
         }
 
-        public bool HasPermission<P>(int userId, PermissionObject<OT>? obj, P permission)
+        public bool HasPermission<P>(int userId, PermissionObject<OT>? obj, P permission, string permissionCondition = null)
         {
-            return Task.Run(async () => await HasPermissionAsync(userId, obj, permission)).Result;
+            return Task.Run(async () => await HasPermissionAsync(userId, obj, permission, permissionCondition)).Result;
         }
 
-        public bool HasPermission(int userId, PermissionObject<OT>? obj, int group, long permission)
+        public bool HasPermission(int userId, PermissionObject<OT>? obj, int group, long permission, string permissionCondition = null)
         {
-            return Task.Run(async () => await HasPermissionAsync(userId, obj, group, permission)).Result;
+            return Task.Run(async () => await HasPermissionAsync(userId, obj, group, permission, permissionCondition)).Result;
         }
 
-        public bool HasAnyPermission<P>(int userId, P permission)
+        public bool HasAnyPermission<P>(int userId, P permission, string permissionCondition = null)
         {
-            return Task.Run(async () => await HasPermissionAsync(userId, null, permission)).Result;
+            return Task.Run(async () => await HasPermissionAsync(userId, null, permission, permissionCondition)).Result;
         }
 
-        public override bool HasAnyPermission(int userId, int group, long permission)
+        public override bool HasAnyPermission(int userId, int group, long permission, string permissionCondition = null)
         {
-            return Task.Run(async () => await HasPermissionAsync(userId, null, group, permission)).Result;
+            return Task.Run(async () => await HasPermissionAsync(userId, null, group, permission, permissionCondition)).Result;
         }
 
-        public override bool HasPermission(int userId, IPermissionObject obj, int group, long permission)
+        public override bool HasPermission(int userId, IPermissionObject obj, int group, long permission, string permissionCondition = null)
         {
-            return HasPermission(userId, PermissionObject<OT>.ReadFrom(obj), group, permission);
+            return HasPermission(userId, PermissionObject<OT>.ReadFrom(obj), group, permission, permissionCondition);
         }
 
         /// <summary>
@@ -191,18 +190,19 @@ namespace Greewf.BaseLibrary.Security.V3
         /// <typeparam name="P"></typeparam>
         /// <param name="userId"></param>
         /// <param name="objectType"></param>
-        /// <param name="permission"></param>        
+        /// <param name="permission"></param> 
+        /// /// <param name="permissionCondition">در صورتیکه دسترسی با یک شرط کنترل می شود</param>
         /// <returns></returns>
-        public int?[] GetAllowedObjectIds<P>(int userId, OT objectType, P permission)
+        public int?[] GetAllowedObjectIds<P>(int userId, OT objectType, P permission, string permissionCondition = null)
         {
             var group = GetGroupOfType(typeof(P));
-            return GetAllowedObjectIds(userId, objectType, (int)(object)group, (long)(object)permission, null);
+            return GetAllowedObjectIds(userId, objectType, (int)(object)group, (long)(object)permission, permissionCondition, null);
         }
 
-        public int?[] GetAllowedObjectIds<P, E>(int userId, OT objectType, P permission, E extraData)
+        public int?[] GetAllowedObjectIds<P, E>(int userId, OT objectType, P permission, string permissionCondition, E extraData)
         {
             var group = GetGroupOfType(typeof(P));
-            return GetAllowedObjectIds(userId, objectType, (int)(object)group, (long)(object)permission, extraData);
+            return GetAllowedObjectIds(userId, objectType, (int)(object)group, (long)(object)permission, permissionCondition, extraData);
         }
 
         /// <summary>
@@ -212,17 +212,18 @@ namespace Greewf.BaseLibrary.Security.V3
         /// <param name="objectType"></param>
         /// <param name="group"></param>
         /// <param name="permission"></param>
-        /// <param name="extraData">In some permission models we may need some extra data</param>
+        /// <param name="permissionCondition">در صورتیکه دسترسی با یک شرط کنترل می شود</param>
+        /// <param name="extraData">بیشتر داده های اختیاری است. مثلا اینکه تمام شناسه ها را بخواهیم با شناسه پدرانشان را با این پارامتر مشخص می کنیم</param>
         /// <returns></returns>
-        protected abstract int?[] GetAllowedObjectIds(int userId, OT objectType, int group, long permission, object extraData = null);
+        protected abstract int?[] GetAllowedObjectIds(int userId, OT objectType, int group, long permission, string permissionCondition, object extraData = null);
 
-        public int[] GetAllowedUserIds<P>(PermissionObject<OT> obj, P permission)
+        public int[] GetAllowedUserIds<P>(PermissionObject<OT> obj, P permission, string permissionCondition = null)
         {
             var group = GetGroupOfType(typeof(P));
-            return GetAllowedUserIds(obj, (int)(object)group, (long)(object)permission);
+            return GetAllowedUserIds(obj, (int)(object)group, (long)(object)permission, permissionCondition);
         }
 
-        protected abstract int[] GetAllowedUserIds(PermissionObject<OT> obj, int group, long permission);
+        protected abstract int[] GetAllowedUserIds(PermissionObject<OT> obj, int group, long permission, string permissionCondition = null);
 
 
 
