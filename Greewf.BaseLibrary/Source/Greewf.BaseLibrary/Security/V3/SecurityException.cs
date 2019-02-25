@@ -16,11 +16,11 @@ namespace Greewf.BaseLibrary.Security.V3
         /// <summary>
         /// اگرچه می توانیم جند دسترسی داشته باشیم اما شرط باید برای همه یکسان باشد
         /// </summary>
-        public string PermissionsCondition { get; set; }
+        public string[] PermissionsCondition { get; set; }
 
         public IPermissionObject PermissionObject { get; private set; }
 
-        public SecurityException(int group, long permissions, int userId, IPermissionObject permissionObject = null, string permissionsCondition= null)
+        public SecurityException(int group, long permissions, int userId, IPermissionObject permissionObject = null, string[] permissionsCondition= null)
         {
             this.PermissionGroup = group;
             this.Permissions = permissions;
@@ -30,7 +30,7 @@ namespace Greewf.BaseLibrary.Security.V3
         }
 
 
-        public SecurityException(int group, long permissions, string[] messages, IPermissionObject permissionObject = null, string permissionsCondition = null)
+        public SecurityException(int group, long permissions, string[] messages, IPermissionObject permissionObject = null, string[] permissionsCondition = null)
         {
             this.PermissionGroup = group;
             this.Permissions = permissions;
