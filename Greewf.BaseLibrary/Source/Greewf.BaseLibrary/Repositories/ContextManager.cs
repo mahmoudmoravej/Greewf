@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using effts;
+using System;
 using System.Data.Entity;
-using effts;
 using System.Data.Entity.Infrastructure.Interception;
 using System.Transactions;
 
@@ -28,9 +25,9 @@ namespace Greewf.BaseLibrary.Repositories
         public IValidationDictionary ValidationDictionary { get; private set; }
 
         public T Context { get; private set; }
-        public ContextManager(IValidationDictionary validationDictionary)
+        public ContextManager(IValidationDictionary validationDictionary, Func<T> contextInstantiator = null)
         {
-            Context = new T();
+            Context = contextInstantiator == null ? new T() : contextInstantiator();
             ContextBase = Context;
             ValidationDictionary = validationDictionary ?? new DefaultValidationDictionary();
             if (!_isFullTextSearchInitiated)
