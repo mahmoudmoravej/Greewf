@@ -44,7 +44,10 @@ namespace Greewf.BaseLibrary.Repositories
 
             bool result = true;
 
-            if (Context.IsInActiveTransactionScope)//to avoid creating new scope (it comes when savechanges causes to call savechanges again)
+            //to avoid creating new scope (it comes when savechanges causes to call savechanges again). 
+            //شرط دوم برای این است که ممکن است کانتکست از ابتدا با یک کانکشنی ایجاد شده باشد که خود در درون ترنزکشن است
+            //در این حالت ایجاد ترنزکشن اسکوپ باعث می شود خطای روبرو را بگیریم : "Cannot enlist in the transaction because a local transaction is in progress on the connection"
+            if (Context.IsInActiveTransactionScope || Context.Database.CurrentTransaction != null)
             {
                 Context.SaveChanges();
                 if (ValidationDictionary?.IsValid == false)
