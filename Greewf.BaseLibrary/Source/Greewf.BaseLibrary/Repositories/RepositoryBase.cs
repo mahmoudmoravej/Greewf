@@ -126,7 +126,7 @@ namespace Greewf.BaseLibrary.Repositories
         {
             get
             {
-                return (IValidationDictionary<M>)base.ValidationDictionary;
+                return base.ValidationDictionary;
             }
         }
 
