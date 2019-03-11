@@ -22,10 +22,10 @@ namespace Greewf.BaseLibrary.Repositories
     {
         protected T context = null;
         protected ContextManager<T> ContextManager { get; private set; }
-        protected Y UoR { get; private set; }
         protected IValidationDictionary ValidationDictionary { get; private set; }//we cannot return it directly from ContextManager becuase sometimes it may be null
 
-        protected RepositoryBase(ContextManager<T> contextManager, Y unitOfRepository)
+
+        protected RepositoryBase(ContextManager<T> contextManager, Func<Y> unitOfRepositoryInstantiator)
         {
             ContextManager = contextManager;
             if (contextManager == null)
@@ -53,9 +53,25 @@ namespace Greewf.BaseLibrary.Repositories
             //    };
             //}
 
-            UoR = unitOfRepository;
+            _UoRInstantiator = unitOfRepositoryInstantiator;
 
         }
+
+        private Func<Y> _UoRInstantiator;
+        private Y _UoR;
+        protected Y UoR
+        {
+            get
+            {
+                if (_UoR == null)
+                {
+                    _UoR = _UoRInstantiator();
+                }
+
+                return _UoR;
+            }
+        }
+
 
         protected virtual void OnChangesSaving(DbContext context)
         {
@@ -107,8 +123,8 @@ namespace Greewf.BaseLibrary.Repositories
     {
         //NOTE! this class is just for generic ValidationDictionart<M>. please put your extensibility codes in base class.
 
-        public RepositoryBase(ContextManager<T> contextManager, Y unitOfRepository)
-            : base(contextManager, unitOfRepository)
+        public RepositoryBase(ContextManager<T> contextManager, Func<Y> unitOfRepositoryInstantiator)
+            : base(contextManager, unitOfRepositoryInstantiator)
         {
         }
 

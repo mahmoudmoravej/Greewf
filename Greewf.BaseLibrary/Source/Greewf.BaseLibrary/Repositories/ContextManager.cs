@@ -2,6 +2,7 @@
 using System;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure.Interception;
+using System.Threading.Tasks;
 using System.Transactions;
 
 namespace Greewf.BaseLibrary.Repositories
@@ -39,6 +40,16 @@ namespace Greewf.BaseLibrary.Repositories
 
         public virtual bool SaveChanges()
         {
+            return SaveChangesBase(() => Context.SaveChanges());
+        }
+
+        public virtual Task<bool> SaveChangesAsync()
+        {
+            return Task.FromResult(SaveChangesBase(() => Context.SaveChangesAsync()));
+        }
+
+        private bool SaveChangesBase(Action contextSaveChangesFunction)
+        {
             if (ValidationDictionary != null && !ValidationDictionary.IsValid)
                 return false;
 
@@ -49,7 +60,7 @@ namespace Greewf.BaseLibrary.Repositories
             //در این حالت ایجاد ترنزکشن اسکوپ باعث می شود خطای روبرو را بگیریم : "Cannot enlist in the transaction because a local transaction is in progress on the connection"
             if (Context.IsInActiveTransactionScope || Context.Database.CurrentTransaction != null)
             {
-                Context.SaveChanges();
+                contextSaveChangesFunction();
                 if (ValidationDictionary?.IsValid == false)
                     result = false;
 
@@ -63,7 +74,7 @@ namespace Greewf.BaseLibrary.Repositories
                 using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled/*due to https://stackoverflow.com/q/13543254/790811 to be able to support async cases*/ ))
                 {
                     Context.IsInActiveTransactionScope = true;
-                    Context.SaveChanges();//my be some calls on onChangesSaved event that needs to be in transaction
+                    contextSaveChangesFunction();//my be some calls on onChangesSaved event that needs to be in transaction
 
                     if (ValidationDictionary?.IsValid == false)
                         result = false;
