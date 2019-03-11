@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Greewf.BaseLibrary.Linq;
+using System;
 using System.Data.Entity;
+using System.Linq;
 using System.Linq.Expressions;
-using Greewf.BaseLibrary.Repositories;
-using Greewf.BaseLibrary;
-using Greewf.BaseLibrary.Linq;
-using System.Transactions;
 
 namespace Greewf.BaseLibrary.Repositories
 {
@@ -54,7 +49,6 @@ namespace Greewf.BaseLibrary.Repositories
             //}
 
             _UoRInstantiator = unitOfRepositoryInstantiator;
-
         }
 
         private Func<Y> _UoRInstantiator;
@@ -132,7 +126,7 @@ namespace Greewf.BaseLibrary.Repositories
         {
             get
             {
-                return base.ValidationDictionary;
+                return (IValidationDictionary<M>)base.ValidationDictionary;
             }
         }
 

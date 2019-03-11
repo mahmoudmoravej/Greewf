@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Linq.Expressions;
 
 namespace Greewf.BaseLibrary
 {
-    public interface IValidationDictionary : IValidationDictionary<Object>
+    public interface IValidationDictionary : IValidationDictionary<object>
     {
     }
 
-    public interface IValidationDictionary<in M> : IWarningDictionary<Object>, IQuestionDictionary<Object>
+    public interface IValidationDictionary<out M> : IWarningDictionary<object>, IQuestionDictionary<object>      
     {
         void AddError(string key, string errorMessage);
         void AddError(string key, string errorMessage, string code);
@@ -20,7 +16,7 @@ namespace Greewf.BaseLibrary
 
     }
 
-   
+
 
 
 }

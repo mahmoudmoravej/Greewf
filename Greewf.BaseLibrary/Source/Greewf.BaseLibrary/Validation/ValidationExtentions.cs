@@ -22,7 +22,7 @@ namespace Greewf.BaseLibrary
             return body.Member.Name;
         }
 
-        public static void AddError<M, P>(this IValidationDictionary<M> v, Expression<Func<M, P>> exp, string errorMessage)
+        public static void AddError<M, P>(this IValidationDictionary<M> v, Expression<Func<M, P>> exp, string errorMessage) 
         {
             (v as IValidationDictionary).AddError(GetName(exp), errorMessage);
         }
