@@ -12,8 +12,7 @@ namespace Greewf.BaseLibrary.Repositories
     /// <typeparam name="T">EF Context</typeparam>
     /// <typeparam name="Y">UnitOfRepository</typeparam>
     public class RepositoryBase<T, Y>
-        where T : DbContext, ISavingTracker, ITransactionScopeAwareness, IQueryHintContext, new()
-        where Y : class, new()
+        where T : DbContext, ISavingTracker, ITransactionScopeAwareness, IQueryHintContext, new()        
     {
         protected T context = null;
         protected ContextManager<T> ContextManager { get; private set; }
@@ -111,8 +110,7 @@ namespace Greewf.BaseLibrary.Repositories
     }
 
     public class RepositoryBase<T, Y, M> : RepositoryBase<T, Y>
-        where T : DbContext, ISavingTracker, ITransactionScopeAwareness, IQueryHintContext, new()
-        where Y : class, new()
+        where T : DbContext, ISavingTracker, ITransactionScopeAwareness, IQueryHintContext, new()        
         where M : class, new()
     {
         //NOTE! this class is just for generic ValidationDictionart<M>. please put your extensibility codes in base class.
