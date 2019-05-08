@@ -33,6 +33,6 @@ using System.Security;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("4.1")]//we ignore * because we change this dll regularly. But we don't update all reference assemblies at same time. So we may get this error "Could not load file or assembly 'Greewf.BaseLibrary, Version..." because of old versions.
-[assembly: AssemblyFileVersion("4.1")]
+[assembly: AssemblyVersion("4.2")]//we ignore * because we change this dll regularly. But we don't update all reference assemblies at same time. So we may get this error "Could not load file or assembly 'Greewf.BaseLibrary, Version..." because of old versions.
+[assembly: AssemblyFileVersion("4.2")]
 [assembly: AllowPartiallyTrustedCallers]//RDLC needs this when it runs in legacy mode
