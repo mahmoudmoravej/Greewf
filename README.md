@@ -13,3 +13,10 @@ It is great when you have designed an enterprise application when users need to 
 
 ### - Simple mode
 It is exactly as same as you designed your web application. It is great if you need to have old browser support 
+
+This framework consists of different modules:
+- Client-side ViewEngine/layouting(based on jquery) 
+- Server-side helper ViewEngine/layouting (based on Asp.Net MVC)
+- Visual Studio Code Generator for CRUD 
+- Inline and interactive file download
+- Reporting Service helpers
