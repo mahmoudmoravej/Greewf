@@ -24,4 +24,5 @@ This framework consists of these modules:
 - Visual Studio Code Generator for CRUD 
 - Inline and interactive file download
 - SQL Server Reporting Service rendering helpers
-- and some ASP.NET MVC helper components...
+- and some ASP.NET MVC helper components
+- ...
